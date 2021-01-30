@@ -1,8 +1,8 @@
-# JavaScript Equalizer Display
+# Web open media player
 
-JavaScript Equalizer Display using the Web Audio API
+Web open media player using the Web Audio API
 
 
 ## Example screenshot:
 
-![Dump](https://github.com/orangeable/javascript-equalizer/blob/master/example.gif?raw=true)
+![Dump](https://github.com/long20014/media-player/blob/master/media-player.png?raw=true)
