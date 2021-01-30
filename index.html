@@ -1,0 +1,305 @@
+<html>
+<head>
+    <title>Media Player</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link type="text/css" href="./css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+
+<div id="player">
+  <div id="setting-panel" class="panel">
+    <div id="setting-panel-header">
+      <div class="item-with-tooltip">        
+        <button type="button" id="close-setting" onclick="showSettings()" class="text--white"><i class="fas fa-times"></i></button> 
+      </div>      
+    </div>
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'equalizer-tab')">Equalizer</button>
+      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>      
+    </div>
+    <div id="equalizer-tab" class="tabcontent">
+      <div id="equalizer">
+        <div class="controls">
+          <label>31Hz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_31HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '31Hz')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>62Hz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_62HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '62Hz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>125Hz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_125HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '125Hz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>250Hz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_250HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '250Hz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>500Hz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_500HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '500Hz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>1kHz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_1kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '1kHz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>2kHz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_2kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '2kHz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>4kHz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_4kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '4kHz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>8kHz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_8kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '8kHz')"></input>
+          </div>          
+        </div>
+        <div class="controls">
+          <label>16kHz</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id=""></div>
+            <input id="_16kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '16kHz')"></input>
+          </div>          
+        </div>
+      </div>
+      <div id="setting-button-section">
+        <div class="item-with-tooltip">
+          <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
+          <button type="button" id="use-media-setting-toggle" onclick="useMediaSettingToggle()"><i class="fas fa-cog"></i></button> 
+        </div>
+        <div class="item-with-tooltip">
+          <div class="tooltip-text tooltip-top" id="reset-equalizer-button-tooltip">Reset equalizer</div>
+          <button type="button" id="reset-equalizer" onclick="resetEqualizer()" class="text--gray"><i class="fas fa-sync"></i></button> 
+        </div>
+      </div>    
+    </div>
+    <div id="video-tab" class="tabcontent">
+      <div id="video">
+        <div class="controls">
+          <label>Brightness</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="brightness-tooltip"></div>
+            <input id="brightness" type="range" value="100" step="1" min="0" max="150" onchange="changeVideoSetting(this.value, 'brightness')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Contrast</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="contrast-tooltip"></div>
+            <input id="contrast" type="range" value="100" step="1" min="0" max="150" onchange="changeVideoSetting(this.value, 'contrast')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Invert</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="invert-tooltip"></div>
+            <input id="invert" type="range" value="0" step="1" min="0" max="100" onchange="changeVideoSetting(this.value, 'invert')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Grayscale</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="grayscale-tooltip"></div>
+            <input id="grayscale" type="range" value="0" step="1" min="0" max="100" onchange="changeVideoSetting(this.value, 'grayscale')"></input>
+          </div>
+        </div>   
+        <div class="controls">
+          <label>Saturate</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="saturate-tooltip"></div>
+            <input id="saturate" type="range" value="100" step="1" min="0" max="100" onchange="changeVideoSetting(this.value, 'saturate')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Sepia</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="sepia-tooltip"></div>
+            <input id="sepia" type="range" value="0" step="1" min="0" max="100" onchange="changeVideoSetting(this.value, 'sepia')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Blur</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="blur-tooltip"></div>
+            <input id="blur" type="range" value="0" step="1" min="0" max="10" onchange="changeVideoSetting(this.value, 'blur')"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Hue Rotation</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="hue-rotation-tooltip"></div>
+            <input id="hue-rotation" type="range" value="0" step="1" min="0" max="180" onchange="changeVideoSetting(this.value, 'hue-rotation')"></input>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </div>
+  <!-- play list panel -->
+  <div id="new-play-list-panel" class="panel">    
+    <div>
+      <label class="text--white">Play list name</label>
+      <input type="text" name="play-list-name" id="play-list-name-input" style="width: 100%;margin-top: 5px;">
+    </div>
+    <div class="form-button-section">
+      <button onclick="addNewPlayList()">Add</button> 
+      <button onclick="closeAddPlayListPanel()">Cancel</button>
+    </div>
+  </div>
+  <!-- player header -->
+  <div id="player__header">
+    <input id="files_upload" type="file" accept="audio/*,video/mp4,video/x-m4v,video/*" multiple/> 
+  </div> 
+
+  <div id="player__body">
+    <canvas id="canvas"></canvas>
+  </div>
+  
+  <div id="player__footer">
+    <div id="elapsed-time-section">
+      <div id="elapsed-time-text">
+        <span id="elapsed-time">00:00</span> / <span id="duration">00:00</span> 
+      </div>      
+      <input id="elapsed-time-bar" type="range" step="1" value="0" onmousedown="startElapsedTimeChange()" oninput="changeElapsedTime(this.value)" onmouseup="endElapsedTimeChange()" style="margin-top: 2px"></input>
+    </div>
+    <div id="player__toolbar-section">
+      <div class="item-with-tooltip" style="margin-right: 10px">
+        <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Save Settings</div>
+        <div id="save-setting-button" class="anchor-button-wrapper" onclick="saveMediaSettings()">
+          <a id="save-setting-icon" class="anchor-button-icon"><i class="fa fa-save text--white"></i></a>  
+        </div>
+      </div>
+      <div class="item-with-tooltip" style="margin-right: 10px">
+        <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
+        <div id="setting-button" class="anchor-button-wrapper" onclick="showSettings()">
+          <a id="setting-icon" class="anchor-button-icon"><i class="fa fa-cog text--white"></i></a>  
+        </div>
+      </div>  
+      <div class="item-with-tooltip" style="margin-right: 10px">
+        <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Song list</div>
+        <div id="show-list-button" class="anchor-button-wrapper" onclick="showListToggle()">
+          <a id="show-list-icon" class="anchor-button-icon"><i class="fa fa-list text--white"></i></a>  
+        </div>
+      </div>  
+      <div id="player__main-toolbar">
+        <div id="speed-section">
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="speed-tooltip"></div>
+            <input type="range" id="speed-control" value="20" step="1" min="1" max="40" onchange="changePlaybackRate(this.value)"></input>
+          </div>        
+        </div>        
+        <div id="button-section">
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="play-prev-button-tooltip">Play previous</div>
+            <button id="play-prev" onclick="playPreviousSong()"><i class="fa fa-step-backward"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="play-button-tooltip"></div>
+            <button id="play" onclick="playToggle()"><i class="fas fa-play"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="stop-button-tooltip"></div>
+            <button id="stop" onclick="stopMedia()"><i class="fas fa-stop"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="loop-button-tooltip"></div>
+            <button type="button" id="loop-toggle" onclick="loopToggle()" class="text--gray"><i class="fas fa-redo-alt"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="loop-all-button-tooltip"></div>
+            <button type="button" id="loop-all-toggle" onclick="loopAllToggle()" class="text--gray"><i class="fas fa-redo-alt"></i><i class="fas fa-redo-alt"></i></button> 
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="play-next-button-tooltip">Play next</div>
+            <button id="play-next" onclick="playNextSong()"><i class="fa fa-step-forward"></i></button>
+          </div>       
+        </div>
+        <div id="volume-section">
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="volume-tooltip"></div>
+            <input type="range" id="volume-control" value="100" step="1" min="0" max="100" onchange="changeVolume(this.value)"></input>    
+          </div>          
+        </div>             
+      </div>
+      <div class="item-with-tooltip" style="margin-left: 10px">
+        <div class="tooltip-text tooltip-top" id="download-button-tooltip">Download</div>
+        <div id="download-button" class="anchor-button-wrapper" onclick="document.getElementById('download-link').click()">
+          <a id="download-link" class="anchor-button-icon" download><i class="fa fa-download text--white"></i></a>  
+        </div>
+      </div>
+      <div class="item-with-tooltip" style="margin-left: 10px">
+        <div class="tooltip-text tooltip-top" id="download-button-tooltip">Fullscreen</div>
+        <div id="fullscreen-button" class="anchor-button-wrapper" onclick="canvasFullscreenToggle()">
+          <a id="fullscreen-icon" class="anchor-button-icon"><i class="fas fa-expand text--white"></i></a>  
+        </div>
+      </div>      
+    </div>   
+  </div>
+  <div id="song-list-panel">
+    <div class="horizontal-toolbar">      
+      <div class="item-with-tooltip"> 
+        <div class="tooltip-text tooltip-left" id="">Close</div>     
+        <div id="show-list-button" class="anchor-button-wrapper" onclick="showListToggle()">
+          <a id="show-list-icon"><i class="fa fa-times text--white"></i></a>  
+        </div>
+      </div>      
+      <div class="item-with-tooltip"> 
+        <div class="tooltip-text tooltip-left" id="">Delete All</div>       
+        <div id="delete-all-button" class="anchor-button-wrapper" onclick="deleteAll()">
+          <a id="delete-all-icon"><i class="fa fa-trash text--white"></i></a>  
+        </div>
+      </div>
+    </div>
+    <div id="play-list-section">
+      <select name="play-lists" id="play-lists" onchange="changePlayList(this.value)"></select>
+      <div class="item-with-tooltip"> 
+        <div class="tooltip-text tooltip-top" id="add-playlist-tooltip">Add play list</div>  
+        <button id="add-playlist" onclick="openAddPlayListPanel()"><i class="fa fa-plus"></i></button>
+      </div>
+      <div class="item-with-tooltip"> 
+        <div class="tooltip-text tooltip-left" id="remove-playlist-tooltip">Remove play list</div>  
+        <button id="remove-playlist" onclick="removePlayList()"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+    
+    <div class="list-wrapper" style="margin-top: 20px;">
+      <table id="song-table"> 
+    </div>          
+    </table>
+  </div>
+</div>
+
+<script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/FileSaver.js"></script>
+<script type="text/javascript" src="./js/indexedDB-import-export.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.1/tuna-min.js" type="text/javascript"></script>
+</body>
+</html>
