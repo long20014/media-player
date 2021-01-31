@@ -637,8 +637,7 @@ function switchMediaType() {
   if (currentSong.type === "audio") {
     sourceNode = audioSourceNode;
     _equalizer.switchMediaSrcNode(audioContext)
-    media = audio;
-    media.loop     
+    media = audio;         
     startFrameLooper();
   } else if (currentSong.type === "video") {
     sourceNode = videoSourceNode;
