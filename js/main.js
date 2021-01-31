@@ -75,15 +75,15 @@ var videoSettings = {
 };
 
 audio.controls = true;
-audio.loop = false;
+media.loop = false;
 audio.isPlay = false;
 media.isPlay = false;
 audio.autoplay = false;
 media.preservesPitch = true;
 
-var MyCustomNode = function(){
+var MyCustomNode = function(){``
   this.input = audioContext.createGain();
-  var output = audioContext.createGain();
+  var output = audioContext.createGain();  ``
 
   this.connect = function(target){
    output.connect(target);
@@ -633,16 +633,19 @@ function switchMediaType() {
   }
   stopFrameLooper();
   clearCanvas();
+  var isLoop = media.loop;    
   if (currentSong.type === "audio") {
     sourceNode = audioSourceNode;
-    _equalizer.switchMediaSrcNode(audioContext)    
+    _equalizer.switchMediaSrcNode(audioContext)
     media = audio;
+    media.loop     
     startFrameLooper();
   } else if (currentSong.type === "video") {
     sourceNode = videoSourceNode;
     _equalizer.switchMediaSrcNode(audioContext)      
     media = video;              
   }
+  media.loop = isLoop;
   media.volume = currentVolume;
 }
 
