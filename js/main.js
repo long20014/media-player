@@ -1484,7 +1484,7 @@ function Processor() {
     let self = this;
     canvasRenderLoopTimeout = setTimeout(function() {
       self.timerCallback();
-    }, 20);
+    }, 33);
   }
 
   this.computeFrame = function () {
