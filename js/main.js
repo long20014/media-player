@@ -1277,12 +1277,15 @@ function getAllPlayLists() {
 
 async function addPlayListToDB(playList) {
   playLists = getAllPlayLists();
-  if (playList) {    
-    if (db._allTables.hasOwnProperty(playList)) {
-      const songs = {};  
+  if (playLists) {    
+    if (!playLists.includes(playList)) {
+      const songs = {}; 
+      playLists.forEach(storeName => {
+        songs[storeName] = 'id, songName, src, createdDate, type, settings';
+      })    
       songs[playList] = 'id, songName, src, createdDate, type, settings';
       await db.close();
-      db.version(db.verno + 1).stores(songs);  
+      db.version(Math.round(db.verno + 1)).stores(songs);  
       await db.open();
       const initSong = {id: "initSong", songName: "initSong", src: null, createdDate: null, type: "audio", settings: null}
       addSongToPlayList(playList, initSong);
