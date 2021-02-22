@@ -61,6 +61,7 @@ var isListShow = false;
 var isFullscreen = false;
 var isSettingShow = false;
 var isSongSettingUsed = true;
+var needFilterApply = false;
 var canvasRenderLoopTimeout;
 
 var domElement = {};
@@ -82,9 +83,9 @@ media.isPlay = false;
 audio.autoplay = false;
 media.preservesPitch = true;
 
-var MyCustomNode = function(){``
+var MyCustomNode = function(){
   this.input = audioContext.createGain();
-  var output = audioContext.createGain();  ``
+  var output = audioContext.createGain();
 
   this.connect = function(target){
    output.connect(target);
@@ -145,7 +146,6 @@ window.addEventListener(
     ctx = domElement.canvas.getContext("2d");
     initVideo(); 
     initCanvasSize(); 
-
     audioSourceNode = audioContext.createMediaElementSource(audio);       
     videoSourceNode = audioContext.createMediaElementSource(video);
     sourceNode = audioSourceNode;
@@ -153,15 +153,10 @@ window.addEventListener(
     _equalizer.setupEqualizer(audioContext)    
     sourceNode.connect(analyser);    
     analyser.connect(audioContext.destination);
-
     await getSongList();     
-
     currentVolume = parseFloat(domElement.volumeControl.value) / VOLUME_STEP_COUNT;
-
     initUploadFileFunction();
-
-    initTooltips();                 
-
+    initTooltips();  
     _processor = new Processor();   
           
   },
@@ -397,8 +392,9 @@ function changePlaybackRate(playbackRateValue) {
   document.getElementById("speed-tooltip").textContent = "Speed: " + media.playbackRate;
 }
 
-function changeElapsedTime(timeValue) {        
-  media.currentTime = timeValue;   
+function changeElapsedTime(timeValue) {
+  needFilterApply = true;         
+  media.currentTime = timeValue;
 }
 
 function startElapsedTimeChange() {
@@ -844,6 +840,7 @@ function openTab(evt, tabName) {
 
 /*----- -video settings function-----*/
 function changeVideoSetting(value, type) {
+  value = +value;
   switch (type) {
     case "brightness":
       videoSettings.brightness = value;
@@ -878,7 +875,8 @@ function changeVideoSetting(value, type) {
       document.getElementById("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
       break;
     default:
-  }    
+  }
+  needFilterApply = true;   
 }
 
 /*----- -Media Function- -----*/
@@ -892,7 +890,8 @@ function playMedia() {
   // changePitch();
   if (media.src !== window.location.href && media.src) {
     media.play();    
-    if (currentSong.type === "video") {        
+    if (currentSong.type === "video") {   
+      needFilterApply = true;        
       processVideo();
     } 
     setPlayToTrue();
@@ -1033,7 +1032,7 @@ function uploadMediaFile(file, fileType) {
   addSongToDisplayList(mediaFile);
   addSongToPlayList(currentPlayList, mediaFile);
   addSongToSongList(mediaFile);
-  saveSongsPos(mediaFile);
+  saveSongsPos();
 }
 
 function setAudioFileAsArrayBuffer(file) {
@@ -1381,20 +1380,19 @@ function saveSongsPos() {
     mediaPosList = [];
   } else {
     mediaPosList = JSON.parse(mediaPosList);
-    mediaPosObj = mediaPosList.find((item) => item.mediaList === currentPlayList)
+    mediaPosObj = mediaPosList.find((item) => item.mediaList === currentPlayList)    
   }
   if (!mediaPosObj) {
     mediaPosObj  = {
       mediaList: currentPlayList,
       mediaPosArr: []
     }
-  }          
-  appSongs.forEach((song) => { mediaPosObj.mediaPosArr.push(song.id) });
-  if (mediaPosList.indexOf(mediaPosObj) !== -1) {
-    mediaPosList[mediaPosList.indexOf(mediaPosObj)] = mediaPosObj
-  } else {
     mediaPosList.push(mediaPosObj);
-  }    
+  } else {
+    // clean old positions
+    mediaPosObj.mediaPosArr = [];
+  }
+  appSongs.forEach((song) => { mediaPosObj.mediaPosArr.push(song.id)});  
   localStorage.setItem("mediaPosList", JSON.stringify(mediaPosList));
 }
 
@@ -1580,20 +1578,14 @@ function Processor() {
     let self = this;
     canvasRenderLoopTimeout = setTimeout(function() {
       self.timerCallback();
-    }, 0);
+    }, 33);
   }
 
   this.computeFrame = function () {
-    new CanvasFilterBuilder()
-    .buildBrightness(videoSettings.brightness)
-    .buildContrast(videoSettings.contrast)    
-    .buildInvert(videoSettings.invert)
-    .buildGrayscale(videoSettings.grayscale)
-    .buildBlur(videoSettings.blur)
-    .buildhueRotation(videoSettings.hueRotation)
-    .buildSaturate(videoSettings.saturate)
-    .buildSepia(videoSettings.sepia)    
-    .build();        
+    if (needFilterApply) {
+      invokeCanvasBuilder();
+      setTimeout(() => needFilterApply = false, 500)      
+    }          
     ctx.drawImage(this.video, 0, 0, this.width, this.height);
     // let frame = this.ctx.getImageData(0, 0, this.width, this.height);
     // let l = frame.data.length / 4;
@@ -1673,6 +1665,19 @@ function CanvasFilterBuilder() {
       "hue-rotate(" + this.hueRotateValue + "deg)";
     return this;
   }
+}
+
+function invokeCanvasBuilder() {
+  new CanvasFilterBuilder()
+      .buildBrightness(videoSettings.brightness)
+      .buildContrast(videoSettings.contrast)    
+      .buildInvert(videoSettings.invert)
+      .buildGrayscale(videoSettings.grayscale)
+      .buildBlur(videoSettings.blur)
+      .buildhueRotation(videoSettings.hueRotation)
+      .buildSaturate(videoSettings.saturate)
+      .buildSepia(videoSettings.sepia)    
+      .build(); 
 }
 
 function processVideo() { 
