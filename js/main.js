@@ -556,20 +556,14 @@ function addSongToSongList(song) {
   appSongs.push(song);
 }
 
-async function getSongList() {    
-  // getAllSongs().then((songs) => {        
-  //   if (songs) {
-  //     appSongs = songs;
-  //     loadSongsPos();
-  //     for (song of appSongs) {
-  //       addSongToDisplayList(song);
-  //     }
-  //   }
-  // });
-  appSongs = await getAllSongFromPlayList(currentPlayList); 
-  for (song of appSongs) {
-    addSongToDisplayList(song);
-  }
+async function getSongList() {   
+  appSongs = await getAllSongFromPlayList(currentPlayList);
+  if (appSongs && appSongs.length > 0) {
+    loadSongsPos(); 
+    for (song of appSongs) {
+      addSongToDisplayList(song);
+    }
+  }  
 }
 
 function sortSongsByCreatedDate(songs, order) {
@@ -789,7 +783,7 @@ async function addNewPlayList() {
   }     
 }
 
-function removePlayList() {
+async function removePlayList() {
   var deleteConfirm = confirm("Are you sure to remove playlist: " + currentPlayList + "?");
   if (deleteConfirm) {
     var playListName = currentPlayList;
@@ -802,9 +796,9 @@ function removePlayList() {
           var targetIndex = Array.from(domElement.playListSelect.children).indexOf(target);
           domElement.playListSelect.removeChild(domElement.playListSelect.childNodes[targetIndex]); 
           playLists.splice(targetIndex, 1)
-          deletePlayListFromDB(playListName);
-          changePlayList(playLists[0]);
-          domElement.playListSelect.value = playLists[0];
+          await deletePlayListFromDB(playListName);
+          await changePlayList(DEFAULT_PLAYLIST);
+          domElement.playListSelect.value = DEFAULT_PLAYLIST;
           closeAddPlayListPanel(); 
         } else {
           alert("Play list does not exists.")
@@ -1278,14 +1272,7 @@ async function addPlayListToDB(playList) {
   playLists = getAllPlayLists();
   if (playLists) {    
     if (!playLists.includes(playList)) {
-      const songs = {}; 
-      playLists.forEach(storeName => {
-        songs[storeName] = 'id, songName, src, createdDate, type, settings';
-      })    
-      songs[playList] = 'id, songName, src, createdDate, type, settings';
-      await db.close();
-      db.version(Math.round(db.verno + 1)).stores(songs);  
-      await db.open();
+      await createNewSchema(playList, 'id, songName, src, createdDate, type, settings');      
       const initSong = {id: "initSong", songName: "initSong", src: null, createdDate: null, type: "audio", settings: null}
       addSongToPlayList(playList, initSong);
       deleteSongFromPlayList(playList, initSong)
@@ -1295,12 +1282,19 @@ async function addPlayListToDB(playList) {
 
 async function deletePlayListFromDB(playList) {
   if (playList && playList !== DEFAULT_PLAYLIST) {
-    var songs = {};  
-    songs[playList] = null;
-    await db.close();
-    db.version(db.verno + 1).stores(songs);  
-    await db.open();
+    await createNewSchema(playList, null);
   }  
+}
+
+async function createNewSchema(playList, newSchema) {
+  const songs = {};
+  playLists.forEach(storeName => {
+    songs[storeName] = 'id, songName, src, createdDate, type, settings';
+  })  
+  songs[playList] = newSchema;
+  await db.close();
+  db.version(Math.round(db.verno + 1)).stores(songs);  
+  await db.open();
 }
 
 async function renamePlayListFromDB(playList) {
@@ -1308,11 +1302,11 @@ async function renamePlayListFromDB(playList) {
   await db.open();
 }
 
-function changePlayList(playListName) {
+async function changePlayList(playListName) {
   if (!media.isPlay) {
     currentPlayList = playListName;    
     clearAllSongs();    
-    getSongList();
+    await getSongList();
   } else {
     domElement.playListSelect.value = currentPlayList;
     alert("Please stop or pause media to change play list!");
