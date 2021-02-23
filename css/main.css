@@ -370,7 +370,7 @@ div#player {
 }
 
 #play-lists {    
-  width: calc(100% - 62px);
+  flex: 1;
 }
 
 #new-play-list-panel {

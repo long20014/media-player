@@ -1631,7 +1631,7 @@ function initDOMVars() {
   domElement.playListSelect = document.getElementById("play-lists");
   domElement.newPlayListPanel = document.getElementById("new-play-list-panel");
   domElement.playListInput = document.getElementById("play-list-name-input");
-  domElement.equalizerControls = {g
+  domElement.equalizerControls = {
     _31HzControl: document.getElementById('_31HzControl'),
     _62HzControl: document.getElementById('_62HzControl'),
     _125HzControl: document.getElementById('_125HzControl'),
