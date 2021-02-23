@@ -874,7 +874,6 @@ function changeVideoSetting(value, type) {
 }
 
 /*----- -Media Function- -----*/
-
 function pauseMedia() {
   media.pause();
   setPlayToFalse();
@@ -997,7 +996,7 @@ files_upload.onchange = function(){
   };   
 }
 
-/*----- -Setup- -----*/
+/*----- -Setup Function- -----*/
 function uploadMediaFile(file, fileType) {
   var createdDate = new Date();
   var mediaFile = {
@@ -1083,139 +1082,6 @@ function setupEcho() {
 }
 
 /*----- -DB- -----*/
-
-// function initIndexDB(dbName) {
-//   indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB
-//   IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction
-//   dbVersion = 2;
-//   var request = window.indexedDB.open(dbName, dbVersion);
-
-//   var createSongObjectStore = function (db) {
-//       // Create an objectStore
-//     console.log("Creating objectStore")
-//     var objectStore = db.createObjectStore("songs", { keyPath: "id" });        
-//     objectStore.createIndex("songName", "songName", { unique: true });        
-//     objectStore.createIndex("src", "src", { unique: true });
-//     objectStore.createIndex("createDate", "createdDate", { unique: false});
-//     objectStore.createIndex("type", "type", { unique: false});
-//     objectStore.createIndex("settings", "settings", { unique: false})
-//   }
-
-//   return new Promise((resolve, reject) => {
-//     request.onsuccess = function (event) {
-//       console.log("Success creating/accessing IndexedDB database");
-//       db = event.target.result; 
-//         // exportDB(db);       
-//         db.onerror = function (event) {
-//           console.log("Error creating/accessing IndexedDB database");
-//         }; 
-//         resolve();         
-//       }
-//     // For future use. Currently only in latest Firefox versions
-//     request.onupgradeneeded = function (event) {
-//       db = event.target.result;
-//       createSongObjectStore(db);
-//       resolve(); 
-//     };
-//   })
-// }
-
-// function getPlayLists() {
-//   if (!window.indexedDB) {
-//     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-//   } else {        
-//     console.log("updating media in IndexedDB");
-//     indexedDB.databases().then(databases => {
-//       databases.forEach((database) => {
-//         playLists.push(database.name)
-//       })            
-//     })
-//   }
-// }
-
-// function updateMedia(media) {
-//   if (!window.indexedDB) {
-//     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-//   } else {        
-//     console.log("updating media in IndexedDB");
-
-//     // Open a transaction to the database
-//     var transaction = db.transaction(["songs"], "readwrite");
-
-//     // Put the blob into the dabase
-//     var objectStore = transaction.objectStore("songs");
-
-//     var request = objectStore.put(media)
-
-//     request.onsuccess = function (event) {
-//       console.log("Successfully update media");                   
-//     }   
-//   }
-// }
-
-// function addSongToPlayList(song) {
-//   if (!window.indexedDB) {
-//     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-//   } else {        
-//     console.log("Putting song in IndexedDB");
-
-//     // Open a transaction to the database
-//     var transaction = db.transaction(["songs"], "readwrite");
-
-//     // Put the blob into the dabase
-//     var objectStore = transaction.objectStore("songs");
-
-//     var request = objectStore.add(song)
-
-//     request.onsuccess = function (event) {
-//       console.log("Successfully added song");                   
-//     }   
-//   }
-// }
-
-// function deleteSongFromPlayList(song) {
-//   if (!window.indexedDB) {
-//     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-//   } else {      
-//     console.log("deleting song in IndexedDB");
-
-//     // Open a transaction to the database
-//     var transaction = db.transaction(["songs"], "readwrite");
-
-//     // Put the blob into the dabase
-//     var objectStore = transaction.objectStore("songs");
-
-//     var request = objectStore.delete(song.id)
-
-//     request.onsuccess = function (event) {
-//       console.log("Successfully delete song");                   
-//     }   
-//   }
-// }
-
-// function getAllSongs() {
-//   if (!window.indexedDB) {
-//     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-//   } else {        
-//     console.log("Getting songs in IndexedDB");
-
-//     // Open a transaction to the database
-//     var transaction = db.transaction(["songs"], "readwrite");
-
-//     // Put the blob into the dabase
-//     var objectStore = transaction.objectStore("songs");
-
-//     var request = objectStore.getAll()
-    
-//     return new Promise((resolve, reject) => {
-//       request.onsuccess = function (event) {
-//         console.log("Successfully get all song");              
-//         resolve(event.target.result)                 
-//       }  
-//     })         
-//   }
-// }
-
 async function initIndexDB(dbName) {
   const connection = await Dexie.exists(dbName).then(function (exists) {
     db = new Dexie(dbName);
@@ -1312,7 +1178,6 @@ async function changePlayList(playListName) {
     alert("Please stop or pause media to change play list!");
   }             
 }
-
 
 function getSongFromNhaccuatui(songUrl) {
   var songKey = "gv8GB8rRmZU6";
@@ -1549,7 +1414,6 @@ function calculateWindowSizeAfterwindowResize() {
 }
 
 /*----- -Video- -----*/
-
 function Processor() { 
   this.doLoad = function () {
     this.video = video;                    
@@ -1767,7 +1631,7 @@ function initDOMVars() {
   domElement.playListSelect = document.getElementById("play-lists");
   domElement.newPlayListPanel = document.getElementById("new-play-list-panel");
   domElement.playListInput = document.getElementById("play-list-name-input");
-  domElement.equalizerControls = {
+  domElement.equalizerControls = {g
     _31HzControl: document.getElementById('_31HzControl'),
     _62HzControl: document.getElementById('_62HzControl'),
     _125HzControl: document.getElementById('_125HzControl'),
