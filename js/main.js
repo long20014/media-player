@@ -13,7 +13,6 @@ var PLAYRATE_STEP_COUNT = 40.0;
 
 var screenWidth = CANVAS_WIDTH;
 var screenHeight = CANVAS_HEIGHT;
-
 var ctx,
 sourceNode,
 videoSourceNode,
@@ -25,9 +24,6 @@ bar_count,
 bar_pos,
 bar_width,
 bar_height,
-lGain,
-mGain,
-hGain,
 files_upload;
 
 var indexedDB;
@@ -35,13 +31,11 @@ var IDBTransaction;
 var dbVersion;
 var db;
 var playLists = [];
-
 var audio = new Audio();
 var video;
 var media = audio;
 var _processor;
 var _equalizer;
-
 var delay;
 var bufferSource;
 var currentArrayBuffer;
@@ -62,7 +56,6 @@ var isSettingShow = false;
 var isSongSettingUsed = true;
 var needFilterApply = false;
 var canvasRenderLoopTimeout;
-
 var domElement = {};
 var videoSettings = {
   brightness: 100, //percent
@@ -75,24 +68,22 @@ var videoSettings = {
   hueRotation: 0, // deg
 };
 
-audio.controls = true;
+media.controls = false;
 media.loop = false;
-audio.isPlay = false;
 media.isPlay = false;
-audio.autoplay = false;
+media.autoplay = false;
 media.preservesPitch = true;
 
-var MyCustomNode = function(){``
+var MyCustomNode = function(){
   this.input = audioContext.createGain();
-  var output = audioContext.createGain();  ``
+  var output = audioContext.createGain();
 
   this.connect = function(target){
    output.connect(target);
  };
 };
 
-/*----- -Window- -----*/
-
+/*----- -Window Function- -----*/
 window.addEventListener("keydown", (e) => {
   if (document.activeElement.type !== "text") {
     if (e.key == "p" || e.key == "P") {
@@ -164,18 +155,18 @@ window.addEventListener(
   false
 );
 
-
 window.addEventListener("click", function() {
   audioContext.resume();     
 })
 
- window.addEventListener('resize', function() {
+window.addEventListener('resize', function() {
   calculateWindowSizeAfterwindowResize();
   if (document.fullscreenElement === null) {
     canvasEscapeFullScreen();
   }    
 })
 
+/*----- -Controller Function- -----*/
 function Equalizer() {
   this.switchXFadeGainValue = function() {
     if (currentSong && currentSong.type === "video")
@@ -311,19 +302,16 @@ function Equalizer() {
   }
 }
 
-/*----- -Controller- -----*/
-
 function changePitch() {
-    // var oscillator = audioContext.createOscillator()
-    // oscillator.type = 'square';
-    // oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // value in hertz
-    // oscillator.connect(audioContext.destination);
-    // oscillator.start();
-  }
+  // var oscillator = audioContext.createOscillator()
+  // oscillator.type = 'square';
+  // oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // value in hertz
+  // oscillator.connect(audioContext.destination);
+  // oscillator.start();
+}
 
 function changeGain(gainValue, type) {
   var value = parseFloat(gainValue) / 100.0;
-
   switch(type)
   {
     case '31Hz': _equalizer.set_31HzGain(value); break;
@@ -381,7 +369,7 @@ function changeDelay(delayValue) {
 function changeVolume(volumeValue) {
   media.volume = parseFloat(volumeValue) / VOLUME_STEP_COUNT;
   currentVolume = media.volume; 
-  document.getElementById("volume-tooltip").textContent = "volume: " + volumeValue;
+  getElement("volume-tooltip").textContent = "volume: " + volumeValue;
   if (isMute) {
     isMute = false;
   }
@@ -390,7 +378,7 @@ function changeVolume(volumeValue) {
 function changePlaybackRate(playbackRateValue) {
   media.playbackRate = parseFloat(playbackRateValue) / (PLAYRATE_STEP_COUNT / 2);
   currentPlaybackRate = media.playbackRate;
-  document.getElementById("speed-tooltip").textContent = "Speed: " + media.playbackRate;
+  getElement("speed-tooltip").textContent = "Speed: " + media.playbackRate;
 }
 
 function changeElapsedTime(timeValue) {
@@ -412,11 +400,11 @@ function endElapsedTimeChange() {
 function useMediaSettingToggle() {
   if (isSongSettingUsed) {
     isSongSettingUsed = false;
-    document.getElementById("use-media-setting-button-tooltip").textContent = "Turn on setting";
+    getElement("use-media-setting-button-tooltip").textContent = "Turn on setting";
     domElement.useMediaSettingToggleButton.classList.add("text--gray");
   } else {
     isSongSettingUsed = true;
-    document.getElementById("use-media-setting-button-tooltip").textContent = "Turn off media setting";
+    getElement("use-media-setting-button-tooltip").textContent = "Turn off media setting";
     domElement.useMediaSettingToggleButton.classList.remove("text--gray");
   }
 }
@@ -441,25 +429,25 @@ function loopToggle() {
 
 function startLoopAll() {    
   isLoopAll = true;
-  document.getElementById("loop-all-button-tooltip").textContent = "Stop loop all";               
+  getElement("loop-all-button-tooltip").textContent = "Stop loop all";               
   domElement.loopAllToggleButton.classList.remove("text--gray");
 }
 
 function stopLoopAll() {    
   isLoopAll = false; 
-  document.getElementById("loop-all-button-tooltip").textContent = "Loop all";     
+  getElement("loop-all-button-tooltip").textContent = "Loop all";     
   domElement.loopAllToggleButton.classList.add("text--gray");
 }
 
 function startLoop() {    
   media.loop = true;    
-  document.getElementById("loop-button-tooltip").textContent = "Stop Loop"; 
+  getElement("loop-button-tooltip").textContent = "Stop Loop"; 
   domElement.loopToggleButton.classList.remove("text--gray");   
 }
 
 function stopLoop() {   
   media.loop = false;
-  document.getElementById("loop-button-tooltip").textContent = "Loop";   
+  getElement("loop-button-tooltip").textContent = "Loop";   
   domElement.loopToggleButton.classList.add("text--gray");
 }
 
@@ -468,23 +456,6 @@ function playToggle(event) {
     playMedia();  
   } else {
     pauseMedia();
-  }
-}
-
-/*----- -Function- -----*/
-
-function changeAudioTrack(event) {    
-  audio.src = event.target.dataset.src;
-  console.log(audio.src);
-}
-
-function clearAllSongs() {
-  if (appSongs && appSongs.length > 0) {
-    for (song of appSongs) {            
-      deleteSongFromDisplayList(song.songName);       
-    }
-    appSongs = []
-    unsetMedia();
   }
 }
 
@@ -520,7 +491,18 @@ function decreasePlayrateOnKeyPress() {
   }  
 }
 
-function deleteSong(song) {
+/*----- -App Function- -----*/
+function clearAllSongs() {
+  if (appSongs && appSongs.length > 0) {
+    for (song of appSongs) {            
+      deleteSongFromDisplayList(song.songName);       
+    }
+    appSongs = []
+    unsetMedia();
+  }
+}
+
+function deleteMedia(song) {
   if (currentSong && currentSong.songName === song.songName) {
     unsetMedia();
   }    
@@ -530,12 +512,12 @@ function deleteSong(song) {
   saveSongsPos();      
 }
 
-function deleteAll() {
+function deleteAllMedia() {
   var deleteConfirm = confirm("Are you sure to delete all media?");
   if (deleteConfirm) {
     var tempSongsList = [...appSongs]
     for (song of tempSongsList) {
-      deleteSong(song);
+      deleteMedia(song);
     }
   }
 }
@@ -592,8 +574,7 @@ function addSongToDisplayList(song) {
 
   songRow.addEventListener("dragstart", (ev) => {
     draggedItem = songRow;
-  })
-  
+  })  
   songRow.addEventListener("dragover", (ev) => {
     ev.preventDefault();
   })    
@@ -616,7 +597,7 @@ function addSongToDisplayList(song) {
   deleteBtn.width = "10%";
   deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';    
   deleteBtn.addEventListener("click", (event) => {
-    deleteSong(song);
+    deleteMedia(song);
   })
   btnCell.appendChild(deleteBtn);
   songRow.appendChild(songItem);
@@ -720,7 +701,7 @@ function chooseSong(event, song) {
 }
 
 function deleteSongFromDisplayList(songName) {
-  var songItem = document.getElementById(songName)
+  var songItem = getElement(songName)
   var songRow = songItem.parentElement;    
   if (songItem && songRow.parentElement === domElement.songTable) {
     domElement.songTable.removeChild(songRow);
@@ -739,13 +720,12 @@ function loadMediaElapsedTime() {
     }
     media.ontimeupdate = (() => {                                                 
       domElement.elapsedTime.textContent = getElapsedTime();
-      domElement.elapsedTimeBar.value = parseInt(media.currentTime);                           
-      if (media.ended) {
-              // document.getElementById(currentSong.src.name).classList.remove("song-highlight");
-              console.log("end")                                
-              playNextSong();                                                           
-            }
-          });
+      domElement.elapsedTimeBar.value = parseInt(media.currentTime);  
+    });
+    media.onended = (() => {
+      console.log("end")                                
+      playNextSong();             
+    })
     setElapsedTimeBar(domElement.elapsedTimeBar);
     domElement.duration.innerHTML = getDuration();
   }; 
@@ -823,11 +803,9 @@ function openTab(evt, tabName) {
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" active", "");
   }
-  document.getElementById(tabName).style.display = "block";
+  getElement(tabName).style.display = "block";
   evt.currentTarget.className += " active";
 }
-
-
 
 /*----- -video settings function-----*/
 function changeVideoSetting(value, type) {
@@ -835,35 +813,35 @@ function changeVideoSetting(value, type) {
   switch (type) {
     case "brightness":
       videoSettings.brightness = value;
-      document.getElementById("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
+      getElement("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
       break;
     case "contrast":
       videoSettings.contrast = value;
-      document.getElementById("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
+      getElement("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
       break;
     case "invert":
       videoSettings.invert = value;
-      document.getElementById("invert-tooltip").textContent = "Invert: " + videoSettings.invert + "%";
+      getElement("invert-tooltip").textContent = "Invert: " + videoSettings.invert + "%";
       break;
     case "grayscale":
       videoSettings.grayscale = value;
-      document.getElementById("grayscale-tooltip").textContent = "Grayscale: " + videoSettings.grayscale + "%";
+      getElement("grayscale-tooltip").textContent = "Grayscale: " + videoSettings.grayscale + "%";
       break; 
     case "saturate":
       videoSettings.saturate = value;
-      document.getElementById("saturate-tooltip").textContent = "Saturate: " + videoSettings.saturate + "%";
+      getElement("saturate-tooltip").textContent = "Saturate: " + videoSettings.saturate + "%";
       break;
     case "sepia":
       videoSettings.sepia = value;
-      document.getElementById("sepia-tooltip").textContent = "Sepia: " + videoSettings.sepia + "%";
+      getElement("sepia-tooltip").textContent = "Sepia: " + videoSettings.sepia + "%";
       break;
     case "blur":
       videoSettings.blur = value;
-      document.getElementById("blur-tooltip").textContent = "Blur: " + videoSettings.blur + "px";
+      getElement("blur-tooltip").textContent = "Blur: " + videoSettings.blur + "px";
       break;
     case "hue-rotation":
       videoSettings.hueRotation = value;
-      document.getElementById("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
+      getElement("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
       break;
     default:
   }
@@ -871,7 +849,6 @@ function changeVideoSetting(value, type) {
 }
 
 /*----- -Media Function- -----*/
-
 function pauseMedia() {
   media.pause();
   setPlayToFalse();
@@ -899,37 +876,46 @@ function stopMedia() {
 }
 
 function setPlayToFalse() {
-  var playButton = document.getElementById("play");
+  var playButton = getElement("play");
   playButton.innerHTML = '<i class="fas fa-play"></i>'
-  document.getElementById("play-button-tooltip").textContent = "Play";
+  getElement("play-button-tooltip").textContent = "Play";
   media.isPlay = false;    
 }
 
 function setPlayToTrue() {
-  var playButton = document.getElementById("play");
+  var playButton = getElement("play");
   playButton.innerHTML = '<i class="fas fa-pause"></i>'
-  document.getElementById("play-button-tooltip").textContent = "Pause";
+  getElement("play-button-tooltip").textContent = "Pause";
   media.isPlay = true;   
+}
+
+function loadCurrentSong(song) {
+  getElement(currentSong.src.name).classList.remove("song-highlight");
+  currentSong = song;
+  switchMediaType();
+  media.isPlay = true;
+  if (isSongSettingUsed) {
+    loadMediaSettings();
+  }
+  var blobUrl = URL.createObjectURL(currentSong.src);
+  setDownloadLink(blobUrl, currentSong.songName)
+  getElement(currentSong.src.name).classList.add("song-highlight");
+  media.src = blobUrl;
+  media.playbackRate = currentPlaybackRate; 
 }
 
 function playNextSong() {           
   nextSong = appSongs[appSongs.indexOf(currentSong) + 1]
   if (!nextSong) {
     if (isLoopAll) {
-      document.getElementById(currentSong.src.name).classList.remove("song-highlight");
-      currentSong = appSongs[0];
-      switchMediaType();
-      media.isPlay = true;
+      loadCurrentSong(appSongs[0]);      
     } else {            
       if (media.isPlay) {
         stopMedia();
       }           
     }        
   } else {
-    document.getElementById(currentSong.src.name).classList.remove("song-highlight");
-    currentSong = nextSong;
-    switchMediaType();
-    media.isPlay = true;
+    loadCurrentSong(nextSong);
   }    
   if (media.isPlay) {
     _playCurrentSong();
@@ -942,26 +928,15 @@ function playPreviousSong() {
     if (media.isPlay) {
       stopMedia();
     }          
-  } else {
-    document.getElementById(currentSong.src.name).classList.remove("song-highlight");
-    currentSong = previousSong;
-    switchMediaType();
-    media.isPlay = true;        
+  } else {    
+    loadCurrentSong(previousSong);        
   }
   if (media.isPlay) {
     _playCurrentSong();
   }    
 }
 
-function _playCurrentSong() {
-  if (isSongSettingUsed) {
-    loadMediaSettings();
-  }
-  var blobUrl = URL.createObjectURL(currentSong.src);
-  setDownloadLink(blobUrl, currentSong.songName)
-  document.getElementById(currentSong.src.name).classList.add("song-highlight");
-  media.src = blobUrl;
-  media.playbackRate = currentPlaybackRate;  
+function _playCurrentSong() { 
   playMedia();
   loadMediaElapsedTime();
 }
@@ -973,13 +948,13 @@ function setElapsedTimeBar(elapsedTimeBar) {
 }
 
 function setDownloadLink(href, outputFileName) {
-  var downloadLink = document.getElementById("download-link");
+  var downloadLink = getElement("download-link");
   downloadLink.href = href;
   downloadLink.download = outputFileName;
 }
 
 function initUploadFileFunction() {    
-  files_upload = document.getElementById("files_upload");   
+  files_upload = getElement("files_upload");   
 
 files_upload.onchange = function(){
   var files = this.files;            
@@ -1080,7 +1055,6 @@ function setupEcho() {
 }
 
 /*----- -DB- -----*/
-
 function initIndexDB(dbName) {
   indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB
   IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction
@@ -1148,15 +1122,11 @@ function updateMedia(media) {
     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
   } else {        
     console.log("updating media in IndexedDB");
-
     // Open a transaction to the database
     var transaction = db.transaction(["songs"], "readwrite");
-
     // Put the blob into the dabase
     var objectStore = transaction.objectStore("songs");
-
-    var request = objectStore.put(media)
-
+    var request = objectStore.put(media);
     request.onsuccess = function (event) {
       console.log("Successfully update media");                   
     }   
@@ -1168,15 +1138,11 @@ function addSongToDB(song) {
     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
   } else {        
     console.log("Putting song in IndexedDB");
-
     // Open a transaction to the database
     var transaction = db.transaction(["songs"], "readwrite");
-
     // Put the blob into the dabase
     var objectStore = transaction.objectStore("songs");
-
-    var request = objectStore.add(song)
-
+    var request = objectStore.add(song);
     request.onsuccess = function (event) {
       console.log("Successfully added song");                   
     }   
@@ -1188,15 +1154,11 @@ function deleteSongFromDB(song) {
     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
   } else {      
     console.log("deleting song in IndexedDB");
-
     // Open a transaction to the database
     var transaction = db.transaction(["songs"], "readwrite");
-
     // Put the blob into the dabase
     var objectStore = transaction.objectStore("songs");
-
-    var request = objectStore.delete(song.id)
-
+    var request = objectStore.delete(song.id);
     request.onsuccess = function (event) {
       console.log("Successfully delete song");                   
     }   
@@ -1208,15 +1170,11 @@ function getAllSongs() {
     console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
   } else {        
     console.log("Getting songs in IndexedDB");
-
     // Open a transaction to the database
     var transaction = db.transaction(["songs"], "readwrite");
-
     // Put the blob into the dabase
     var objectStore = transaction.objectStore("songs");
-
-    var request = objectStore.getAll()
-    
+    var request = objectStore.getAll()    
     return new Promise((resolve, reject) => {
       request.onsuccess = function (event) {
         console.log("Successfully get all song");              
@@ -1331,7 +1289,6 @@ function exportDB(db) {
 }
 
 /*----- -Canvas- -----*/
-
 function initCanvasSize() {
   domElement.canvas.width = CANVAS_WIDTH;
   domElement.canvas.height = CANVAS_HEIGHT; 
@@ -1621,7 +1578,7 @@ function showSettings() {
 }
 
 function showListToggle() {
-  var songListPanel = document.getElementById("song-list-panel");
+  var songListPanel = getElement("song-list-panel");
   if (isListShow) {
     isListShow = false;
     songListPanel.style.right = "-40vw";
@@ -1634,7 +1591,7 @@ function showListToggle() {
 function enableSettingPanelMove() {
   var offset = [0, 0];
   var isMouseDown = false;
-  var settingPanelHeader = document.getElementById("setting-panel-header");
+  var settingPanelHeader = getElement("setting-panel-header");
   settingPanelHeader.addEventListener('mouseup', function() {
     isMouseDown = false;    
   }, true);
@@ -1661,52 +1618,56 @@ function enableSettingPanelMove() {
 }
 
 /*----- -DOM- -----*/
+function getElement(elemId) {
+  return document.getElementById(elemId);
+}
+
 function initDOMVars() {
-  domElement.loopToggleButton = document.getElementById("loop-toggle");
-  domElement.loopAllToggleButton = document.getElementById("loop-all-toggle"); 
-  domElement.useMediaSettingToggleButton = document.getElementById("use-media-setting-toggle"); 
-  domElement.player = document.getElementById("player");
-  domElement.playerFooter = document.getElementById("player__footer");
-  domElement.playerHeader = document.getElementById("player__header");
-  domElement.canvas = document.getElementById("canvas");
-  domElement.settingPanel = document.getElementById("setting-panel");
-  domElement.elapsedTime = document.getElementById("elapsed-time");
-  domElement.duration = document.getElementById("duration");                    
-  domElement.elapsedTimeBar = document.getElementById("elapsed-time-bar"); 
-  domElement.volumeControl = document.getElementById('volume-control'); 
-  domElement.playbackRateControl = document.getElementById('speed-control'); 
-  domElement.songTable = document.getElementById("song-table");
-  domElement.playListSelect = document.getElementById("play-lists");
-  domElement.newPlayListPanel = document.getElementById("new-play-list-panel");
-  domElement.playListInput = document.getElementById("play-list-name-input");
+  domElement.loopToggleButton = getElement("loop-toggle");
+  domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
+  domElement.useMediaSettingToggleButton = getElement("use-media-setting-toggle"); 
+  domElement.player = getElement("player");
+  domElement.playerFooter = getElement("player__footer");
+  domElement.playerHeader = getElement("player__header");
+  domElement.canvas = getElement("canvas");
+  domElement.settingPanel = getElement("setting-panel");
+  domElement.elapsedTime = getElement("elapsed-time");
+  domElement.duration = getElement("duration");                    
+  domElement.elapsedTimeBar = getElement("elapsed-time-bar"); 
+  domElement.volumeControl = getElement('volume-control'); 
+  domElement.playbackRateControl = getElement('speed-control'); 
+  domElement.songTable = getElement("song-table");
+  domElement.playListSelect = getElement("play-lists");
+  domElement.newPlayListPanel = getElement("new-play-list-panel");
+  domElement.playListInput = getElement("play-list-name-input");
   domElement.equalizerControls = {
-    _31HzControl: document.getElementById('_31HzControl'),
-    _62HzControl: document.getElementById('_62HzControl'),
-    _125HzControl: document.getElementById('_125HzControl'),
-    _250HzControl: document.getElementById('_250HzControl'),
-    _500HzControl: document.getElementById('_500HzControl'),
-    _1kHzControl: document.getElementById('_1kHzControl'),
-    _2kHzControl: document.getElementById('_2kHzControl'),
-    _4kHzControl: document.getElementById('_4kHzControl'),
-    _8kHzControl: document.getElementById('_8kHzControl'),
-    _16kHzControl: document.getElementById('_16kHzControl'),
+    _31HzControl: getElement('_31HzControl'),
+    _62HzControl: getElement('_62HzControl'),
+    _125HzControl: getElement('_125HzControl'),
+    _250HzControl: getElement('_250HzControl'),
+    _500HzControl: getElement('_500HzControl'),
+    _1kHzControl: getElement('_1kHzControl'),
+    _2kHzControl: getElement('_2kHzControl'),
+    _4kHzControl: getElement('_4kHzControl'),
+    _8kHzControl: getElement('_8kHzControl'),
+    _16kHzControl: getElement('_16kHzControl'),
   }
 }
 
 function initTooltips() {
-  document.getElementById("volume-tooltip").textContent = "Volume: " + audio.volume * 100;
-  document.getElementById("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
-  document.getElementById("play-button-tooltip").textContent = "Play";
-  document.getElementById("stop-button-tooltip").textContent = "Stop";
-  document.getElementById("loop-button-tooltip").textContent = "Loop";
-  document.getElementById("loop-all-button-tooltip").textContent = "Loop all";
-  document.getElementById("use-media-setting-button-tooltip").textContent = "Turn off media setting";
-  document.getElementById("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
-  document.getElementById("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
-  document.getElementById("invert-tooltip").textContent = "Invert: " + videoSettings.invert + "%";
-  document.getElementById("grayscale-tooltip").textContent = "Grayscale: " + videoSettings.grayscale + "%";
-  document.getElementById("saturate-tooltip").textContent = "Saturate: " + videoSettings.saturate + "%";
-  document.getElementById("sepia-tooltip").textContent = "Sepia: " + videoSettings.sepia + "%";
-  document.getElementById("blur-tooltip").textContent = "Blur: " + videoSettings.blur + "px";
-  document.getElementById("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
+  getElement("volume-tooltip").textContent = "Volume: " + audio.volume * 100;
+  getElement("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
+  getElement("play-button-tooltip").textContent = "Play";
+  getElement("stop-button-tooltip").textContent = "Stop";
+  getElement("loop-button-tooltip").textContent = "Loop";
+  getElement("loop-all-button-tooltip").textContent = "Loop all";
+  getElement("use-media-setting-button-tooltip").textContent = "Turn off media setting";
+  getElement("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
+  getElement("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
+  getElement("invert-tooltip").textContent = "Invert: " + videoSettings.invert + "%";
+  getElement("grayscale-tooltip").textContent = "Grayscale: " + videoSettings.grayscale + "%";
+  getElement("saturate-tooltip").textContent = "Saturate: " + videoSettings.saturate + "%";
+  getElement("sepia-tooltip").textContent = "Sepia: " + videoSettings.sepia + "%";
+  getElement("blur-tooltip").textContent = "Blur: " + videoSettings.blur + "px";
+  getElement("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
 }
