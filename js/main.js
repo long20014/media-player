@@ -855,7 +855,6 @@ function changeVideoSetting(value, type) {
 /*----- -Media Function- -----*/
 function pauseMedia() {
   media.pause();
-  // setPlayToFalse();
 }
 
 media.onpause = () => {
@@ -873,8 +872,7 @@ function playMedia() {
     if (currentSong.type === "video") {   
       needFilterApply = true;        
       processVideo();
-    } 
-    // setPlayToTrue();
+    }
     // bufferSource.start(currentTime);   
   } else {
     alert("Please choose a song in song list to play! \nOr add a song to song list if there is no song!");
@@ -884,7 +882,6 @@ function playMedia() {
 function stopMedia() {
   media.pause();
   media.currentTime = 0;
-  // setPlayToFalse();
 }
 
 function setPlayToFalse() {
@@ -1526,7 +1523,6 @@ function invokeCanvasBuilder() {
 function processVideo() { 
   _processor.doLoad();
 }
-
 
 function initVideo() {
   video = document.createElement("video"); 
