@@ -496,13 +496,15 @@ function clearAllSongs() {
     for (song of appSongs) {            
       deleteSongFromDisplayList(song.songName);       
     }
-    appSongs = []
+    appSongs = [];
+    stopMedia();
     unsetMedia();
   }
 }
 
 function deleteMedia(song) {
   if (currentSong && currentSong.songName === song.songName) {
+    stopMedia();
     unsetMedia();
   }    
   removeSongFromList(song);
@@ -521,8 +523,7 @@ function deleteAllMedia() {
   }
 }
 
-function unsetMedia() {
-  stopMedia();
+function unsetMedia() {  
   currentSong = null;
   media.src = "";     
   domElement.duration.innerHTML = "0:00";
@@ -693,8 +694,7 @@ function chooseSong(event, song) {
   }    
   media.src = event.target.dataset.src;  
   media.playbackRate = currentPlaybackRate;  
-  setDownloadLink(event.target.dataset.src, event.target.textContent);
-  setPlayToFalse();
+  setDownloadLink(event.target.dataset.src, event.target.textContent);  
 }
 
 function deleteSongFromDisplayList(songName) {
@@ -720,7 +720,8 @@ function loadMediaElapsedTime() {
       domElement.elapsedTimeBar.value = parseInt(media.currentTime);  
     });
     media.onended = (() => {
-      console.log("end")                                
+      console.log("end");
+      clearCanvas();                                
       playNextSong();             
     })
     setElapsedTimeBar(domElement.elapsedTimeBar);
@@ -854,7 +855,15 @@ function changeVideoSetting(value, type) {
 /*----- -Media Function- -----*/
 function pauseMedia() {
   media.pause();
+  // setPlayToFalse();
+}
+
+media.onpause = () => {
   setPlayToFalse();
+}
+
+media.onplay = () => {
+  setPlayToTrue();
 }
 
 function playMedia() {
@@ -865,7 +874,7 @@ function playMedia() {
       needFilterApply = true;        
       processVideo();
     } 
-    setPlayToTrue();
+    // setPlayToTrue();
     // bufferSource.start(currentTime);   
   } else {
     alert("Please choose a song in song list to play! \nOr add a song to song list if there is no song!");
@@ -875,7 +884,7 @@ function playMedia() {
 function stopMedia() {
   media.pause();
   media.currentTime = 0;
-  setPlayToFalse();
+  // setPlayToFalse();
 }
 
 function setPlayToFalse() {
@@ -1520,7 +1529,13 @@ function processVideo() {
 
 
 function initVideo() {
-  video = document.createElement("video");  
+  video = document.createElement("video"); 
+  video.addEventListener('play', (event) => {
+    setPlayToTrue();
+  });
+  video.addEventListener('pause', (event) => {
+    setPlayToFalse();
+  });
   var tracks = video.audioTracks;       
 }
 
