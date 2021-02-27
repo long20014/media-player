@@ -387,8 +387,15 @@ function changeElapsedTime(timeValue) {
 }
 
 function startElapsedTimeChange() {
-  console.log("pause")
+  const isPlaying = media.isPlay;
   media.pause();
+  if (isPlaying) {
+    // need setTimeout to call this after pause
+    // event listener take effect.
+    setTimeout(() => {      
+      setPlayToTrue();      
+    }, 0);
+  }
 }
 
 function endElapsedTimeChange() {
@@ -722,7 +729,8 @@ function loadMediaElapsedTime() {
       domElement.elapsedTimeBar.value = parseInt(media.currentTime);  
     });
     media.onended = (() => {
-      console.log("end")                                
+      console.log("end")
+      clearCanvas();                                
       playNextSong();             
     })
     setElapsedTimeBar(domElement.elapsedTimeBar);
