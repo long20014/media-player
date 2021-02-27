@@ -876,6 +876,7 @@ media.onplay = (() => {
 
 function stopMedia() {
   media.pause();
+  setPlayToFalse();
   media.currentTime = 0;
 }
 
