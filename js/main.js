@@ -694,7 +694,7 @@ function chooseSong(event, song) {
   }    
   media.src = event.target.dataset.src;  
   media.playbackRate = currentPlaybackRate;  
-  setDownloadLink(event.target.dataset.src, event.target.textContent);  
+  setDownloadLink(event.target.dataset.src, event.target.textContent); 
 }
 
 function deleteSongFromDisplayList(songName) {
@@ -872,15 +872,24 @@ function playMedia() {
     if (currentSong.type === "video") {   
       needFilterApply = true;        
       processVideo();
-    }
+    }     
     // bufferSource.start(currentTime);   
   } else {
     alert("Please choose a song in song list to play! \nOr add a song to song list if there is no song!");
   }    
 }
 
+media.onpause = (() => {
+  setPlayToFalse();
+})
+
+media.onplay = (() => {
+  setPlayToTrue();
+})
+
 function stopMedia() {
   media.pause();
+  setPlayToFalse();
   media.currentTime = 0;
 }
 
@@ -1525,13 +1534,13 @@ function processVideo() {
 }
 
 function initVideo() {
-  video = document.createElement("video"); 
-  video.addEventListener('play', (event) => {
+  video = document.createElement("video");  
+  video.addEventListener("play", (event) => {
     setPlayToTrue();
-  });
-  video.addEventListener('pause', (event) => {
+  })
+  video.addEventListener("pause", (event) => {
     setPlayToFalse();
-  });
+  })
   var tracks = video.audioTracks;       
 }
 
