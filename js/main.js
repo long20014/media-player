@@ -386,8 +386,15 @@ function changeElapsedTime(timeValue) {
 }
 
 function startElapsedTimeChange() {
-  console.log("pause")
+  const isPlaying = media.isPlay;
   media.pause();
+  if (isPlaying) {
+    // need setTimeout to call this after pause
+    // event listener take effect.
+    setTimeout(() => {      
+      setPlayToTrue();      
+    }, 0);
+  }
 }
 
 function endElapsedTimeChange() {
