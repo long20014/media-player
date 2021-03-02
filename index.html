@@ -324,9 +324,15 @@
   </div>
   <div id="song-list-panel">
     <div class="horizontal-toolbar">      
-      <div class="item-with-tooltip"> 
+      <div class="item-with-tooltip non-mobile"> 
         <div class="tooltip-text tooltip-left" id="">Close</div>     
         <div id="show-list-button" class="anchor-button-wrapper" onclick="showListToggle()">
+          <a id="show-list-icon"><i class="fa fa-times text--white"></i></a>  
+        </div>
+      </div> 
+      <div class="item-with-tooltip mobile"> 
+        <div class="tooltip-text tooltip-left" id="">Close</div>     
+        <div id="show-list-button" class="anchor-button-wrapper" onclick="showListToggleMobile()">
           <a id="show-list-icon"><i class="fa fa-times text--white"></i></a>  
         </div>
       </div>      
