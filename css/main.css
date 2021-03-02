@@ -484,7 +484,7 @@ div#player {
   }
 
   #song-list-panel {
-    right: -100vw;
+    right: -110vw;
     width: 90vw;
   }
 }
