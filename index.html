@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Media Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link type="text/css" href="./css/main.css" rel="stylesheet" />
 </head>
@@ -95,6 +96,10 @@
         <div class="item-with-tooltip">
           <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
           <button type="button" id="use-media-setting-toggle" onclick="useMediaSettingToggle()"><i class="fas fa-cog"></i></button> 
+        </div>
+        <div class="item-with-tooltip" class="mobile">
+          <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Setting</div>
+          <button type="button" id="save-setting-button-mobile" onclick="saveMediaSettings()"><i class="fas fa-save"></i></button> 
         </div>
         <div class="item-with-tooltip">
           <div class="tooltip-text tooltip-top" id="reset-equalizer-button-tooltip">Reset equalizer</div>
@@ -192,7 +197,7 @@
     </div>
     <div id="player__toolbar-section">
       <div class="item-with-tooltip" style="margin-right: 10px">
-        <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Save Settings</div>
+        <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Settings</div>
         <div id="save-setting-button" class="anchor-button-wrapper" onclick="saveMediaSettings()">
           <a id="save-setting-icon" class="anchor-button-icon"><i class="fa fa-save text--white"></i></a>  
         </div>
@@ -256,11 +261,51 @@
         </div>
       </div>
       <div class="item-with-tooltip" style="margin-left: 10px">
-        <div class="tooltip-text tooltip-top" id="download-button-tooltip">Fullscreen</div>
+        <div class="tooltip-text tooltip-top" id="fullscreen-button-tooltip">Fullscreen</div>
         <div id="fullscreen-button" class="anchor-button-wrapper" onclick="canvasFullscreenToggle()">
           <a id="fullscreen-icon" class="anchor-button-icon"><i class="fas fa-expand text--white"></i></a>  
         </div>
       </div>      
+    </div>
+
+    <!-- -mobile- -->    
+    <div id="player__toolbar-section" class="mobile">  
+      <div id="player__main-toolbar">               
+        <div id="button-section">
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
+            <button id="show-setting-button-mobile" onclick="showSettings()"><i class="fa fa-cog "></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Song list</div>
+            <button id="show-list-button-mobile" onclick="showListToggleMobile()"><i class="fa fa-list"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="play-prev-button-tooltip">Play previous</div>
+            <button id="play-prev" onclick="playPreviousSong()"><i class="fa fa-step-backward"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="play-button-tooltip"></div>
+            <button id="play" onclick="playToggle()"><i class="fas fa-play"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="stop-button-tooltip"></div>
+            <button id="stop" onclick="stopMedia()"><i class="fas fa-stop"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="loop-button-tooltip-mobile"></div>
+            <button type="button" id="loop-toggle-mobile" onclick="loopToggleMobile()" class="text--gray"><i class="fas fa-redo-alt"></i></button>
+          </div>          
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="play-next-button-tooltip">Play next</div>
+            <button id="play-next" onclick="playNextSong()"><i class="fa fa-step-forward"></i></button>
+          </div>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="download-button-tooltip">Fullscreen</div>
+            <button id="fullscreen-button-mobile" onclick="canvasFullscreenToggle()"><i class="fas fa-expand text--white"></i></button>
+          </div>       
+        </div>                    
+      </div> 
     </div>   
   </div>
   <div id="song-list-panel">
@@ -298,9 +343,10 @@
 </div>
 
 <script type="text/javascript" src="./js/dexie.js"></script>
-<script type="text/javascript" src="./js/main.js"></script>
-<script type="text/javascript" src="./js/FileSaver.js"></script>
 <script type="text/javascript" src="./js/indexedDB-import-export.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.1/tuna-min.js" type="text/javascript"></script>
+<script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/mobile.js"></script>
+<script type="text/javascript" src="./js/FileSaver.js"></script>
 </body>
 </html>

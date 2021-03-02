@@ -1643,6 +1643,7 @@ function getElement(elemId) {
 
 function initDOMVars() {
   domElement.loopToggleButton = getElement("loop-toggle");
+  domElement.loopToggleButtonMobile = getElement("loop-toggle-mobile");
   domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
   domElement.useMediaSettingToggleButton = getElement("use-media-setting-toggle"); 
   domElement.player = getElement("player");
@@ -1678,8 +1679,9 @@ function initTooltips() {
   getElement("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
   getElement("play-button-tooltip").textContent = "Play";
   getElement("stop-button-tooltip").textContent = "Stop";
-  getElement("loop-button-tooltip").textContent = "Loop";
+  getElement("loop-button-tooltip").textContent = "Start loop";
   getElement("loop-all-button-tooltip").textContent = "Loop all";
+  getElement("loop-button-tooltip-mobile").textContent = "Start loop";
   getElement("use-media-setting-button-tooltip").textContent = "Turn off media setting";
   getElement("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
   getElement("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
