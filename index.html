@@ -91,6 +91,20 @@
             <input id="_16kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '16kHz')"></input>
           </div>          
         </div>
+        <div class="controls">
+          <label>Volume</label>
+          <div class="item-with-tooltip mobile">
+            <div class="tooltip-text tooltip-top" id="volume-tooltip-mobile"></div>
+            <input type="range" id="volume-control-mobile" value="100" step="1" min="0" max="100" onchange="changeVolume(this.value)"></input>  
+          </div>          
+        </div>
+        <div class="controls">
+          <label>Speed</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="speed-tooltip-mobile"></div>
+            <input type="range" id="speed-control-mobile" value="20" step="1" min="1" max="40" onchange="changePlaybackRate(this.value)"></input>
+          </div>          
+        </div>
       </div>
       <div id="setting-button-section">
         <div class="item-with-tooltip">
