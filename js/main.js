@@ -1316,6 +1316,7 @@ function canvasFullscreenToggle() {
     domElement.player.webkitRequestFullScreen();
     domElement.playerFooter.classList.add("fullscreen");
     domElement.playerHeader.classList.add("fullscreen");
+    domElement.playerBody.style.alignItems = "center";
     domElement.canvas.classList.add("canvas__fullscreen");
     isFullscreen = true;
     canvasEnterFullScreen();        
@@ -1329,6 +1330,7 @@ function exitFullscreen() {
     document.exitFullscreen();
     domElement.playerFooter.classList.remove("fullscreen");
     domElement.playerHeader.classList.remove("fullscreen");
+    domElement.playerBody.style.alignItems = null;
     domElement.canvas.classList.remove("canvas__fullscreen");
     isFullscreen = false; 
     canvasEscapeFullScreen();
@@ -1651,6 +1653,7 @@ function initDOMVars() {
   domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
   domElement.useMediaSettingToggleButton = getElement("use-media-setting-toggle"); 
   domElement.player = getElement("player");
+  domElement.playerBody = getElement("player__body")
   domElement.playerFooter = getElement("player__footer");
   domElement.playerHeader = getElement("player__header");
   domElement.canvas = getElement("canvas");

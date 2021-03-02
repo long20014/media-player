@@ -35,7 +35,7 @@ function showListToggleMobile() {
   var songListPanel = getElement("song-list-panel");
   if (isListShow) {
     isListShow = false;
-    songListPanel.style.right = "-100vw";
+    songListPanel.style.right = "-120vw";
   } else {
     isListShow = true;
     songListPanel.style.right = "0";

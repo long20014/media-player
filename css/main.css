@@ -464,6 +464,7 @@ div#player {
   #player__footer {
     height: auto;
   }
+
   #player__toolbar-section{
     display: none;
   }
@@ -484,7 +485,7 @@ div#player {
   }
 
   #song-list-panel {
-    right: -110vw;
+    right: -120vw;
     width: 90vw;
   }
 }
