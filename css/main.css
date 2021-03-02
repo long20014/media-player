@@ -1,5 +1,6 @@
 :root {
   --player__footer-height: 125px;
+  --player__footer-height-mobile: 125px;
   --player__header-height: 62.5px;
   --player__main-toolbar-width: 822px;
   --outline__left-margin: 25px;
@@ -22,6 +23,7 @@ div#player {
   flex-direction: row;
   flex-wrap: wrap;
   position: relative;
+  overflow: hidden;
 }
 
 #player__header {
@@ -84,6 +86,10 @@ div#player {
 #player__toolbar-section {
   display: flex;
   justify-content: center;
+}
+
+#player__toolbar-section.mobile {
+  display: none;
 }
 
 #player__main-toolbar {
@@ -223,7 +229,7 @@ div#player {
 }
 
 .text--gray {
-  color: gray;
+  color: gray !important;
 }
 
 #player__toolbar-section {
@@ -264,7 +270,7 @@ div#player {
   white-space: nowrap;
   overflow: hidden;
   cursor: pointer;
-  max-width: 70;
+  max-width: 70px;
   text-overflow: ellipsis;
 }
 
@@ -343,7 +349,7 @@ div#player {
 }
 
 #setting-button-section button {
-  min-width: 70px;
+  min-width: 60px;
   height: 30px;
   border: 2px solid #456;
   margin-top: 20px;    
@@ -438,4 +444,48 @@ div#player {
 
 #equalizer-tab {
   display: block;
+}
+
+/*----- -Non mobile- -----*/ 
+.mobile {
+  display: none;
+}
+
+/*----- -Responsive- -----*/
+@media screen and (max-width: 768px) {
+  .mobile {
+    display: inherit;
+  }
+
+  .non-mobile {
+    display: none;
+  }
+
+  #player__footer {
+    height: auto;
+  }
+
+  #player__toolbar-section{
+    display: none;
+  }
+  #player__toolbar-section.mobile {
+    display: flex;
+  }
+
+  #player__toolbar-section.mobile #player__main-toolbar {
+    border: none;
+    width: auto;
+  }
+
+  #player__toolbar-section.mobile #player__main-toolbar button {
+    background: none;
+    border: none;
+    color: white;
+    min-width: 35px;
+  }
+
+  #song-list-panel {
+    right: -120vw;
+    width: 90vw;
+  }
 }

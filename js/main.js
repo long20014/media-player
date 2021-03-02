@@ -369,6 +369,7 @@ function changeVolume(volumeValue) {
   media.volume = parseFloat(volumeValue) / VOLUME_STEP_COUNT;
   currentVolume = media.volume; 
   getElement("volume-tooltip").textContent = "volume: " + volumeValue;
+  getElement("volume-tooltip-mobile").textContent = "volume: " + volumeValue;
   if (isMute) {
     isMute = false;
   }
@@ -378,6 +379,7 @@ function changePlaybackRate(playbackRateValue) {
   media.playbackRate = parseFloat(playbackRateValue) / (PLAYRATE_STEP_COUNT / 2);
   currentPlaybackRate = media.playbackRate;
   getElement("speed-tooltip").textContent = "Speed: " + media.playbackRate;
+  getElement("speed-tooltip-mobile").textContent = "Speed: " + media.playbackRate;
 }
 
 function changeElapsedTime(timeValue) {
@@ -671,7 +673,9 @@ function loadMediaSettings() {
   _equalizer.set_8kHzGain(currentSong.settings.equalizer._8kHz);
   _equalizer.set_16kHzGain(currentSong.settings.equalizer._16kHz);
   domElement.volumeControl.value = currentSong.settings.volume * 100;
+  domElement.volumeControl.value = currentSong.settings.volume * 100;
   domElement.playbackRateControl.value = currentSong.settings.playbackRate * 20;
+  domElement.playbackRateControlMobile.value = currentSong.settings.playbackRate * 20;
   domElement.equalizerControls._31HzControl.value = currentSong.settings.equalizer._31Hz * 100;
   domElement.equalizerControls._62HzControl.value = currentSong.settings.equalizer._62Hz * 100;
   domElement.equalizerControls._125HzControl.value = currentSong.settings.equalizer._125Hz * 100;
@@ -1293,6 +1297,7 @@ function canvasFullscreenToggle() {
     domElement.player.webkitRequestFullScreen();
     domElement.playerFooter.classList.add("fullscreen");
     domElement.playerHeader.classList.add("fullscreen");
+    domElement.playerBody.style.alignItems = "center";
     domElement.canvas.classList.add("canvas__fullscreen");
     isFullscreen = true;
     canvasEnterFullScreen();        
@@ -1306,6 +1311,7 @@ function exitFullscreen() {
     document.exitFullscreen();
     domElement.playerFooter.classList.remove("fullscreen");
     domElement.playerHeader.classList.remove("fullscreen");
+    domElement.playerBody.style.alignItems = null;
     domElement.canvas.classList.remove("canvas__fullscreen");
     isFullscreen = false; 
     canvasEscapeFullScreen();
@@ -1622,9 +1628,11 @@ function getElement(elemId) {
 
 function initDOMVars() {
   domElement.loopToggleButton = getElement("loop-toggle");
+  domElement.loopToggleButtonMobile = getElement("loop-toggle-mobile");
   domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
   domElement.useMediaSettingToggleButton = getElement("use-media-setting-toggle"); 
   domElement.player = getElement("player");
+  domElement.playerBody = getElement("player__body")
   domElement.playerFooter = getElement("player__footer");
   domElement.playerHeader = getElement("player__header");
   domElement.canvas = getElement("canvas");
@@ -1633,7 +1641,9 @@ function initDOMVars() {
   domElement.duration = getElement("duration");                    
   domElement.elapsedTimeBar = getElement("elapsed-time-bar"); 
   domElement.volumeControl = getElement('volume-control'); 
+  domElement.volumeControlMobile = getElement('volume-control-mobile');
   domElement.playbackRateControl = getElement('speed-control'); 
+  domElement.playbackRateControlMobile = getElement('speed-control-mobile'); 
   domElement.songTable = getElement("song-table");
   domElement.playListSelect = getElement("play-lists");
   domElement.newPlayListPanel = getElement("new-play-list-panel");
@@ -1655,10 +1665,13 @@ function initDOMVars() {
 function initTooltips() {
   getElement("volume-tooltip").textContent = "Volume: " + audio.volume * 100;
   getElement("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
+  getElement("volume-tooltip-mobile").textContent = "Volume: " + audio.volume * 100;
+  getElement("speed-tooltip-mobile").textContent = "Speed: " + audio.playbackRate;
   getElement("play-button-tooltip").textContent = "Play";
   getElement("stop-button-tooltip").textContent = "Stop";
-  getElement("loop-button-tooltip").textContent = "Loop";
+  getElement("loop-button-tooltip").textContent = "Start loop";
   getElement("loop-all-button-tooltip").textContent = "Loop all";
+  getElement("loop-button-tooltip-mobile").textContent = "Start loop";
   getElement("use-media-setting-button-tooltip").textContent = "Turn off media setting";
   getElement("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
   getElement("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
