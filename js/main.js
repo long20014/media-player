@@ -117,7 +117,7 @@ window.addEventListener(
   "load",
   async function() {    
     await initIndexDB(DEFAULT_DB);
-    await addPlayListToDB(DEFAULT_PLAYLIST);
+    await addPlayListToDB(DEFAULT_PLAYLIST);   
     audioContext = new AudioContext();
     _equalizer = new Equalizer();      
     bufferSource = audioContext.createBufferSource();           
@@ -137,6 +137,7 @@ window.addEventListener(
     ctx = domElement.canvas.getContext("2d");
     initVideo(); 
     initCanvasSize(); 
+    await testPlayingYoutubeVideo();
     audioSourceNode = audioContext.createMediaElementSource(audio);       
     videoSourceNode = audioContext.createMediaElementSource(video);
     sourceNode = audioSourceNode;
@@ -1194,6 +1195,54 @@ function getSongFromNhaccuatui(songUrl) {
   };
 // xhr.send('type=playlist&key=gv8GB8rRmZU6&v=' + new Date().getTime());
   xhr.send();
+}
+
+async function postData(url = '', data = {}) {
+  const newData = new URLSearchParams();
+  let formData = new FormData();
+  formData.append('url', data.url);  
+  for (const pair of formData) {
+    newData.append(pair[0], pair[1]);
+  }
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    // mode: 'no-cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      // 'Content-Type': 'application/json'
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: newData // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+
+async function getVideoFromYouTube(videoUrl) {
+  const response = await postData('http://localhost:3000/youtube', {url: videoUrl})
+  // return "https://r3---sn-oxuo5h-nboe.googlevideo.com/videoplayback?expire=1615300809&ei=aTRHYPy2JOOamLAPuP6KuAg&ip=212.47.239.90&id=o-AIRaDXYERYei3xJJ3-wvumT9wjCA7WS2VpyjVRZNs0N8&itag=248&aitags=133%2C134%2C135%2C136%2C137%2C160%2C242%2C243%2C244%2C247%2C248%2C278&source=youtube&requiressl=yes&vprv=1&mime=video%2Fwebm&ns=h0K63n0aQdLz-oZ0Aa4xF4kF&gir=yes&clen=1423069151&dur=4577.040&lmt=1615231229936439&fvip=3&keepalive=yes&fexp=24001374,24007246&c=WEB&txp=5535432&n=vPMUNPpi6LfFh5Lx&sparams=expire%2Cei%2Cip%2Cid%2Caitags%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cdur%2Clmt&sig=AOq0QJ8wRAIgFrotKWIwPaPK7yqyzeQsLrCRrKKJ3pcg3Aw81yrqXloCIAYN043-ooFNJISlz7IWbNOAQIfFVsZaOlyrwTQKKuq7&redirect_counter=1&rm=sn-25gkk7s&req_id=5dea8527d6bda3ee&cms_redirect=yes&ipbypass=yes&mh=7e&mip=103.199.7.221&mm=31&mn=sn-oxuo5h-nboe&ms=au&mt=1615278512&mv=m&mvi=3&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRgIhAMEM2KCSyiTviz1XTqgqQ7JwgiBRwYV-1WtZpg1tpxEnAiEAh5qH6rApuGNOXbCpN6klt3YLQKSYdgaYirCh3T04ZBM%3D"
+  if (response && response.status !== 'wait') {
+    console.log(response)    
+    for (const format of response.formats) {
+      if (format.format_note === "720p") {        
+        return format.url;
+      }
+    }    
+  } else {
+    console.error('no response');
+  }  
+}
+
+async function testPlayingYoutubeVideo() {
+  media = video;
+  media.src = await getVideoFromYouTube('https://www.youtube.com/watch?v=2ZFgcTOcnUg&t=14s&ab_channel=ng-conf')
+  currentSong = {type: "video"}
+  setDownloadLink(media.src, "testFile.mp4")
+  loadMediaElapsedTime();
 }
 
 // dry.addEventListener("click", function(e) {
