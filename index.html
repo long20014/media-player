@@ -9,15 +9,19 @@
 <body>
 
 <div id="player">
+  <div id="loading-panel" class="panel">
+    <div class="loader">Loading...</div>
+  </div>
   <div id="setting-panel" class="panel">
     <div id="setting-panel-header">
       <div class="item-with-tooltip">        
-        <button type="button" id="close-setting" onclick="showSettings()" class="text--white"><i class="fas fa-times"></i></button> 
+        <button type="button" id="close-setting" onclick="showSettingToggle()" class="text--white"><i class="fas fa-times"></i></button> 
       </div>      
     </div>
     <div class="tab">
       <button class="tablinks active" onclick="openTab(event, 'equalizer-tab')">Equalizer</button>
-      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>      
+      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>
+      <button class="tablinks" onclick="openTab(event, 'quality-tab')">Quality</button>       
     </div>
     <div id="equalizer-tab" class="tabcontent">
       <div id="equalizer">
@@ -180,7 +184,11 @@
           </div>
         </div>
       </div>
-    </div>  
+    </div>
+    <div id="quality-tab" class="tabcontent">
+      <form id="video-quality">
+      </form>
+    </div>
   </div>
   <!-- play list panel -->
   <div id="new-play-list-panel" class="panel">    
@@ -195,7 +203,12 @@
   </div>
   <!-- player header -->
   <div id="player__header">
-    <input id="files_upload" type="file" accept="audio/*,video/mp4,video/x-m4v,video/*" multiple/> 
+    <div style="flex: 1">
+      <input id="files_upload" type="file" accept="audio/*,video/mp4,video/x-m4v,video/*" multiple/>
+    </div>
+    <div style="flex: 2">
+      <input id="youtube-url-input" type="text" placeholder="place youtube video url" onkeypress="loadYoutubeVideo(event)">
+    </div>    
   </div> 
 
   <div id="player__body">
@@ -218,7 +231,7 @@
       </div>
       <div class="item-with-tooltip" style="margin-right: 10px">
         <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
-        <div id="setting-button" class="anchor-button-wrapper" onclick="showSettings()">
+        <div id="setting-button" class="anchor-button-wrapper" onclick="showSettingToggle()">
           <a id="setting-icon" class="anchor-button-icon"><i class="fa fa-cog text--white"></i></a>  
         </div>
       </div>  
@@ -288,7 +301,7 @@
         <div id="button-section">
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
-            <button id="show-setting-button-mobile" onclick="showSettings()"><i class="fa fa-cog "></i></button>
+            <button id="show-setting-button-mobile" onclick="showSettingToggle()"><i class="fa fa-cog "></i></button>
           </div>
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Song list</div>

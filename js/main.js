@@ -48,6 +48,8 @@ var currentPlayList = DEFAULT_PLAYLIST;
 var appSongs; 
 var currentSong;
 var draggedItem;
+var videoFormats = [];
+var currentVideoFormat = null;
 var isInited = false;
 var isLoopAll = false;
 var isMute = false;
@@ -137,7 +139,7 @@ window.addEventListener(
     ctx = domElement.canvas.getContext("2d");
     initVideo(); 
     initCanvasSize(); 
-    await testPlayingYoutubeVideo();
+    // await loadYoutubeVideo();
     audioSourceNode = audioContext.createMediaElementSource(audio);       
     videoSourceNode = audioContext.createMediaElementSource(video);
     sourceNode = audioSourceNode;
@@ -1223,12 +1225,15 @@ async function postData(url = '', data = {}) {
 
 
 async function getVideoFromYouTube(videoUrl) {
-  const response = await postData('http://localhost:3000/youtube', {url: videoUrl})
-  // return "https://r3---sn-oxuo5h-nboe.googlevideo.com/videoplayback?expire=1615300809&ei=aTRHYPy2JOOamLAPuP6KuAg&ip=212.47.239.90&id=o-AIRaDXYERYei3xJJ3-wvumT9wjCA7WS2VpyjVRZNs0N8&itag=248&aitags=133%2C134%2C135%2C136%2C137%2C160%2C242%2C243%2C244%2C247%2C248%2C278&source=youtube&requiressl=yes&vprv=1&mime=video%2Fwebm&ns=h0K63n0aQdLz-oZ0Aa4xF4kF&gir=yes&clen=1423069151&dur=4577.040&lmt=1615231229936439&fvip=3&keepalive=yes&fexp=24001374,24007246&c=WEB&txp=5535432&n=vPMUNPpi6LfFh5Lx&sparams=expire%2Cei%2Cip%2Cid%2Caitags%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cdur%2Clmt&sig=AOq0QJ8wRAIgFrotKWIwPaPK7yqyzeQsLrCRrKKJ3pcg3Aw81yrqXloCIAYN043-ooFNJISlz7IWbNOAQIfFVsZaOlyrwTQKKuq7&redirect_counter=1&rm=sn-25gkk7s&req_id=5dea8527d6bda3ee&cms_redirect=yes&ipbypass=yes&mh=7e&mip=103.199.7.221&mm=31&mn=sn-oxuo5h-nboe&ms=au&mt=1615278512&mv=m&mvi=3&pl=24&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRgIhAMEM2KCSyiTviz1XTqgqQ7JwgiBRwYV-1WtZpg1tpxEnAiEAh5qH6rApuGNOXbCpN6klt3YLQKSYdgaYirCh3T04ZBM%3D"
+  const response = await postData('http://localhost:3000/youtube', {url: videoUrl})  
   if (response && response.status !== 'wait') {
-    console.log(response)    
-    for (const format of response.formats) {
-      if (format.format_note === "720p") {        
+    console.log(response) 
+    videoFormats = response.formats.filter((format) => {
+      return format.ext === "mp4" && format.acodec === "none";
+    })
+    console.log(videoFormats)
+    for (const format of videoFormats) {
+      if (format.format_note === "360p") {        
         return format.url;
       }
     }    
@@ -1237,12 +1242,50 @@ async function getVideoFromYouTube(videoUrl) {
   }  
 }
 
-async function testPlayingYoutubeVideo() {
-  media = video;
-  media.src = await getVideoFromYouTube('https://www.youtube.com/watch?v=2ZFgcTOcnUg&t=14s&ab_channel=ng-conf')
-  currentSong = {type: "video"}
-  setDownloadLink(media.src, "testFile.mp4")
-  loadMediaElapsedTime();
+async function loadYoutubeVideo(event) {
+  // 'https://www.youtube.com/watch?v=2ZFgcTOcnUg&t=14s&ab_channel=ng-conf'
+  if (event.key === "Enter") {
+    const url = event.target.value;
+    media = video;
+    showLoadingToggle();
+    media.src = await getVideoFromYouTube(url);
+    loadVideoQualitiesToSetting()
+    currentSong = {type: "video"}
+    setDownloadLink(media.src, "testFile.mp4")
+    loadMediaElapsedTime();
+    showLoadingToggle();
+  } 
+}
+
+function loadVideoQualitiesToSetting() {
+  videoFormats.forEach((format) => {
+    const radiobox = document.createElement('input');
+    radiobox.type = 'radio';
+    radiobox.id = format.format_note;
+    radiobox.name = 'quality-radio'
+    radiobox.value = format.format_note;
+    radiobox.addEventListener('change', (event) => {
+      chooseQuality(event.target.value);
+      console.log(currentVideoFormat)
+    })
+    const label = document.createElement('label')
+    label.htmlFor = format.format_note;
+   
+    const description = document.createTextNode(format.format_note);
+    label.appendChild(description);
+   
+    const newline = document.createElement('br'); 
+    
+    domElement.videoQuality.appendChild(radiobox);
+    domElement.videoQuality.appendChild(label);
+    domElement.videoQuality.appendChild(newline);
+  })  
+}
+
+function chooseQuality(quality) {
+  const targetFormat = videoFormats.find((format) => format.format_note === quality)
+  currentVideoFormat = targetFormat;
+  media.src = currentVideoFormat.url;
 }
 
 // dry.addEventListener("click", function(e) {
@@ -1618,7 +1661,7 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
 }
 
 /*----- -DOM interact- -----*/
-function showSettings() {
+function showSettingToggle() {
   if (isSettingShow) {
     domElement.settingPanel.style.opacity = "0";
     setTimeout(() => domElement.settingPanel.style.visibility = "hidden", 300);        
@@ -1626,6 +1669,18 @@ function showSettings() {
   } else {
     domElement.settingPanel.style.visibility = "visible";
     domElement.settingPanel.style.opacity = "1";
+    isSettingShow = true;    
+  }
+}
+
+function showLoadingToggle() {
+  if (isSettingShow) {
+    domElement.loadingPanel.style.opacity = "0";
+    setTimeout(() => domElement.settingPanel.style.visibility = "hidden", 300);        
+    isSettingShow = false;
+  } else {
+    domElement.loadingPanel.style.visibility = "visible";
+    domElement.loadingPanel.style.opacity = "1";
     isSettingShow = true;    
   }
 }
@@ -1697,6 +1752,8 @@ function initDOMVars() {
   domElement.playListSelect = getElement("play-lists");
   domElement.newPlayListPanel = getElement("new-play-list-panel");
   domElement.playListInput = getElement("play-list-name-input");
+  domElement.loadingPanel = getElement("loading-panel");
+  domElement.videoQuality = getElement("video-quality");
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),
