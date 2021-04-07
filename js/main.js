@@ -119,7 +119,8 @@ window.addEventListener(
   "load",
   async function() {    
     await initIndexDB(DEFAULT_DB);
-    await addPlayListToDB(DEFAULT_PLAYLIST);   
+    await addPlayListToDB(DEFAULT_PLAYLIST); 
+    audio.crossOrigin = "anonymous";  
     audioContext = new AudioContext();
     _equalizer = new Equalizer();      
     bufferSource = audioContext.createBufferSource();           
@@ -1229,7 +1230,7 @@ async function getVideoFromYouTube(videoUrl) {
   if (response && response.status !== 'wait') {
     console.log(response) 
     videoFormats = response.formats.filter((format) => {
-      return format.ext === "mp4" && format.acodec === "none";
+      return format.ext === "m4a" && format.acodec !== "none";
     })
     console.log(videoFormats)
     for (const format of videoFormats) {
