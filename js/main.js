@@ -7,7 +7,8 @@ var FULL_SCREEN_HEIGHT = screen.height;
 var KEYCODE_ENTER = 13;
 var KEYCODE_ESC = 27;
 var FILTER_GAIN_MULTIPLIER = 10 * 2;
-var DEFAULT_PLAYLIST = "MySongDB"
+var DEFAULT_DB = "MyMediaDB";
+var DEFAULT_PLAYLIST = "default play list";
 var VOLUME_STEP_COUNT = 100.0;
 var PLAYRATE_STEP_COUNT = 40.0;
 
@@ -114,43 +115,41 @@ window.addEventListener("keydown", (e) => {
 
 window.addEventListener(
   "load",
-  function() {
-    getPlayLists();
-    initIndexDB(DEFAULT_PLAYLIST)
-    .then(() => {  
-      audioContext = new AudioContext();
-      _equalizer = new Equalizer();      
-      bufferSource = audioContext.createBufferSource();           
-      console.log(audio);
+  async function() {    
+    await initIndexDB(DEFAULT_DB);
+    await addPlayListToDB(DEFAULT_PLAYLIST);
+    audioContext = new AudioContext();
+    _equalizer = new Equalizer();      
+    bufferSource = audioContext.createBufferSource();           
+    console.log(audio);
+    
+    analyser = audioContext.createAnalyser();
+    initDOMVars();            
+    initPlayListsToSelection();
+    enableSettingPanelMove();
 
-      analyser = audioContext.createAnalyser();
-      initDOMVars();            
-      addPlayListsToSelection();
-      enableSettingPanelMove();
+    document.onwebkitfullscreenchange = function(event) {
+      if (document.fullscreenElement === null) {
+        exitFullscreen();
+      }               
+    }
 
-      document.onwebkitfullscreenchange = function(event) {
-        if (document.fullscreenElement === null) {
-          exitFullscreen();
-        }               
-      }
-
-      ctx = domElement.canvas.getContext("2d");
-      initVideo(); 
-      initCanvasSize();
-      needFilterApply = true;
-      audioSourceNode = audioContext.createMediaElementSource(audio);       
-      videoSourceNode = audioContext.createMediaElementSource(video);
-      sourceNode = audioSourceNode;
-      // sourceNode =audioContext.createMediaElementSource(audio);
-      _equalizer.setupEqualizer(audioContext)    
-      sourceNode.connect(analyser);    
-      analyser.connect(audioContext.destination);
-      getSongList(); 
-      currentVolume = parseFloat(domElement.volumeControl.value) / VOLUME_STEP_COUNT;
-      initUploadFileFunction();
-      initTooltips();  
-      _processor = new Processor();   
-    });        
+    ctx = domElement.canvas.getContext("2d");
+    initVideo(); 
+    initCanvasSize(); 
+    audioSourceNode = audioContext.createMediaElementSource(audio);       
+    videoSourceNode = audioContext.createMediaElementSource(video);
+    sourceNode = audioSourceNode;
+    // sourceNode =audioContext.createMediaElementSource(audio);
+    _equalizer.setupEqualizer(audioContext)    
+    sourceNode.connect(analyser);    
+    analyser.connect(audioContext.destination);
+    await getSongList();     
+    currentVolume = parseFloat(domElement.volumeControl.value) / VOLUME_STEP_COUNT;
+    initUploadFileFunction();
+    initTooltips();  
+    _processor = new Processor();   
+          
   },
   false
 );
@@ -506,18 +505,20 @@ function clearAllSongs() {
     for (song of appSongs) {            
       deleteSongFromDisplayList(song.songName);       
     }
-    appSongs = []
+    appSongs = [];
+    stopMedia();
     unsetMedia();
   }
 }
 
 function deleteMedia(song) {
   if (currentSong && currentSong.songName === song.songName) {
+    stopMedia();
     unsetMedia();
   }    
   removeSongFromList(song);
   deleteSongFromDisplayList(song.songName);
-  deleteSongFromDB(song);
+  deleteSongFromPlayList(currentPlayList, song);
   saveSongsPos();      
 }
 
@@ -531,8 +532,7 @@ function deleteAllMedia() {
   }
 }
 
-function unsetMedia() {
-  stopMedia();
+function unsetMedia() {  
   currentSong = null;
   media.src = "";     
   domElement.duration.innerHTML = "0:00";
@@ -548,16 +548,14 @@ function addSongToSongList(song) {
   appSongs.push(song);
 }
 
-function getSongList() {    
-  getAllSongs().then((songs) => {        
-    if (songs) {
-      appSongs = songs;
-      loadSongsPos();
-      for (song of appSongs) {
-        addSongToDisplayList(song);
-      }
+async function getSongList() {   
+  appSongs = await getAllSongFromPlayList(currentPlayList);
+  if (appSongs && appSongs.length > 0) {
+    loadSongsPos(); 
+    for (song of appSongs) {
+      addSongToDisplayList(song);
     }
-  });
+  }  
 }
 
 function sortSongsByCreatedDate(songs, order) {
@@ -707,7 +705,7 @@ function chooseSong(event, song) {
   }    
   media.src = event.target.dataset.src;  
   media.playbackRate = currentPlaybackRate;  
-  setDownloadLink(event.target.dataset.src, event.target.textContent);
+  setDownloadLink(event.target.dataset.src, event.target.textContent); 
 }
 
 function deleteSongFromDisplayList(songName) {
@@ -733,7 +731,7 @@ function loadMediaElapsedTime() {
       domElement.elapsedTimeBar.value = parseInt(media.currentTime);  
     });
     media.onended = (() => {
-      console.log("end")
+      console.log("end");
       clearCanvas();                                
       playNextSong();             
     })
@@ -749,8 +747,13 @@ function addPlayListToSelection(playListName) {
   domElement.playListSelect.appendChild(option)
 }
 
-function addPlayListsToSelection() {
-  playLists.forEach(playList => addPlayListToSelection(playList));
+function initPlayListsToSelection() {
+  if (playLists.length > 0) {
+    playLists.forEach(playList => addPlayListToSelection(playList));
+  }
+  else {
+    addPlayListToSelection(DEFAULT_PLAYLIST);
+  }
   var defaultOption = Array.from(domElement.playListSelect.children).find((child) => child.value === currentPlayList);
   defaultOption.setAttribute("selected", "selected");
 }
@@ -760,22 +763,23 @@ function openAddPlayListPanel() {
   domElement.newPlayListPanel.style.visibility = "visible";    
 }
 
-function addNewPlayList() {  
+async function addNewPlayList() {  
   var playListName = domElement.playListInput.value;
   if (playListName.length > 3) {
-    playLists.push(playListName);
-    addPlayListToSelection(playListName);
+    await addPlayListToDB(playListName);
+    playLists.push(playListName);    
+    addPlayListToSelection(playListName);    
     closeAddPlayListPanel(); 
   } else {
     alert("Play list name must longer than 3 characters!")
   }     
 }
 
-function removePlayList() {
+async function removePlayList() {
   var deleteConfirm = confirm("Are you sure to remove playlist: " + currentPlayList + "?");
   if (deleteConfirm) {
     var playListName = currentPlayList;
-    if (playListName !== DEFAULT_PLAYLIST) {
+    if (playListName !== DEFAULT_DB) {
       if (media.isPlay) {
         alert("Please stop or pause media before remove play list!")
       } else {
@@ -784,9 +788,9 @@ function removePlayList() {
           var targetIndex = Array.from(domElement.playListSelect.children).indexOf(target);
           domElement.playListSelect.removeChild(domElement.playListSelect.childNodes[targetIndex]); 
           playLists.splice(targetIndex, 1)
-          indexedDB.deleteDatabase(playListName);
-          changePlayList(playLists[0]);
-          domElement.playListSelect.value = playLists[0];
+          await deletePlayListFromDB(playListName);
+          await changePlayList(DEFAULT_PLAYLIST);
+          domElement.playListSelect.value = DEFAULT_PLAYLIST;
           closeAddPlayListPanel(); 
         } else {
           alert("Play list does not exists.")
@@ -861,7 +865,15 @@ function changeVideoSetting(value, type) {
 
 /*----- -Media Function- -----*/
 function pauseMedia() {
-  media.pause();  
+  media.pause();
+}
+
+media.onpause = () => {
+  setPlayToFalse();
+}
+
+media.onplay = () => {
+  setPlayToTrue();
 }
 
 function playMedia() {
@@ -992,9 +1004,9 @@ files_upload.onchange = function(){
   };   
 }
 
-/*----- -Setup- -----*/
+/*----- -Setup Function- -----*/
 function uploadMediaFile(file, fileType) {
-  var createdDate = new Date()
+  var createdDate = new Date();
   var mediaFile = {
     id: file.name + " " + createdDate.getTime(), 
     songName: file.name, 
@@ -1019,7 +1031,7 @@ function uploadMediaFile(file, fileType) {
     }
   };            
   addSongToDisplayList(mediaFile);
-  addSongToDB(mediaFile);
+  addSongToPlayList(currentPlayList, mediaFile);
   addSongToSongList(mediaFile);
   saveSongsPos();
 }
@@ -1078,133 +1090,102 @@ function setupEcho() {
 }
 
 /*----- -DB- -----*/
-function initIndexDB(dbName) {
-  indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB
-  IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.OIDBTransaction || window.msIDBTransaction
-  dbVersion = 2;
-  var request = window.indexedDB.open(dbName, dbVersion);
+async function initIndexDB(dbName) {
+  const connection = await Dexie.exists(dbName).then(function (exists) {
+    db = new Dexie(dbName);
+    if (exists) { 
+      return db.open();
+    }  
+  });
+  return connection;   
 
-  var createSongObjectStore = function (db) {
-      // Create an objectStore
-    console.log("Creating objectStore")
-    var objectStore = db.createObjectStore("songs", { keyPath: "id" });        
-    objectStore.createIndex("songName", "songName", { unique: true });        
-    objectStore.createIndex("src", "src", { unique: true });
-    objectStore.createIndex("createDate", "createdDate", { unique: false});
-    objectStore.createIndex("type", "type", { unique: false});
-    objectStore.createIndex("settings", "settings", { unique: false})
-  }
-
-  return new Promise((resolve, reject) => {
-    request.onsuccess = function (event) {
-      console.log("Success creating/accessing IndexedDB database");
-      db = event.target.result; 
-        // exportDB(db);       
-        db.onerror = function (event) {
-          console.log("Error creating/accessing IndexedDB database");
-        }; 
-        resolve();         
-      }
-    // For future use. Currently only in latest Firefox versions
-    request.onupgradeneeded = function (event) {
-      db = event.target.result;
-      createSongObjectStore(db);
-      resolve(); 
-    };
-  })
 }
 
-function getPlayLists() {
-  if (!window.indexedDB) {
-    console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-  } else {        
-    console.log("updating media in IndexedDB");
-    indexedDB.databases().then(databases => {
-      databases.forEach((database) => {
-        playLists.push(database.name)
-      })            
-    })
-  }
+function addSongToPlayList(playList, song) {
+  if (song && playList) {
+    const {id, songName, src, createdDate, type, settings} = song;
+    return db.table(playList).put({id, songName, src, createdDate, type, settings});
+  }  
 }
 
-function changePlayList(playListName) {
+function updateMedia(playList, song) {
+if (song && playList) {
+    const {id, songName} = song;
+    return db.table(playList).update({id, songName, src, createdDate, type, settings});
+  }  
+}
+
+async function getAllSongFromPlayList(playList) {  
+  if (playList) {
+    const appSongs = await db.table(playList).toArray().then(songs => songs); 
+    console.log(appSongs);
+    return appSongs;    
+  }  
+  return [];
+}
+async function getSongFromDB(playList, songName) {
+  if (playList && songName) {
+    const song = await db.table(playList).get({songName}, song => song);
+    if (song) {
+      console.log(song);
+      return song;
+    }    
+  }  
+}
+
+function deleteSongFromPlayList(playList, song) {
+  if (playList && song) {
+    db.table(playList).delete(song.id);  
+  }  
+}
+
+function getAllPlayLists() {  
+  return db._storeNames;
+}
+
+async function addPlayListToDB(playList) {
+  playLists = getAllPlayLists();
+  if (playLists) {    
+    if (!playLists.includes(playList)) {
+      await createNewSchema(playList, 'id, songName, src, createdDate, type, settings');      
+      const initSong = {id: "initSong", songName: "initSong", src: null, createdDate: null, type: "audio", settings: null}
+      addSongToPlayList(playList, initSong);
+      deleteSongFromPlayList(playList, initSong)
+    }  
+  }  
+}
+
+async function deletePlayListFromDB(playList) {
+  if (playList && playList !== DEFAULT_PLAYLIST) {
+    await createNewSchema(playList, null);
+  }  
+}
+
+async function createNewSchema(playList, newSchema) {
+  const songs = {};
+  playLists.forEach(storeName => {
+    songs[storeName] = 'id, songName, src, createdDate, type, settings';
+  })  
+  songs[playList] = newSchema;
+  await db.close();
+  db.version(Math.round(db.verno + 1)).stores(songs);  
+  await db.open();
+}
+
+async function renamePlayListFromDB(playList) {
+  await db.close();
+  await db.open();
+}
+
+async function changePlayList(playListName) {
   if (!media.isPlay) {
-    currentPlayList = playListName;
-    initIndexDB(playListName).then(() => {
-      clearAllSongs();
-      getSongList();
-    }); 
+    currentPlayList = playListName;    
+    clearAllSongs();    
+    await getSongList();
   } else {
     domElement.playListSelect.value = currentPlayList;
     alert("Please stop or pause media to change play list!");
-  }             
-}
-
-function updateMedia(media) {
-  if (!window.indexedDB) {
-    console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-  } else {        
-    console.log("updating media in IndexedDB");
-    // Open a transaction to the database
-    var transaction = db.transaction(["songs"], "readwrite");
-    // Put the blob into the dabase
-    var objectStore = transaction.objectStore("songs");
-    var request = objectStore.put(media);
-    request.onsuccess = function (event) {
-      console.log("Successfully update media");                   
-    }   
-  }
-}
-
-function addSongToDB(song) {
-  if (!window.indexedDB) {
-    console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-  } else {        
-    console.log("Putting song in IndexedDB");
-    // Open a transaction to the database
-    var transaction = db.transaction(["songs"], "readwrite");
-    // Put the blob into the dabase
-    var objectStore = transaction.objectStore("songs");
-    var request = objectStore.add(song);
-    request.onsuccess = function (event) {
-      console.log("Successfully added song");                   
-    }   
-  }
-}
-
-function deleteSongFromDB(song) {
-  if (!window.indexedDB) {
-    console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-  } else {      
-    console.log("deleting song in IndexedDB");
-    // Open a transaction to the database
-    var transaction = db.transaction(["songs"], "readwrite");
-    // Put the blob into the dabase
-    var objectStore = transaction.objectStore("songs");
-    var request = objectStore.delete(song.id);
-    request.onsuccess = function (event) {
-      console.log("Successfully delete song");                   
-    }   
-  }
-}
-
-function getAllSongs() {
-  if (!window.indexedDB) {
-    console.log("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
-  } else {        
-    console.log("Getting songs in IndexedDB");
-    // Open a transaction to the database
-    var transaction = db.transaction(["songs"], "readwrite");
-    // Put the blob into the dabase
-    var objectStore = transaction.objectStore("songs");
-    var request = objectStore.getAll()    
-    return new Promise((resolve, reject) => {
-      request.onsuccess = function (event) {
-        console.log("Successfully get all song");              
-        resolve(event.target.result)                 
-      }  
-    })         
-  }
+  }   
 }
 
 function getSongFromNhaccuatui(songUrl) {
@@ -1443,7 +1424,6 @@ function calculateWindowSizeAfterwindowResize() {
 }
 
 /*----- -Video- -----*/
-
 function Processor() { 
   this.doLoad = function () {
     this.video = video;                    
@@ -1571,7 +1551,6 @@ function invokeCanvasBuilder() {
 function processVideo() { 
   _processor.doLoad();
 }
-
 
 function initVideo() {
   video = document.createElement("video");  
