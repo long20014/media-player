@@ -974,12 +974,18 @@ function initUploadFileFunction() {
   files_upload = getElement("files_upload");   
 
 files_upload.onchange = function(){
+  function isVideo(file) {
+    const fileNameSplitted = file.name.split('.');
+    const fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
+    const videoExtension = ['mkv'];
+    return file.type.includes("video") || videoExtension.includes(fileExtension);
+  }
   var files = this.files;            
   for (file of files) {            
     if (file.type.includes("audio")) {
         // setAudioFileAsArrayBuffer(files[0]);    
         uploadMediaFile(file, "audio")                
-      } else if (file.type.includes("video")) {
+      } else if (isVideo(file)) {
         uploadMediaFile(file, "video")
       }                         
     }
