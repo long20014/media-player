@@ -23,6 +23,8 @@ Support save audio settings for each media. (volume, speed, equalizer)
 
 Support responsive on mobile.
 
+Support loop one media or all media.
+
 ## Note
 
 Only work on Chrome and Firefox.
