@@ -1,5 +1,4 @@
 const filesToCache = [  
-  '/',
   'css/main.css',
   'js/main.js', 
   'js/mobile.js',
@@ -18,32 +17,25 @@ self.addEventListener('install', event => {
   );
 });
 
-self.addEventListener('fetch', function onFetch(event) {
-  var request = event.request;
-
-  if (!request.url.match(/^https?:\/\/example.com/) ) { return; }
-  if (request.method !== 'GET') { return; }
-
+self.addEventListener('fetch', event => {
+  console.log('Fetch event for ', event.request.url);
   event.respondWith(
-    fetch(request)                                      // first, the network
-    .catch(function fallback() {
-      caches.match(request).then(function(response) {  // then, the cache
-        response || caches.match("/index.html");     // then, /offline cache
-      })
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          console.log('Found ', event.request.url, ' in cache');
+          return response;
+        }
+        console.log('Network request for ', event.request.url);
+        return fetch(event.request).then(response => {
+          return caches.open(staticCacheName).then(cache => {
+            cache.put(event.request.url, response.clone());
+            return response;
+          });
+        });
+      }).catch(error => {
     })
   );
 });
 
-// self.addEventListener('activate', function onActivate(event) {
-//   event.waitUntil(
-//     caches.keys().then(function deleteOldCache(cacheNames) {
-//       return Promise.all(
-//         cacheNames.filter(function(cacheName) {
-//           return key.indexOf(version) !== 0;
-//         }).map(function(cacheName) {
-//           return caches.delete(cacheName);
-//         })
-//       );
-//     })
-//   );
-// });
+  
