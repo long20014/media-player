@@ -787,7 +787,8 @@ async function removePlayList() {
         if (target) {
           var targetIndex = Array.from(domElement.playListSelect.children).indexOf(target);
           domElement.playListSelect.removeChild(domElement.playListSelect.childNodes[targetIndex]); 
-          playLists.splice(targetIndex, 1)
+          playLists.splice(targetIndex, 1);
+          removePlayListFromPosList(playListName);          
           await deletePlayListFromDB(playListName);
           await changePlayList(DEFAULT_PLAYLIST);
           domElement.playListSelect.value = DEFAULT_PLAYLIST;
@@ -1283,6 +1284,13 @@ function loadSongsPos() {
       appSongs = tempAppSongs;    
     }        
   }
+}
+
+function removePlayListFromPosList(playListName) {
+  var mediaPosList = JSON.parse(localStorage.getItem("mediaPosList"));
+  var removedList = mediaPosList.find((list) => list.mediaList === playListName);
+  mediaPosList.splice(mediaPosList.indexOf(removedList), 1)
+  localStorage.setItem("mediaPosList", JSON.stringify(mediaPosList));
 }
 
 function exportDB(db) {
