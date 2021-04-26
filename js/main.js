@@ -1435,24 +1435,29 @@ function Processor() {
   }
 
   this.timerCallback = function () {
-    if (this.width === 0 || this.height === 0) {
+    let self = _processor;
+    if (self.width === 0 || self.height === 0) {
       adjustCanvasAndVideoSize(this);
     }
-    if (this.video.paused || this.video.ended) {
+    if (self.video.paused || self.video.ended) {
       stopCanvasRendering();
       return;
     }
-    this.computeFrame();
-    let self = this;
-    canvasRenderLoopTimeout = setTimeout(function() {
-      self.timerCallback();
-    }, 33);
+    self.computeFrame();    
+    window.RequestAnimationFrame =
+      window.requestAnimationFrame(self.timerCallback) ||
+      window.msRequestAnimationFrame(self.timerCallback) ||
+      window.mozRequestAnimationFrame(self.timerCallback) ||
+      window.webkitRequestAnimationFrame(self.timerCallback);
+    // canvasRenderLoopTimeout = setTimeout(function() {
+    //   self.timerCallback();
+    // }, 33);
   }
 
   this.computeFrame = function () {
     if (needFilterApply) {
       invokeCanvasBuilder();
-      setTimeout(() => needFilterApply = false, 500)      
+      setTimeout(() => needFilterApply = false, 100)      
     }          
     ctx.drawImage(this.video, 0, 0, this.width, this.height);
     // let frame = this.ctx.getImageData(0, 0, this.width, this.height);
