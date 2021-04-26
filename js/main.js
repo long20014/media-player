@@ -652,7 +652,7 @@ function saveMediaSettings() {
         _16kHz: _equalizer._16kHz.gain.value / FILTER_GAIN_MULTIPLIER,        
       }
     };
-    updateMedia(currentSong); 
+    updateMedia(currentPlayList, currentSong); 
     alert("Successfully save settings.")
   } else {
     alert("Failed to save settings.")
@@ -1110,8 +1110,8 @@ function addSongToPlayList(playList, song) {
 
 function updateMedia(playList, song) {
 if (song && playList) {
-    const {id, songName} = song;
-    return db.table(playList).update({id, songName, src, createdDate, type, settings});
+    const {id, settings} = song;
+    return db.table(playList).update(id, {settings});
   }  
 }
 
