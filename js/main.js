@@ -1445,27 +1445,27 @@ function Processor() {
   this.timerCallback = function () {
     let self = _processor;
     if (self.width === 0 || self.height === 0) {
-      adjustCanvasAndVideoSize(this);
+      adjustCanvasAndVideoSize(self);
     }
     if (self.video.paused || self.video.ended) {
       stopCanvasRendering();
       return;
     }
     self.computeFrame();    
-    window.RequestAnimationFrame =
-      window.requestAnimationFrame(self.timerCallback) ||
-      window.msRequestAnimationFrame(self.timerCallback) ||
-      window.mozRequestAnimationFrame(self.timerCallback) ||
-      window.webkitRequestAnimationFrame(self.timerCallback);
-    // canvasRenderLoopTimeout = setTimeout(function() {
-    //   self.timerCallback();
-    // }, 33);
+    // window.RequestAnimationFrame =
+    //   window.requestAnimationFrame(self.timerCallback) ||
+    //   window.msRequestAnimationFrame(self.timerCallback) ||
+    //   window.mozRequestAnimationFrame(self.timerCallback) ||
+    //   window.webkitRequestAnimationFrame(self.timerCallback);
+    canvasRenderLoopTimeout = setTimeout(function() {
+      self.timerCallback();
+    }, 33);
   }
 
   this.computeFrame = function () {
     if (needFilterApply) {
       invokeCanvasBuilder();
-      setTimeout(() => needFilterApply = false, 100)      
+      setTimeout(() => needFilterApply = false, 0)      
     }          
     ctx.drawImage(this.video, 0, 0, this.width, this.height);
     // let frame = this.ctx.getImageData(0, 0, this.width, this.height);
