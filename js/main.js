@@ -134,7 +134,7 @@ window.addEventListener(
       }               
     }
 
-    ctx = domElement.canvas.getContext("2d");
+    ctx = domElement.canvas.getContext("2d", { alpha: false });
     initVideo(); 
     initCanvasSize(); 
     audioSourceNode = audioContext.createMediaElementSource(audio);       
