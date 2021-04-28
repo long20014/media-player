@@ -991,7 +991,7 @@ function initUploadFileFunction() {
       const fileNameSplitted = file.name.split('.');
       const fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
       const videoExtension = ['mkv'];
-      return file.type.includes("video") || videoExtension.includes(fileExtension);
+      return file.type.includes("video") || videoExtension.includes(fileExtension.toLowerCase());
     }
     var files = this.files;            
     for (file of files) {            
