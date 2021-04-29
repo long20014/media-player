@@ -12,7 +12,7 @@
   <div id="setting-panel" class="panel">
     <div id="setting-panel-header">
       <div class="item-with-tooltip">        
-        <button type="button" id="close-setting" onclick="showSettings()" class="text--white"><i class="fas fa-times"></i></button> 
+        <button type="button" id="close-setting" onclick="showSettingsToggle()" class="text--white"><i class="fas fa-times"></i></button> 
       </div>      
     </div>
     <div class="tab">
@@ -218,7 +218,7 @@
       </div>
       <div class="item-with-tooltip" style="margin-right: 10px">
         <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
-        <div id="setting-button" class="anchor-button-wrapper" onclick="showSettings()">
+        <div id="setting-button" class="anchor-button-wrapper" onclick="showSettingsToggle()">
           <a id="setting-icon" class="anchor-button-icon"><i class="fa fa-cog text--white"></i></a>  
         </div>
       </div>  
@@ -288,7 +288,7 @@
         <div id="button-section">
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
-            <button id="show-setting-button-mobile" onclick="showSettings()"><i class="fa fa-cog "></i></button>
+            <button id="show-setting-button-mobile" onclick="showSettingsToggle()"><i class="fa fa-cog "></i></button>
           </div>
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Song list</div>
