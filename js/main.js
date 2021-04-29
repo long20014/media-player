@@ -19,13 +19,7 @@ sourceNode,
 videoSourceNode,
 audioSourceNode,   
 audioContext,
-analyser,
-fbc_array,
-bar_count,
-bar_pos,
-bar_width,
-bar_height,
-files_upload;
+analyser;
 
 var indexedDB;
 var IDBTransaction;
@@ -99,6 +93,10 @@ window.addEventListener("keydown", (e) => {
       muteToggle();
     } else if (e.key === "f" || e.key === "F" ) {
       canvasFullscreenToggle();
+    } else if (e.key === "q" || e.key === "Q" ) {
+      showListToggle();
+    } else if (e.key === "w" || e.key === "W" ) {
+      showSettingsToggle();
     } else if (e.keyCode === KEYCODE_ESC) {
       exitFullscreen();
     } else if (e.key === "[") {
@@ -389,7 +387,7 @@ function changeElapsedTime(timeValue) {
 }
 
 function startElapsedTimeChange() {
-  const isPlaying = media.isPlay;
+  var isPlaying = media.isPlay;
   media.pause();
   if (isPlaying) {
     // need setTimeout to call this after pause
@@ -985,13 +983,11 @@ function setDownloadLink(href, outputFileName) {
 }
 
 function initUploadFileFunction() {    
-  files_upload = getElement("files_upload");   
-
-  files_upload.onchange = function(){
+  domElement.files_upload.onchange = function(){
     function isVideo(file) {
-      const fileNameSplitted = file.name.split('.');
-      const fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
-      const videoExtension = ['mkv'];
+      var fileNameSplitted = file.name.split('.');
+      var fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
+      var videoExtension = ['mkv'];
       return file.type.includes("video") || videoExtension.includes(fileExtension.toLowerCase());
     }
     var files = this.files;            
@@ -1061,8 +1057,8 @@ function setAudioFileAsArrayBuffer(file) {
 
 function setupChangePitch() {
   audioContext.decodeAudioData(currentArrayBuffer, function(buffer) {
-    const C3 = 130.81;
-    const c3d150 = 150 / C3; // 1.1467013225;
+    var C3 = 130.81;
+    var c3d150 = 150 / C3; // 1.1467013225;
     bufferSource.buffer = buffer;
     bufferSource.playbackRate.value = c3d150;
     bufferSource.connect(audioContext.destination);
@@ -1093,7 +1089,7 @@ function setupEcho() {
 
 /*----- -DB- -----*/
 async function initIndexDB(dbName) {
-  const connection = await Dexie.exists(dbName).then(function (exists) {
+  var connection = await Dexie.exists(dbName).then(function (exists) {
     db = new Dexie(dbName);
     if (exists) { 
       return db.open();
@@ -1105,21 +1101,21 @@ async function initIndexDB(dbName) {
 
 function addSongToPlayList(playList, song) {
   if (song && playList) {
-    const {id, songName, src, createdDate, type, settings} = song;
+    var {id, songName, src, createdDate, type, settings} = song;
     return db.table(playList).put({id, songName, src, createdDate, type, settings});
   }  
 }
 
 function updateMedia(playList, song) {
 if (song && playList) {
-    const {id, settings} = song;
+    var {id, settings} = song;
     return db.table(playList).update(id, {settings});
   }  
 }
 
 async function getAllSongFromPlayList(playList) {  
   if (playList) {
-    const appSongs = await db.table(playList).toArray().then(songs => songs); 
+    var appSongs = await db.table(playList).toArray().then(songs => songs); 
     console.log(appSongs);
     return appSongs;    
   }  
@@ -1127,7 +1123,7 @@ async function getAllSongFromPlayList(playList) {
 }
 async function getSongFromDB(playList, songName) {
   if (playList && songName) {
-    const song = await db.table(playList).get({songName}, song => song);
+    var song = await db.table(playList).get({songName}, song => song);
     if (song) {
       console.log(song);
       return song;
@@ -1150,7 +1146,7 @@ async function addPlayListToDB(playList) {
   if (playLists) {    
     if (!playLists.includes(playList)) {
       await createNewSchema(playList, 'id, songName, src, createdDate, type, settings');      
-      const initSong = {id: "initSong", songName: "initSong", src: null, createdDate: null, type: "audio", settings: null}
+      var initSong = {id: "initSong", songName: "initSong", src: null, createdDate: null, type: "audio", settings: null}
       addSongToPlayList(playList, initSong);
       deleteSongFromPlayList(playList, initSong)
     }  
@@ -1164,7 +1160,7 @@ async function deletePlayListFromDB(playList) {
 }
 
 async function createNewSchema(playList, newSchema) {
-  const songs = {};
+  var songs = {};
   playLists.forEach(storeName => {
     songs[storeName] = 'id, songName, src, createdDate, type, settings';
   })  
@@ -1340,8 +1336,9 @@ function FrameLooper() {
   window.mozRequestAnimationFrame(FrameLooper) ||
   window.webkitRequestAnimationFrame(FrameLooper);
 
-  fbc_array = new Uint8Array(analyser.frequencyBinCount);
-  bar_count = window.innerWidth / 2;
+  var fbc_array = new Uint8Array(analyser.frequencyBinCount);
+  var bar_width = 2;
+  var bar_count = domElement.canvas.width / bar_width;
 
   analyser.getByteFrequencyData(fbc_array);
 
@@ -1349,10 +1346,8 @@ function FrameLooper() {
   ctx.fillStyle = "#ffffff";
 
   for (var i = 0; i < bar_count; i++) {
-    bar_pos = i * 4;
-    bar_width = 2;
-    bar_height = -(fbc_array[i] / 2);
-
+    var bar_pos = i * bar_width * 2;    
+    var bar_height = -(fbc_array[i] / 2) * 2;
     ctx.fillRect(bar_pos, domElement.canvas.height, bar_width, bar_height);
   }
 }
@@ -1436,7 +1431,7 @@ function calculateWindowSizeAfterwindowResize() {
 function Processor() { 
   this.doLoad = function () {
     this.video = video;                    
-    let self = this;
+    var self = this;
     this.video.addEventListener('play', function() {                
       adjustCanvasAndVideoSize(self)
       self.timerCallback();
@@ -1452,7 +1447,7 @@ function Processor() {
       return;
     }
     this.computeFrame();
-    let self = this;
+    var self = this;
     canvasRenderLoopTimeout = setTimeout(function() {
       self.timerCallback();
     }, 33);
@@ -1461,7 +1456,7 @@ function Processor() {
   this.computeFrame = function () {
     if (needFilterApply) {
       invokeCanvasBuilder();
-      setTimeout(() => needFilterApply = false, 500)      
+      setTimeout(() => needFilterApply = false, 0)      
     }          
     ctx.drawImage(this.video, 0, 0, this.width, this.height);
     // let frame = this.ctx.getImageData(0, 0, this.width, this.height);
@@ -1572,19 +1567,8 @@ function initVideo() {
   var tracks = video.audioTracks;       
 }
 
-/*----- -utilities -----*/
-function limitPercentValue(value, lowerLimit, upperLimit) {
-  var limitedValue = value; 
-  if (limitedValue > upperLimit) {
-    limitedValue = upperLimit;
-  } else if (limitedValue < lowerLimit) {
-    limitedValue = lowerLimit;
-  }
-  return limitedValue;
-}
-
 /*----- -DOM interact- -----*/
-function showSettings() {
+function showSettingsToggle() {
   if (isSettingShow) {
     domElement.settingPanel.style.opacity = "0";
     setTimeout(() => domElement.settingPanel.style.visibility = "hidden", 300);        
@@ -1636,6 +1620,16 @@ function enableSettingPanelMove() {
 }
 
 /*----- -Utilities- -----*/
+function limitPercentValue(value, lowerLimit, upperLimit) {
+  var limitedValue = value; 
+  if (limitedValue > upperLimit) {
+    limitedValue = upperLimit;
+  } else if (limitedValue < lowerLimit) {
+    limitedValue = lowerLimit;
+  }
+  return limitedValue;
+}
+
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
     var debounceHideMediaList = debounce(showListToggle, 2000);
@@ -1714,6 +1708,7 @@ function initDOMVars() {
   domElement.newPlayListPanel = getElement("new-play-list-panel");
   domElement.playListInput = getElement("play-list-name-input");
   domElement.songListPanel = getElement("song-list-panel");
+  domElement.files_upload = getElement("files_upload");  
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),
