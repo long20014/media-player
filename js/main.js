@@ -1389,6 +1389,10 @@ function adjustCanvasFrameLooperSize() {
 function adjustCanvasSize() {
   if (currentSong.type === "video") {
     adjustCanvasAndVideoSize(_processor);
+    if (!media.isPlay) {
+      _processor.computeFrame();
+    }
+    
   } else {
     adjustCanvasFrameLooperSize();
   } 
@@ -1632,7 +1636,7 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
 
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
-    var debounceHideMediaList = debounce(showListToggle, 2000);
+    var debounceHideMediaList = debounce(showListToggle, 4000);
     domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);      
   }
 }
