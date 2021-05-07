@@ -46,6 +46,8 @@ var isInited = false;
 var isLoopAll = false;
 var isMute = false;
 var isListShow = false;
+var isAddNewPlaylistPanelShow = false;
+var isOnSelectingPlaylist = false;
 var isFullscreen = false;
 var isSettingShow = false;
 var isSongSettingUsed = true;
@@ -759,7 +761,15 @@ function initPlayListsToSelection() {
 
 function openAddPlayListPanel() {    
   domElement.newPlayListPanel.style.opacity = "1";
-  domElement.newPlayListPanel.style.visibility = "visible";    
+  domElement.newPlayListPanel.style.visibility = "visible";  
+  isAddNewPlaylistPanelShow = true; 
+}
+
+function closeAddPlayListPanel() {
+  domElement.newPlayListPanel.style.opacity = "0";
+  domElement.newPlayListPanel.style.visibility = "hidden";
+  domElement.playListInput.value = "";  
+  isAddNewPlaylistPanelShow = false;
 }
 
 async function addNewPlayList() {  
@@ -800,12 +810,6 @@ async function removePlayList() {
       alert("Cannot delete default playlist!")
     }
   }    
-}
-
-function closeAddPlayListPanel() {
-  domElement.newPlayListPanel.style.opacity = "0";
-  domElement.newPlayListPanel.style.visibility = "hidden";
-  domElement.playListInput.value = "";  
 }
 
 function openTab(evt, tabName) {
@@ -1391,7 +1395,7 @@ function adjustCanvasSize() {
     adjustCanvasAndVideoSize(_processor);
     if (!media.isPlay) {
       _processor.computeFrame();
-    }
+    cod}
     
   } else {
     adjustCanvasFrameLooperSize();
@@ -1636,8 +1640,21 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
 
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
-    var debounceHideMediaList = debounce(showListToggle, 4000);
-    domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);      
+    var debounceHideMediaList = debounce(() => {
+      if (isListShow && !isAddNewPlaylistPanelShow && !isOnSelectingPlaylist) {
+        showListToggle();
+      }      
+    }, 3000);
+    domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
+    domElement.songListPanel.addEventListener('click', (event) => {
+      var isClickOutsideElement = !domElement.playListSelect.contains(event.target);
+      if (isOnSelectingPlaylist && isClickOutsideElement) {
+        isOnSelectingPlaylist = false;
+      }      
+    });
+    domElement.playListSelect.addEventListener('focus', () => isOnSelectingPlaylist = true); 
+    domElement.playListSelect.addEventListener('blur', () => isOnSelectingPlaylist = false); 
+    domElement.playListSelect.addEventListener('change', () => isOnSelectingPlaylist = false);   
   }
 }
 
