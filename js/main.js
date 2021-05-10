@@ -54,7 +54,10 @@ var isSongSettingUsed = true;
 var needFilterApply = false;
 var canvasRenderLoopTimeout;
 var domElement = {};
-var videoSettings = {
+var appSetting = {
+  songListAutoCloseTime: 4000
+}
+var videoSetting = {
   brightness: 100, //percent
   contrast: 100, // percent
   invert: 0, // percent
@@ -64,6 +67,7 @@ var videoSettings = {
   blur: 0, // px   
   hueRotation: 0, // deg
 };
+var debounceHideMediaList;
 
 media.controls = false;
 media.loop = false;
@@ -831,36 +835,36 @@ function changeVideoSetting(value, type) {
   value = +value;
   switch (type) {
     case "brightness":
-      videoSettings.brightness = value;
-      getElement("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
+      videoSetting.brightness = value;
+      getElement("brightness-tooltip").textContent = "Brightness: " + videoSetting.brightness + "%";
       break;
     case "contrast":
-      videoSettings.contrast = value;
-      getElement("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
+      videoSetting.contrast = value;
+      getElement("contrast-tooltip").textContent = "Contrast: " + videoSetting.contrast + "%";
       break;
     case "invert":
-      videoSettings.invert = value;
-      getElement("invert-tooltip").textContent = "Invert: " + videoSettings.invert + "%";
+      videoSetting.invert = value;
+      getElement("invert-tooltip").textContent = "Invert: " + videoSetting.invert + "%";
       break;
     case "grayscale":
-      videoSettings.grayscale = value;
-      getElement("grayscale-tooltip").textContent = "Grayscale: " + videoSettings.grayscale + "%";
+      videoSetting.grayscale = value;
+      getElement("grayscale-tooltip").textContent = "Grayscale: " + videoSetting.grayscale + "%";
       break; 
     case "saturate":
-      videoSettings.saturate = value;
-      getElement("saturate-tooltip").textContent = "Saturate: " + videoSettings.saturate + "%";
+      videoSetting.saturate = value;
+      getElement("saturate-tooltip").textContent = "Saturate: " + videoSetting.saturate + "%";
       break;
     case "sepia":
-      videoSettings.sepia = value;
-      getElement("sepia-tooltip").textContent = "Sepia: " + videoSettings.sepia + "%";
+      videoSetting.sepia = value;
+      getElement("sepia-tooltip").textContent = "Sepia: " + videoSetting.sepia + "%";
       break;
     case "blur":
-      videoSettings.blur = value;
-      getElement("blur-tooltip").textContent = "Blur: " + videoSettings.blur + "px";
+      videoSetting.blur = value;
+      getElement("blur-tooltip").textContent = "Blur: " + videoSetting.blur + "px";
       break;
     case "hue-rotation":
-      videoSettings.hueRotation = value;
-      getElement("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
+      videoSetting.hueRotation = value;
+      getElement("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSetting.hueRotation + "deg";
       break;
     default:
   }
@@ -987,7 +991,7 @@ function setDownloadLink(href, outputFileName) {
 }
 
 function initUploadFileFunction() {    
-  domElement.files_upload.onchange = function(){
+  domElement.filesUpload.onchange = function(){
     function isVideo(file) {
       var fileNameSplitted = file.name.split('.');
       var fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
@@ -1554,14 +1558,14 @@ function CanvasFilterBuilder() {
 
 function invokeCanvasBuilder() {
   new CanvasFilterBuilder()
-      .buildBrightness(videoSettings.brightness)
-      .buildContrast(videoSettings.contrast)    
-      .buildInvert(videoSettings.invert)
-      .buildGrayscale(videoSettings.grayscale)
-      .buildBlur(videoSettings.blur)
-      .buildhueRotation(videoSettings.hueRotation)
-      .buildSaturate(videoSettings.saturate)
-      .buildSepia(videoSettings.sepia)    
+      .buildBrightness(videoSetting.brightness)
+      .buildContrast(videoSetting.contrast)    
+      .buildInvert(videoSetting.invert)
+      .buildGrayscale(videoSetting.grayscale)
+      .buildBlur(videoSetting.blur)
+      .buildhueRotation(videoSetting.hueRotation)
+      .buildSaturate(videoSetting.saturate)
+      .buildSepia(videoSetting.sepia)    
       .build(); 
 }
 
@@ -1633,6 +1637,11 @@ function enableSettingPanelMove() {
 }
 
 /*----- -Utilities- -----*/
+function changeSongListAutoCloseTime(value) {
+  appSetting.songListAutoCloseTime = value * 1000;
+  reregisterAutoHideMediaList();
+}
+
 function limitPercentValue(value, lowerLimit, upperLimit) {
   var limitedValue = value; 
   if (limitedValue > upperLimit) {
@@ -1645,22 +1654,24 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
 
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
-    var debounceHideMediaList = debounce(() => {
-      if (isListShow && !isAddNewPlaylistPanelShow && !isOnSelectingPlaylist) {
-        showListToggle();
-      }      
-    }, 3000);
+    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
     domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
-    domElement.songListPanel.addEventListener('click', (event) => {
-      var isClickOutsideElement = !domElement.playListSelect.contains(event.target);
-      if (isOnSelectingPlaylist && isClickOutsideElement) {
-        isOnSelectingPlaylist = false;
-      }      
-    });
     domElement.playListSelect.addEventListener('focus', () => isOnSelectingPlaylist = true); 
-    domElement.playListSelect.addEventListener('blur', () => isOnSelectingPlaylist = false); 
+    domElement.playListSelect.addEventListener('focusout', () => isOnSelectingPlaylist = false); 
     domElement.playListSelect.addEventListener('change', () => isOnSelectingPlaylist = false);   
   }
+}
+
+function closeSongListPanel() {
+  if (isListShow && !isAddNewPlaylistPanelShow && !isOnSelectingPlaylist && !draggedItem) {
+    showListToggle();
+  } 
+}
+
+function reregisterAutoHideMediaList() {
+  domElement.songListPanel.removeEventListener('mousemove', debounceHideMediaList);
+  debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+  domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
 }
 
 function debounce(func, wait, immediate) {
@@ -1734,7 +1745,8 @@ function initDOMVars() {
   domElement.newPlayListPanel = getElement("new-play-list-panel");
   domElement.playListInput = getElement("play-list-name-input");
   domElement.songListPanel = getElement("song-list-panel");
-  domElement.files_upload = getElement("files_upload");  
+  domElement.filesUpload = getElement("files_upload");  
+  domElement.songListAutoCloseTime = getElement("song-list-auto-close-time");
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),
@@ -1760,12 +1772,12 @@ function initTooltips() {
   getElement("loop-all-button-tooltip").textContent = "Loop all";
   getElement("loop-button-tooltip-mobile").textContent = "Start loop";
   getElement("use-media-setting-button-tooltip").textContent = "Turn off media setting";
-  getElement("brightness-tooltip").textContent = "Brightness: " + videoSettings.brightness + "%";
-  getElement("contrast-tooltip").textContent = "Contrast: " + videoSettings.contrast + "%";
-  getElement("invert-tooltip").textContent = "Invert: " + videoSettings.invert + "%";
-  getElement("grayscale-tooltip").textContent = "Grayscale: " + videoSettings.grayscale + "%";
-  getElement("saturate-tooltip").textContent = "Saturate: " + videoSettings.saturate + "%";
-  getElement("sepia-tooltip").textContent = "Sepia: " + videoSettings.sepia + "%";
-  getElement("blur-tooltip").textContent = "Blur: " + videoSettings.blur + "px";
-  getElement("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSettings.hueRotation + "deg";
+  getElement("brightness-tooltip").textContent = "Brightness: " + videoSetting.brightness + "%";
+  getElement("contrast-tooltip").textContent = "Contrast: " + videoSetting.contrast + "%";
+  getElement("invert-tooltip").textContent = "Invert: " + videoSetting.invert + "%";
+  getElement("grayscale-tooltip").textContent = "Grayscale: " + videoSetting.grayscale + "%";
+  getElement("saturate-tooltip").textContent = "Saturate: " + videoSetting.saturate + "%";
+  getElement("sepia-tooltip").textContent = "Sepia: " + videoSetting.sepia + "%";
+  getElement("blur-tooltip").textContent = "Blur: " + videoSetting.blur + "px";
+  getElement("hue-rotation-tooltip").textContent = "Hue rotation: " + videoSetting.hueRotation + "deg";
 }
