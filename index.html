@@ -17,10 +17,12 @@
     </div>
     <div class="tab">
       <button class="tablinks active" onclick="openTab(event, 'equalizer-tab')">Equalizer</button>
-      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>      
+      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>   
+      <button class="tablinks" onclick="openTab(event, 'app-tab')">App</button>    
     </div>
+    <!-- audio settings -->
     <div id="equalizer-tab" class="tabcontent">
-      <div id="equalizer">
+      <div id="equalizer" class="setting-panel-container">
         <div class="controls">
           <label>31Hz</label>
           <div class="item-with-tooltip">
@@ -121,8 +123,9 @@
         </div>
       </div>    
     </div>
+    <!-- video settings -->
     <div id="video-tab" class="tabcontent">
-      <div id="video">
+      <div id="video-setting" class="setting-panel-container">
         <div class="controls">
           <label>Brightness</label>
           <div class="item-with-tooltip">
@@ -177,6 +180,18 @@
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="hue-rotation-tooltip"></div>
             <input id="hue-rotation" type="range" value="0" step="1" min="0" max="180" onchange="changeVideoSetting(this.value, 'hue-rotation')"></input>
+          </div>
+        </div>
+      </div>      
+    </div>
+    <!-- app settings -->
+    <div id="app-tab" class="tabcontent">
+      <div id="app-setting" class="setting-panel-container">
+        <div class="controls">
+          <label>Song list auto close time</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="song-list-auto-close-time-tooltip"></div>
+            <input id="song-list-auto-close-time" type="number" value="4" min="1" max="6" onchange="changeSongListAutoCloseTime(this.value)"></input>
           </div>
         </div>
       </div>

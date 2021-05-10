@@ -157,7 +157,7 @@ div#player {
   margin-left: calc(2% + 2px);
 }
 
-#equalizer, #video  {
+.setting-panel-container {
   background: #c3c3c3; 
   padding: 5px;
 }
@@ -166,8 +166,16 @@ div#player {
   width: 190px;
 }
 
-#video {
+#video-setting {
   width: 230px;
+}
+
+#app-setting {
+  width: 230px;
+}
+
+#app-setting input[type="number"] {
+  width: 40px;
 }
 
 #player__toolbar-section button {
