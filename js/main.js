@@ -1399,7 +1399,7 @@ function adjustCanvasSize() {
     adjustCanvasAndVideoSize(_processor);
     if (!media.isPlay) {
       _processor.computeFrame();
-    cod}
+    }
     
   } else {
     adjustCanvasFrameLooperSize();
