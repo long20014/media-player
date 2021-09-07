@@ -25,10 +25,13 @@ Support responsive on mobile.
 
 Support loop one media or all media.
 
+Support offline (service worker).
+
 ## Note
 
 Only work on Chrome and Firefox.
 
+## App
 
-
+https://long20014.github.io/media-player/
 
