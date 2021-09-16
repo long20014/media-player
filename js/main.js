@@ -4,13 +4,21 @@ var CANVAS_WIDTH = window.innerWidth * 0.85;
 var CANVAS_HEIGHT = window.innerHeight - PLAYER_HEADER_HEIGHT - PLAYER_FOOTER_HEIGHT;
 var FULL_SCREEN_WIDTH = screen.width;
 var FULL_SCREEN_HEIGHT = screen.height;
-var KEYCODE_ENTER = 13;
-var KEYCODE_ESC = 27;
+var keyCode = {
+  ENTER: 13,
+  ESCAPE: 27,
+  SPACE: 32,
+  LEFT_ARROW: 37,
+  UP_ARROW: 38,
+  RIGHT_ARROW: 39,
+  DOWN_ARROW: 40,
+};
 var FILTER_GAIN_MULTIPLIER = 10 * 2;
 var DEFAULT_DB = "MyMediaDB";
 var DEFAULT_PLAYLIST = "default play list";
 var VOLUME_STEP_COUNT = 100.0;
 var PLAYRATE_STEP_COUNT = 40.0;
+var TIME_STEP = 5 //second
 
 var screenWidth = CANVAS_WIDTH;
 var screenHeight = CANVAS_HEIGHT;
@@ -87,7 +95,7 @@ var MyCustomNode = function(){
 /*----- -Window Function- -----*/
 window.addEventListener("keydown", (e) => {
   if (document.activeElement.type !== "text") {
-    if (e.key == "p" || e.key == "P") {
+    if (e.key === "p" || e.key === "P" || e.keyCode === keyCode.SPACE) {
       playToggle();
     } else if (e.key === "k" || e.key === "K") {
       loopAllToggle();
@@ -103,17 +111,21 @@ window.addEventListener("keydown", (e) => {
       showListToggle();
     } else if (e.key === "w" || e.key === "W" ) {
       showSettingsToggle();
-    } else if (e.keyCode === KEYCODE_ESC) {
+    } else if (e.keyCode === keyCode.ESCAPE) {
       exitFullscreen();
-    } else if (e.key === "[") {
+    } else if (e.keyCode === keyCode.DOWN_ARROW) {
       decreaseVolumeOnKeyPress();          
-    } else if (e.key === "]" ) {
+    } else if (e.keyCode === keyCode.UP_ARROW ) {
       increaseVolumeOnKeyPress();            
     } else if (e.key === ";") {
       decreasePlayrateOnKeyPress();
     } else if (e.key === "'" ) {
       increasePlayrateOnKeyPress();            
-    }
+    } else if (e.keyCode === keyCode.LEFT_ARROW ) {
+      changeElapsedTime(media.currentTime - TIME_STEP);            
+    } else if (e.keyCode === keyCode.RIGHT_ARROW ) {
+      changeElapsedTime(media.currentTime + TIME_STEP);      
+    } 
   }    
 });
 
@@ -473,19 +485,27 @@ function playToggle(event) {
 }
 
 function increaseVolumeOnKeyPress() {
-  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT + 1)
+  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT + 5)
   if (newValue <= VOLUME_STEP_COUNT) {
     domElement.volumeControl.value = newValue;
     changeVolume(newValue);
-  } 
+  } else {
+    newValue = 100;
+    domElement.volumeControl.value = newValue;
+    changeVolume(newValue);
+  }
 }
 
 function decreaseVolumeOnKeyPress() {
-  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT - 1)
+  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT - 5)
   if (newValue >= 0) {
     domElement.volumeControl.value = newValue;
     changeVolume(newValue);
-  } 
+  } else {
+    newValue = 0;
+    domElement.volumeControl.value = newValue;
+    changeVolume(newValue);
+  }
 }
 
 function increasePlayrateOnKeyPress() {
