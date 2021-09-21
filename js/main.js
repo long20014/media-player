@@ -94,7 +94,7 @@ var MyCustomNode = function(){
 
 /*----- -Window Function- -----*/
 window.addEventListener("keydown", (e) => {
-  if (document.activeElement.type !== "text") {
+  if (document.activeElement.type !== "text" && document.activeElement === document.body) {
     if (e.key === "p" || e.key === "P" || e.keyCode === keyCode.SPACE) {
       playToggle();
     } else if (e.key === "k" || e.key === "K") {
