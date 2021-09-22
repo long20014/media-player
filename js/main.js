@@ -19,6 +19,7 @@ var DEFAULT_PLAYLIST = "default play list";
 var VOLUME_STEP_COUNT = 100.0;
 var PLAYRATE_STEP_COUNT = 40.0;
 var TIME_STEP = 5 //second
+var VOLUME_STEP = 5
 
 var screenWidth = CANVAS_WIDTH;
 var screenHeight = CANVAS_HEIGHT;
@@ -485,7 +486,7 @@ function playToggle(event) {
 }
 
 function increaseVolumeOnKeyPress() {
-  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT + 5)
+  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT + VOLUME_STEP)
   if (newValue <= VOLUME_STEP_COUNT) {
     domElement.volumeControl.value = newValue;
     changeVolume(newValue);
@@ -497,7 +498,7 @@ function increaseVolumeOnKeyPress() {
 }
 
 function decreaseVolumeOnKeyPress() {
-  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT - 5)
+  var newValue = parseInt(currentVolume * VOLUME_STEP_COUNT - VOLUME_STEP)
   if (newValue >= 0) {
     domElement.volumeControl.value = newValue;
     changeVolume(newValue);
