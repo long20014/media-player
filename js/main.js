@@ -919,6 +919,8 @@ function playMedia() {
     // bufferSource.start(currentTime);   
   } else {
     alert("Please choose a song in song list to play! \nOr add a song to song list if there is no song!");
+    if (!isListShow) showListToggle();
+    
   }    
 }
 
