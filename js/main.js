@@ -89,6 +89,17 @@ media.isPlay = false;
 media.autoplay = false;
 media.preservesPitch = true;
 
+var _soundTouch = new SoundTouch();
+_soundTouch.pitch = pitch;
+_soundTouch.tempo = tempo;
+
+function getTempo() {
+  return _soundTouch.tempo;
+}
+function setTempo(tempo) {
+  _soundTouch.tempo = tempo;
+}
+
 
 /*----- -Window Function- -----*/
 window.addEventListener("keydown", (e) => {

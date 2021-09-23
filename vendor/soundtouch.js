@@ -1110,4 +1110,4 @@ extend(SoundTouch.prototype, {
 
 // This is the only part that was added for screw (plus fixing a couple typos where `this` was
 // erroneously not used)
-module.exports = {SimpleFilter, SoundTouch};
+// module.exports = {SimpleFilter, SoundTouch};
