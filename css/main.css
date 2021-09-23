@@ -509,7 +509,7 @@ div#player {
 /*----- -Responsive- -----*/
 @media screen and (max-width: 768px) {
   .mobile {
-    display: inherit;
+    display: flex;
   }
 
   .non-mobile {
