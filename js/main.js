@@ -106,7 +106,12 @@ window.addEventListener("keydown", (e) => {
     } else if (e.key === "f" || e.key === "F" ) {
       canvasFullscreenToggle();
     } else if (e.key === "q" || e.key === "Q" ) {
-      showListToggle();
+      if (window.innerWidth > 768) {
+        showListToggle();
+      } else {
+        showListToggleMobile();
+      }
+      
     } else if (e.key === "w" || e.key === "W" ) {
       showSettingsToggle();
     } else if (e.keyCode === keyCode.ESCAPE) {
