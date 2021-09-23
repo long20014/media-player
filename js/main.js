@@ -1,3 +1,5 @@
+var BUFFER_SIZE = 4096;
+
 var PLAYER_FOOTER_HEIGHT = 125;
 var PLAYER_HEADER_HEIGHT = 62.5;
 var CANVAS_WIDTH = window.innerWidth * 0.85;
@@ -48,6 +50,8 @@ var currentDelay;
 var currentVolume;
 var currentPlaybackRate = 1;
 var currentPlayList = DEFAULT_PLAYLIST;
+var pitch = 1;
+var tempo = 1
 var appSongs; 
 var currentSong;
 var draggedItem;
@@ -77,6 +81,7 @@ var videoSetting = {
   hueRotation: 0, // deg
 };
 var debounceHideMediaList;
+var tooltip = {};
 
 media.controls = false;
 media.loop = false;
@@ -84,14 +89,6 @@ media.isPlay = false;
 media.autoplay = false;
 media.preservesPitch = true;
 
-var MyCustomNode = function(){
-  this.input = audioContext.createGain();
-  var output = audioContext.createGain();
-
-  this.connect = function(target){
-   output.connect(target);
- };
-};
 
 /*----- -Window Function- -----*/
 window.addEventListener("keydown", (e) => {
@@ -145,6 +142,7 @@ window.addEventListener(
     initPlayListsToSelection();
     enableSettingPanelMove();
     registerAutoHideMediaList();
+    addCanvasClickEvent();
 
     document.onwebkitfullscreenchange = function(event) {
       if (document.fullscreenElement === null) {
@@ -934,16 +932,18 @@ function stopMedia() {
 }
 
 function setPlayToFalse() {
-  var playButton = getElement("play");
-  playButton.innerHTML = '<i class="fas fa-play"></i>'
-  getElement("play-button-tooltip").textContent = "Play";
+  domElement.playButton.innerHTML = '<i class="fas fa-play"></i>';
+  domElement.playButtonOnCanvasIcon.innerHTML = '<i class="fas fa-pause text--white"></i>';
+  flashPlayButtonOnCanvas()
+  tooltip.playButton.textContent = "Play";
   media.isPlay = false;    
 }
 
 function setPlayToTrue() {
-  var playButton = getElement("play");
-  playButton.innerHTML = '<i class="fas fa-pause"></i>'
-  getElement("play-button-tooltip").textContent = "Pause";
+  domElement.playButton.innerHTML = '<i class="fas fa-pause"></i>';
+  domElement.playButtonOnCanvasIcon.innerHTML = '<i class="fas fa-play text--white"></i>';
+  flashPlayButtonOnCanvas();
+  tooltip.playButton.textContent = "Pause";
   media.isPlay = true;   
 }
 
@@ -1332,6 +1332,12 @@ function initCanvasSize() {
   domElement.canvas.height = CANVAS_HEIGHT; 
 }
 
+function addCanvasClickEvent() {
+  domElement.canvas.addEventListener('click', (e) => {
+    playToggle();
+  })
+}
+
 function canvasFullscreenToggle() {    
   if (document.fullscreenElement === null) {
     domElement.player.webkitRequestFullScreen();
@@ -1652,6 +1658,22 @@ function enableSettingPanelMove() {
   }, true);
 }
 
+
+function flashPlayButtonOnCanvas() {
+  var removeTime = 250;
+  domElement.playButtonOnCanvas.classList.remove('hidden');
+  domElement.playButtonOnCanvas.classList.add('visible');
+  domElement.playButtonOnCanvas.classList.add('scale');
+  setTimeout(() => {
+    domElement.playButtonOnCanvas.classList.add('hidden');
+    domElement.playButtonOnCanvas.classList.remove('visible');
+  }, removeTime)
+  setTimeout(() => {
+    domElement.playButtonOnCanvas.classList.remove('scale');
+  }, removeTime * 2)
+
+}
+
 /*----- -Utilities- -----*/
 function changeSongListAutoCloseTime(value) {
   appSetting.songListAutoCloseTime = value * 1000;
@@ -1740,6 +1762,9 @@ function getElement(elemId) {
 
 function initDOMVars() {
   domElement.loopToggleButton = getElement("loop-toggle");
+  domElement.playButton = getElement("play");
+  domElement.playButtonOnCanvas = getElement("play-button-on-canvas");
+  domElement.playButtonOnCanvasIcon = getElement("play-button-on-canvas-icon");
   domElement.loopToggleButtonMobile = getElement("loop-toggle-mobile");
   domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
   domElement.useMediaSettingToggleButton = getElement("use-media-setting-toggle"); 
@@ -1778,11 +1803,12 @@ function initDOMVars() {
 }
 
 function initTooltips() {
+  tooltip.playButton = getElement("play-button-tooltip");
+  tooltip.playButton.textContent = "Play";
   getElement("volume-tooltip").textContent = "Volume: " + audio.volume * 100;
   getElement("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
   getElement("volume-tooltip-mobile").textContent = "Volume: " + audio.volume * 100;
   getElement("speed-tooltip-mobile").textContent = "Speed: " + audio.playbackRate;
-  getElement("play-button-tooltip").textContent = "Play";
   getElement("stop-button-tooltip").textContent = "Stop";
   getElement("loop-button-tooltip").textContent = "Start loop";
   getElement("loop-all-button-tooltip").textContent = "Loop all";

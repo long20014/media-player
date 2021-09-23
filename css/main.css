@@ -421,6 +421,43 @@ div#player {
   background-color: #f1f1f1;
 }
 
+#play-button-on-canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5vw;
+  width: 5vw;
+  border: 1px solid gray;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(0,0,0,0.3);
+}
+
+#play-button-on-canvas-icon {
+  font-size: 1.5vw;
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.scale {
+  animation: scale 0.5s linear;
+}
+
+
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
@@ -452,6 +489,16 @@ div#player {
 
 #equalizer-tab {
   display: block;
+}
+
+/*----- -animation- -----*/
+@keyframes scale {
+  0% {
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /*----- -Non mobile- -----*/ 
