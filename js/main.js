@@ -15,13 +15,15 @@ var keyCode = {
   RIGHT_ARROW: 39,
   DOWN_ARROW: 40,
 };
-var FILTER_GAIN_MULTIPLIER = 10 * 2;
+var FILTER_GAIN_MULTIPLIER = 20;
 var DEFAULT_DB = "MyMediaDB";
 var DEFAULT_PLAYLIST = "default play list";
-var VOLUME_STEP_COUNT = 100.0;
-var PLAYRATE_STEP_COUNT = 40.0;
+var VOLUME_STEP_COUNT = 100;
+var PLAYRATE_STEP_COUNT = 20;
 var TIME_STEP = 5 //second
 var VOLUME_STEP = 5
+var DEFAULT_VIDEO_XFADE_GAIN = 1;
+var DEFAULT_AUDIO_XFADE_GAIN = 0.25
 
 var screenWidth = CANVAS_WIDTH;
 var screenHeight = CANVAS_HEIGHT;
@@ -48,6 +50,7 @@ var currentArrayBuffer;
 var currentTime;
 var currentDelay;
 var currentVolume;
+var currentEnhancedVolume;
 var currentPlaybackRate = 1;
 var currentPlayList = DEFAULT_PLAYLIST;
 var pitch = 1;
@@ -141,7 +144,6 @@ window.addEventListener(
     _equalizer = new Equalizer();      
     bufferSource = audioContext.createBufferSource();           
     console.log(audio);
-    
     analyser = audioContext.createAnalyser();
     initDOMVars();            
     initPlayListsToSelection();
@@ -161,12 +163,12 @@ window.addEventListener(
     audioSourceNode = audioContext.createMediaElementSource(audio);       
     videoSourceNode = audioContext.createMediaElementSource(video);
     sourceNode = audioSourceNode;
-    // sourceNode =audioContext.createMediaElementSource(audio);
-    _equalizer.setupEqualizer(audioContext)    
     sourceNode.connect(analyser);    
     analyser.connect(audioContext.destination);
     await getSongList();     
-    currentVolume = parseFloat(domElement.volumeControl.value) / VOLUME_STEP_COUNT;
+    setCurrentVolume(domElement.volumeControl.value);
+    setCurrentEnhancedVolume(domElement.enhancedVolumeControl.value);
+    _equalizer.setupEqualizer(audioContext);  // must place after setCurrentEnhancedVolume cuz this use it;
     initUploadFileFunction();
     initTooltips();  
     _processor = new Processor();   
@@ -188,11 +190,11 @@ window.addEventListener('resize', function() {
 
 /*----- -Controller Function- -----*/
 function Equalizer() {
-  this.switchXFadeGainValue = function() {
+  this.changeXFadeGainValue = function() {
     if (currentSong && currentSong.type === "video")
-      this.xfadeGain.gain.value = 1;
+      this.xfadeGain.gain.value = DEFAULT_VIDEO_XFADE_GAIN + currentEnhancedVolume * 2;
     else {
-      this.xfadeGain.gain.value = 0.25;
+      this.xfadeGain.gain.value = DEFAULT_AUDIO_XFADE_GAIN + currentEnhancedVolume * 2;
     } 
   }
   this.connectFilters = function(audioContext) {
@@ -210,13 +212,13 @@ function Equalizer() {
     this.xfadeGain.connect(audioContext.destination)
   }
   this.switchMediaSrcNode = function(audioContext) {
-    this.switchXFadeGainValue();
+    this.changeXFadeGainValue();
     this.connectFilters(audioContext);
   }
   this.setupEqualizer = function(audioContext) {
     this.bandSplit = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]; 
     this.xfadeGain = audioContext.createGain();
-    this.switchXFadeGainValue()        
+    this.changeXFadeGainValue();       
 
     this._31Hz = audioContext.createBiquadFilter();
     this._31Hz.type = "lowshelf";
@@ -377,9 +379,25 @@ function muteToggle() {
     isMute = true; 
   } else {
     console.log(currentVolume);
-    media.volume = currentVolume;
+    media.volume = getTotalVolume();
     isMute = false;
   }    
+}
+
+function getTotalVolume() {
+  return currentVolume;
+}
+
+function calculateFloatVolume(volumeValue) {
+  return parseFloat(volumeValue / VOLUME_STEP_COUNT);
+}
+
+function setCurrentVolume(volumeValue) {
+  currentVolume = calculateFloatVolume(volumeValue);
+}
+
+function setCurrentEnhancedVolume(volumeValue) {
+  currentEnhancedVolume = calculateFloatVolume(volumeValue);
 }
 
 function changeDelay(delayValue) {  
@@ -387,8 +405,8 @@ function changeDelay(delayValue) {
 }
 
 function changeVolume(volumeValue) {
-  media.volume = parseFloat(volumeValue) / VOLUME_STEP_COUNT;
-  currentVolume = media.volume; 
+  setCurrentVolume(volumeValue);
+  media.volume = getTotalVolume(); 
   getElement("volume-tooltip").textContent = "volume: " + volumeValue;
   getElement("volume-tooltip-mobile").textContent = "volume: " + volumeValue;
   if (isMute) {
@@ -396,9 +414,18 @@ function changeVolume(volumeValue) {
   }
 }
 
+function changeEnhancedVolume(volumeValue) {
+  setCurrentEnhancedVolume(volumeValue);
+  _equalizer.changeXFadeGainValue()
+  getElement("enhanced-volume-tooltip").textContent = "enhanced volume: " + volumeValue;
+  if (isMute) {
+    isMute = false;
+  }
+}
+
 function changePlaybackRate(playbackRateValue) {
-  media.playbackRate = parseFloat(playbackRateValue) / (PLAYRATE_STEP_COUNT / 2);
-  currentPlaybackRate = media.playbackRate;
+  currentPlaybackRate = parseFloat(playbackRateValue / PLAYRATE_STEP_COUNT);
+  media.playbackRate = currentPlaybackRate;
   getElement("speed-tooltip").textContent = "Speed: " + media.playbackRate;
   getElement("speed-tooltip-mobile").textContent = "Speed: " + media.playbackRate;
 }
@@ -513,15 +540,17 @@ function decreaseVolumeOnKeyPress() {
 }
 
 function increasePlayrateOnKeyPress() {
-  var newValue = parseInt(currentPlaybackRate * PLAYRATE_STEP_COUNT / 2 + 1);
-  if (newValue <= PLAYRATE_STEP_COUNT) {
+  var increaseStep = 1;
+  var newValue = parseInt(currentPlaybackRate * PLAYRATE_STEP_COUNT + increaseStep);
+  if (newValue <= PLAYRATE_STEP_COUNT * 2) {
     domElement.playbackRateControl.value = newValue;
     changePlaybackRate(newValue);
   }
 }
 
 function decreasePlayrateOnKeyPress() {
-  var newValue = parseInt(currentPlaybackRate * PLAYRATE_STEP_COUNT / 2 - 1);
+  var decreaseStep = 1;
+  var newValue = parseInt(currentPlaybackRate * PLAYRATE_STEP_COUNT - decreaseStep);
   if (newValue >= 0) {
     domElement.playbackRateControl.value = newValue;
     changePlaybackRate(newValue);
@@ -659,7 +688,7 @@ function switchMediaType() {
     media = video;              
   }
   media.loop = isLoop;
-  media.volume = currentVolume;
+  media.volume = getTotalVolume();
 }
 
 function saveMediaSettings() {
@@ -667,6 +696,7 @@ function saveMediaSettings() {
   if (currentSong && saveConfirm) {
     currentSong.settings = {
       volume: currentVolume,
+      enhancedVolume: currentEnhancedVolume,
       playbackRate: currentPlaybackRate,
       equalizer: {
         _31Hz: _equalizer._31Hz.gain.value / FILTER_GAIN_MULTIPLIER,
@@ -682,15 +712,14 @@ function saveMediaSettings() {
       }
     };
     updateMedia(currentPlayList, currentSong); 
-    alert("Successfully save settings.")
-  } else {
-    alert("Failed to save settings.")
-  }   
+  }  
 }
 
 function loadMediaSettings() {
-  changeVolume(currentSong.settings.volume * 100);    
-  changePlaybackRate(currentSong.settings.playbackRate * 20);    
+  currentSong.settings.enhancedVolume = currentSong.settings.enhancedVolume ? currentSong.settings.enhancedVolume : 0;
+  changeVolume(currentSong.settings.volume * VOLUME_STEP_COUNT);    
+  changeEnhancedVolume(currentSong.settings.enhancedVolume * VOLUME_STEP_COUNT);
+  changePlaybackRate(currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT);    
   _equalizer.set_31HzGain(currentSong.settings.equalizer._31Hz); 
   _equalizer.set_62HzGain(currentSong.settings.equalizer._62Hz); 
   _equalizer.set_125HzGain(currentSong.settings.equalizer._125Hz);
@@ -701,20 +730,21 @@ function loadMediaSettings() {
   _equalizer.set_4kHzGain(currentSong.settings.equalizer._4kHz);
   _equalizer.set_8kHzGain(currentSong.settings.equalizer._8kHz);
   _equalizer.set_16kHzGain(currentSong.settings.equalizer._16kHz);
-  domElement.volumeControl.value = currentSong.settings.volume * 100;
-  domElement.volumeControl.value = currentSong.settings.volume * 100;
-  domElement.playbackRateControl.value = currentSong.settings.playbackRate * 20;
-  domElement.playbackRateControlMobile.value = currentSong.settings.playbackRate * 20;
-  domElement.equalizerControls._31HzControl.value = currentSong.settings.equalizer._31Hz * 100;
-  domElement.equalizerControls._62HzControl.value = currentSong.settings.equalizer._62Hz * 100;
-  domElement.equalizerControls._125HzControl.value = currentSong.settings.equalizer._125Hz * 100;
-  domElement.equalizerControls._250HzControl.value = currentSong.settings.equalizer._250Hz * 100;
-  domElement.equalizerControls._500HzControl.value = currentSong.settings.equalizer._500Hz * 100;
-  domElement.equalizerControls._1kHzControl.value = currentSong.settings.equalizer._1kHz * 100;
-  domElement.equalizerControls._2kHzControl.value = currentSong.settings.equalizer._2kHz * 100;
-  domElement.equalizerControls._4kHzControl.value = currentSong.settings.equalizer._4kHz * 100;
-  domElement.equalizerControls._8kHzControl.value = currentSong.settings.equalizer._8kHz * 100;
-  domElement.equalizerControls._16kHzControl.value = currentSong.settings.equalizer._16kHz * 100;
+  domElement.enhancedVolumeControl.value = currentSong.settings.enhancedVolume * VOLUME_STEP_COUNT;
+  domElement.volumeControl.value = currentSong.settings.volume * VOLUME_STEP_COUNT;
+  domElement.volumeControlMobile.value = currentSong.settings.volume * VOLUME_STEP_COUNT;
+  domElement.playbackRateControl.value = currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
+  domElement.playbackRateControlMobile.value = currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
+  domElement.equalizerControls._31HzControl.value = currentSong.settings.equalizer._31Hz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._62HzControl.value = currentSong.settings.equalizer._62Hz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._125HzControl.value = currentSong.settings.equalizer._125Hz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._250HzControl.value = currentSong.settings.equalizer._250Hz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._500HzControl.value = currentSong.settings.equalizer._500Hz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._1kHzControl.value = currentSong.settings.equalizer._1kHz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._2kHzControl.value = currentSong.settings.equalizer._2kHz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._4kHzControl.value = currentSong.settings.equalizer._4kHz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._8kHzControl.value = currentSong.settings.equalizer._8kHz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._16kHzControl.value = currentSong.settings.equalizer._16kHz * VOLUME_STEP_COUNT;
 }    
 
 function chooseSong(event, song) { 
@@ -1049,6 +1079,7 @@ function uploadMediaFile(file, fileType) {
     type: fileType,
     settings: {
       volume: 1,
+      enhancedVolume: 0,
       playbackRate: 1,
       equalizer: {
         _31Hz: 0,
@@ -1784,6 +1815,7 @@ function initDOMVars() {
   domElement.elapsedTime = getElement("elapsed-time");
   domElement.duration = getElement("duration");                    
   domElement.elapsedTimeBar = getElement("elapsed-time-bar"); 
+  domElement.enhancedVolumeControl = getElement('enhanced-volume-control');
   domElement.volumeControl = getElement('volume-control'); 
   domElement.volumeControlMobile = getElement('volume-control-mobile');
   domElement.playbackRateControl = getElement('speed-control'); 
