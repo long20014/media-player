@@ -513,6 +513,7 @@ function playToggle(event) {
   } else {
     pauseMedia();
   }
+  flashPlayButtonOnCanvas();
 }
 
 function increaseVolumeOnKeyPress() {
@@ -971,7 +972,6 @@ function stopMedia() {
 function setPlayToFalse() {
   domElement.playButton.innerHTML = '<i class="fas fa-play"></i>';
   domElement.playButtonOnCanvasIcon.innerHTML = '<i class="fas fa-pause text--white"></i>';
-  flashPlayButtonOnCanvas()
   tooltip.playButton.textContent = "Play";
   media.isPlay = false;    
 }
@@ -979,7 +979,6 @@ function setPlayToFalse() {
 function setPlayToTrue() {
   domElement.playButton.innerHTML = '<i class="fas fa-pause"></i>';
   domElement.playButtonOnCanvasIcon.innerHTML = '<i class="fas fa-play text--white"></i>';
-  flashPlayButtonOnCanvas();
   tooltip.playButton.textContent = "Pause";
   media.isPlay = true;   
 }
