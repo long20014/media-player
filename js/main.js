@@ -58,20 +58,19 @@ var tempo = 1
 var appSongs; 
 var currentSong;
 var draggedItem;
-var isInited = false;
-var isLoopAll = false;
-var isMute = false;
-var isListShow = false;
-var isAddNewPlaylistPanelShow = false;
-var isOnSelectingPlaylist = false;
-var isFullscreen = false;
-var isSettingShow = false;
-var isSongSettingUsed = true;
-var needFilterApply = false;
 var canvasRenderLoopTimeout;
-var domElement = {};
 var appSetting = {
-  songListAutoCloseTime: 4000
+  songListAutoCloseTime: 4000,
+  isSongSettingUsed: true,
+  isLoopAll: false,
+  isInited: false,
+  isMute: false,
+  isListShow: false,
+  isAddNewPlaylistPanelShow: false,
+  isOnSelectingPlaylist: false,
+  isFullscreen: false,
+  isSettingShow: false,
+  needFilterApply: false,
 }
 var videoSetting = {
   brightness: 100, //percent
@@ -84,6 +83,7 @@ var videoSetting = {
   hueRotation: 0, // deg
 };
 var debounceHideMediaList;
+var domElement = {};
 var tooltip = {};
 
 media.controls = false;
@@ -361,6 +361,7 @@ function resetEqualizer() {
   _equalizer.set_4kHzGain(value);
   _equalizer.set_8kHzGain(value);
   _equalizer.set_16kHzGain(value);
+  setCurrentEnhancedVolume(value);
   domElement.equalizerControls._31HzControl.value = value;
   domElement.equalizerControls._62HzControl.value = value;
   domElement.equalizerControls._125HzControl.value = value;
@@ -371,16 +372,17 @@ function resetEqualizer() {
   domElement.equalizerControls._4kHzControl.value = value;
   domElement.equalizerControls._8kHzControl.value = value;
   domElement.equalizerControls._16kHzControl.value = value;
+  domElement.enhancedVolumeControl.value = value;
 }
 
 function muteToggle() {
-  if (!isMute) {
+  if (!appSetting.isMute) {
     media.volume = 0.0;
-    isMute = true; 
+    appSetting.isMute = true; 
   } else {
     console.log(currentVolume);
     media.volume = getTotalVolume();
-    isMute = false;
+    appSetting.isMute = false;
   }    
 }
 
@@ -409,8 +411,8 @@ function changeVolume(volumeValue) {
   media.volume = getTotalVolume(); 
   getElement("volume-tooltip").textContent = "volume: " + volumeValue;
   getElement("volume-tooltip-mobile").textContent = "volume: " + volumeValue;
-  if (isMute) {
-    isMute = false;
+  if (appSetting.isMute) {
+    appSetting.isMute = false;
   }
 }
 
@@ -418,8 +420,8 @@ function changeEnhancedVolume(volumeValue) {
   setCurrentEnhancedVolume(volumeValue);
   _equalizer.changeXFadeGainValue()
   getElement("enhanced-volume-tooltip").textContent = "enhanced volume: " + volumeValue;
-  if (isMute) {
-    isMute = false;
+  if (appSetting.isMute) {
+    appSetting.isMute = false;
   }
 }
 
@@ -431,7 +433,7 @@ function changePlaybackRate(playbackRateValue) {
 }
 
 function changeElapsedTime(timeValue) {
-  needFilterApply = true;         
+  appSetting.needFilterApply = true;         
   media.currentTime = timeValue;
 }
 
@@ -454,19 +456,19 @@ function endElapsedTimeChange() {
 }
 
 function useMediaSettingToggle() {
-  if (isSongSettingUsed) {
-    isSongSettingUsed = false;
+  if (appSetting.isSongSettingUsed) {
+    appSetting.isSongSettingUsed = false;
     getElement("use-media-setting-button-tooltip").textContent = "Turn on setting";
-    domElement.useMediaSettingToggleButton.classList.add("text--gray");
+    domElement.useMediaSettingCheckbox.checked = false;
   } else {
-    isSongSettingUsed = true;
+    appSetting.isSongSettingUsed = true;
     getElement("use-media-setting-button-tooltip").textContent = "Turn off media setting";
-    domElement.useMediaSettingToggleButton.classList.remove("text--gray");
+    domElement.useMediaSettingCheckbox.checked = true;
   }
 }
 
 function loopAllToggle() {    
-  if (isLoopAll) {
+  if (appSetting.isLoopAll) {
     stopLoopAll();
   } else { 
     startLoopAll();
@@ -484,13 +486,13 @@ function loopToggle() {
 }
 
 function startLoopAll() {    
-  isLoopAll = true;
+  appSetting.isLoopAll = true;
   getElement("loop-all-button-tooltip").textContent = "Stop loop all";               
   domElement.loopAllToggleButton.classList.remove("text--gray");
 }
 
 function stopLoopAll() {    
-  isLoopAll = false; 
+  appSetting.isLoopAll = false; 
   getElement("loop-all-button-tooltip").textContent = "Loop all";     
   domElement.loopAllToggleButton.classList.add("text--gray");
 }
@@ -760,7 +762,7 @@ function chooseSong(event, song) {
   loadMediaElapsedTime();                   
   console.log(event)
   currentSong = appSongs.find((target) => target.songName == event.target.textContent);
-  if (isSongSettingUsed) {
+  if (appSetting.isSongSettingUsed) {
     loadMediaSettings();
   }    
   media.src = event.target.dataset.src;  
@@ -821,14 +823,14 @@ function initPlayListsToSelection() {
 function openAddPlayListPanel() {    
   domElement.newPlayListPanel.style.opacity = "1";
   domElement.newPlayListPanel.style.visibility = "visible";  
-  isAddNewPlaylistPanelShow = true; 
+  appSetting.isAddNewPlaylistPanelShow = true; 
 }
 
 function closeAddPlayListPanel() {
   domElement.newPlayListPanel.style.opacity = "0";
   domElement.newPlayListPanel.style.visibility = "hidden";
   domElement.playListInput.value = "";  
-  isAddNewPlaylistPanelShow = false;
+  appSetting.isAddNewPlaylistPanelShow = false;
 }
 
 async function addNewPlayList() {  
@@ -923,7 +925,7 @@ function changeVideoSetting(value, type) {
       break;
     default:
   }
-  needFilterApply = true;   
+  appSetting.needFilterApply = true;   
 }
 
 /*----- -Media Function- -----*/
@@ -944,13 +946,13 @@ function playMedia() {
   if (media.src !== window.location.href && media.src) {
     media.play();    
     if (currentSong.type === "video") {   
-      needFilterApply = true;        
+      appSetting.needFilterApply = true;        
       processVideo();
     }     
     // bufferSource.start(currentTime);   
   } else {
     alert("Please choose a song in song list to play! \nOr add a song to song list if there is no song!");
-    if (!isListShow) showListToggle();
+    if (!appSetting.isListShow) showListToggle();
     
   }    
 }
@@ -988,7 +990,7 @@ function loadCurrentSong(song) {
   currentSong = song;
   switchMediaType();
   media.isPlay = true;
-  if (isSongSettingUsed) {
+  if (appSetting.isSongSettingUsed) {
     loadMediaSettings();
   }
   var blobUrl = URL.createObjectURL(currentSong.src);
@@ -1001,7 +1003,7 @@ function loadCurrentSong(song) {
 function playNextSong() {           
   nextSong = appSongs[appSongs.indexOf(currentSong) + 1]
   if (!nextSong) {
-    if (isLoopAll) {
+    if (appSetting.isLoopAll) {
       loadCurrentSong(appSongs[0]);      
     } else {            
       if (media.isPlay) {
@@ -1150,7 +1152,7 @@ function setupEcho() {
   //connect delay as a standard web audio node to the audio context destination
   delay.connect(audioContext.destination);
   currentTime = audioContext.currentTime
-  isInited = true;  
+  appSetting.isInited = true;  
 }
 
 /*----- -DB- -----*/
@@ -1267,12 +1269,12 @@ function getSongFromNhaccuatui(songUrl) {
 }
 
 // dry.addEventListener("click", function(e) {
-//     if (!isInited) init();
+//     if (!appSetting.isInited) init();
 //     if (delay) delay.bypass = true;
 // });
 
 // wet.addEventListener("click", function(e) {
-//     if (!isInited) init();
+//     if (!appSetting.isInited) init();
 //     if (delay) delay.bypass = false;
 // });
 
@@ -1382,7 +1384,7 @@ function canvasFullscreenToggle() {
     domElement.playerHeader.classList.add("fullscreen");
     domElement.playerBody.style.alignItems = "center";
     domElement.canvas.classList.add("canvas__fullscreen");
-    isFullscreen = true;
+    appSetting.isFullscreen = true;
     canvasEnterFullScreen();        
   } else {
     exitFullscreen();       
@@ -1390,13 +1392,13 @@ function canvasFullscreenToggle() {
 }
 
 function exitFullscreen() {
-  if (isFullscreen) {
+  if (appSetting.isFullscreen) {
     document.exitFullscreen();
     domElement.playerFooter.classList.remove("fullscreen");
     domElement.playerHeader.classList.remove("fullscreen");
     domElement.playerBody.style.alignItems = null;
     domElement.canvas.classList.remove("canvas__fullscreen");
-    isFullscreen = false; 
+    appSetting.isFullscreen = false; 
     canvasEscapeFullScreen();
   }    
 }
@@ -1451,7 +1453,7 @@ function adjustCanvasAndVideoSize(processor) {
 }
 
 function adjustCanvasFrameLooperSize() {
-  if (isFullscreen) {        
+  if (appSetting.isFullscreen) {        
     domElement.canvas.height = FULL_SCREEN_HEIGHT - PLAYER_FOOTER_HEIGHT;
   } else {
     domElement.canvas.height = CANVAS_HEIGHT;
@@ -1530,9 +1532,9 @@ function Processor() {
   }
 
   this.computeFrame = function () {
-    if (needFilterApply) {
+    if (appSetting.needFilterApply) {
       invokeCanvasBuilder();
-      setTimeout(() => needFilterApply = false, 0)      
+      setTimeout(() => appSetting.needFilterApply = false, 0)      
     }          
     ctx.drawImage(this.video, 0, 0, this.width, this.height);
     // let frame = this.ctx.getImageData(0, 0, this.width, this.height);
@@ -1645,23 +1647,23 @@ function initVideo() {
 
 /*----- -DOM interact- -----*/
 function showSettingsToggle() {
-  if (isSettingShow) {
+  if (appSetting.isSettingShow) {
     domElement.settingPanel.style.opacity = "0";
     setTimeout(() => domElement.settingPanel.style.visibility = "hidden", 300);        
-    isSettingShow = false;
+    appSetting.isSettingShow = false;
   } else {
     domElement.settingPanel.style.visibility = "visible";
     domElement.settingPanel.style.opacity = "1";
-    isSettingShow = true;    
+    appSetting.isSettingShow = true;    
   }
 }
 
 function showListToggle() {  
-  if (isListShow) {
-    isListShow = false;
+  if (appSetting.isListShow) {
+    appSetting.isListShow = false;
     domElement.songListPanel.style.right = "-40vw";
   } else {
-    isListShow = true;
+    appSetting.isListShow = true;
     domElement.songListPanel.style.right = "0";
   }
 }
@@ -1714,6 +1716,7 @@ function flashPlayButtonOnCanvas() {
 /*----- -Utilities- -----*/
 function changeSongListAutoCloseTime(value) {
   appSetting.songListAutoCloseTime = value * 1000;
+  tooltip.songListAutoCloseTime.textContent = value + " s";
   reregisterAutoHideMediaList();
 }
 
@@ -1731,14 +1734,14 @@ function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
     debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
     domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
-    domElement.playListSelect.addEventListener('focus', () => isOnSelectingPlaylist = true); 
-    domElement.playListSelect.addEventListener('focusout', () => isOnSelectingPlaylist = false); 
-    domElement.playListSelect.addEventListener('change', () => isOnSelectingPlaylist = false);   
+    domElement.playListSelect.addEventListener('focus', () => appSetting.isOnSelectingPlaylist = true); 
+    domElement.playListSelect.addEventListener('focusout', () => appSetting.isOnSelectingPlaylist = false); 
+    domElement.playListSelect.addEventListener('change', () => appSetting.isOnSelectingPlaylist = false);   
   }
 }
 
 function closeSongListPanel() {
-  if (isListShow && !isAddNewPlaylistPanelShow && !isOnSelectingPlaylist && !draggedItem) {
+  if (appSetting.isListShow && !appSetting.isAddNewPlaylistPanelShow && !appSetting.isOnSelectingPlaylist && !draggedItem) {
     showListToggle();
   } 
 }
@@ -1804,7 +1807,7 @@ function initDOMVars() {
   domElement.playButtonOnCanvasIcon = getElement("play-button-on-canvas-icon");
   domElement.loopToggleButtonMobile = getElement("loop-toggle-mobile");
   domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
-  domElement.useMediaSettingToggleButton = getElement("use-media-setting-toggle"); 
+  domElement.useMediaSettingCheckbox = getElement("use-media-setting-checkbox");
   domElement.player = getElement("player");
   domElement.playerBody = getElement("player__body")
   domElement.playerFooter = getElement("player__footer");
@@ -1843,6 +1846,8 @@ function initDOMVars() {
 function initTooltips() {
   tooltip.playButton = getElement("play-button-tooltip");
   tooltip.playButton.textContent = "Play";
+  tooltip.songListAutoCloseTime = getElement("song-list-auto-close-time-tooltip");
+  tooltip.songListAutoCloseTime.textContent = (appSetting.songListAutoCloseTime / 1000) + " s";
   getElement("volume-tooltip").textContent = "Volume: " + audio.volume * 100;
   getElement("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
   getElement("volume-tooltip-mobile").textContent = "Volume: " + audio.volume * 100;

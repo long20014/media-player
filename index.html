@@ -123,11 +123,7 @@
       </div>
       <div id="setting-button-section">
         <div class="item-with-tooltip">
-          <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
-          <button type="button" id="use-media-setting-toggle" onclick="useMediaSettingToggle()"><i class="fas fa-cog"></i></button> 
-        </div>
-        <div class="item-with-tooltip mobile">
-          <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Setting</div>
+          <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Settings</div>
           <button type="button" id="save-setting-button-mobile" onclick="saveMediaSettings()"><i class="fas fa-save"></i></button> 
         </div>
         <div class="item-with-tooltip">
@@ -204,7 +200,14 @@
           <label>Song list auto close time</label>
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="song-list-auto-close-time-tooltip"></div>
-            <input id="song-list-auto-close-time" type="number" value="4" min="1" max="6" onchange="changeSongListAutoCloseTime(this.value)"></input>&nbsps
+            <input id="song-list-auto-close-time" type="number" value="4" min="1" max="6" onchange="changeSongListAutoCloseTime(this.value)"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Use media setting</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
+            <input id="use-media-setting-checkbox" type="checkbox" checked onchange="useMediaSettingToggle()"></input>
           </div>
         </div>
       </div>
@@ -242,12 +245,6 @@
       <input id="elapsed-time-bar" type="range" step="1" value="0" onmousedown="startElapsedTimeChange()" oninput="changeElapsedTime(this.value)" onmouseup="endElapsedTimeChange()" style="margin-top: 2px"></input>
     </div>
     <div id="player__toolbar-section">
-      <div class="item-with-tooltip" style="margin-right: 10px">
-        <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Settings</div>
-        <div id="save-setting-button" class="anchor-button-wrapper" onclick="saveMediaSettings()">
-          <a id="save-setting-icon" class="anchor-button-icon"><i class="fa fa-save text--white"></i></a>  
-        </div>
-      </div>
       <div class="item-with-tooltip" style="margin-right: 10px">
         <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
         <div id="setting-button" class="anchor-button-wrapper" onclick="showSettingsToggle()">

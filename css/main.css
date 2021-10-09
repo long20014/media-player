@@ -354,13 +354,18 @@ div#player {
 .controls {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 0.2em;
+}
+
+.controls input[type="checkbox"] {
+  margin-right: 0;
 }
 
 #setting-button-section button {
   min-width: 60px;
   height: 30px;
   border: 2px solid #456;
-  margin-top: 20px;    
+  margin-top: 10px;    
 }
 
 #setting-button-section {
@@ -482,7 +487,7 @@ div#player {
 /* Style the tab content */
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-top: none;
 }
