@@ -16,6 +16,8 @@ var keyCode = {
   DOWN_ARROW: 40,
 };
 var FILTER_GAIN_MULTIPLIER = 20;
+var FILTER_GAIN_CONTROL_OFFSET = 50;
+var ENHANCED_VOLUME_MULTIPLIER = 2;
 var DEFAULT_DB = "MyMediaDB";
 var DEFAULT_PLAYLIST = "default play list";
 var VOLUME_STEP_COUNT = 100;
@@ -192,9 +194,9 @@ window.addEventListener('resize', function() {
 function Equalizer() {
   this.changeXFadeGainValue = function() {
     if (currentSong && currentSong.type === "video")
-      this.xfadeGain.gain.value = DEFAULT_VIDEO_XFADE_GAIN + currentEnhancedVolume * 2;
+      this.xfadeGain.gain.value = DEFAULT_VIDEO_XFADE_GAIN + currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
     else {
-      this.xfadeGain.gain.value = DEFAULT_AUDIO_XFADE_GAIN + currentEnhancedVolume * 2;
+      this.xfadeGain.gain.value = DEFAULT_AUDIO_XFADE_GAIN + currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
     } 
   }
   this.connectFilters = function(audioContext) {
@@ -223,55 +225,55 @@ function Equalizer() {
     this._31Hz = audioContext.createBiquadFilter();
     this._31Hz.type = "lowshelf";
     this._31Hz.frequency.value = this.bandSplit[0];
-    this._31Hz.Q.value = 0.1;
+    this._31Hz.Q.value = 1;
     this._31Hz.gain.value = 0; 
 
     this._62Hz = audioContext.createBiquadFilter();
     this._62Hz.type = "peaking";
     this._62Hz.frequency.value = this.bandSplit[1];
-    this._62Hz.Q.value = 0.2;
+    this._62Hz.Q.value = 1;
     this._62Hz.gain.value = 0;
 
     this._125Hz = audioContext.createBiquadFilter();
     this._125Hz.type = "peaking";
     this._125Hz.frequency.value = this.bandSplit[2];
-    this._125Hz.Q.value = 0.3;
+    this._125Hz.Q.value = 1;
     this._125Hz.gain.value = 0;
 
     this._250Hz = audioContext.createBiquadFilter();
     this._250Hz.type = "peaking";
     this._250Hz.frequency.value = this.bandSplit[3];
-    this._250Hz.Q.value = 0.4;
+    this._250Hz.Q.value = 1;
     this._250Hz.gain.value = 0;
 
     this._500Hz = audioContext.createBiquadFilter();
     this._500Hz.type = "peaking";
     this._500Hz.frequency.value = this.bandSplit[4];
-    this._500Hz.Q.value = 0.5;
+    this._500Hz.Q.value = 1;
     this._500Hz.gain.value = 0;
 
     this._1kHz = audioContext.createBiquadFilter();
     this._1kHz.type = "peaking";
     this._1kHz.frequency.value = this.bandSplit[5];
-    this._1kHz.Q.value = 0.6;
+    this._1kHz.Q.value = 1;
     this._1kHz.gain.value = 0;
 
     this._2kHz = audioContext.createBiquadFilter();
     this._2kHz.type = "peaking";
     this._2kHz.frequency.value = this.bandSplit[6];
-    this._2kHz.Q.value = 0.6;
+    this._2kHz.Q.value = 1;
     this._2kHz.gain.value = 0;  
 
     this._4kHz = audioContext.createBiquadFilter();
     this._4kHz.type = "peaking";
     this._4kHz.frequency.value = this.bandSplit[7];
-    this._4kHz.Q.value = 0.7;
+    this._4kHz.Q.value = 1;
     this._4kHz.gain.value = 0;  
 
     this._8kHz = audioContext.createBiquadFilter();
     this._8kHz.type = "peaking";
     this._8kHz.frequency.value = this.bandSplit[8];
-    this._8kHz.Q.value = 0.8;
+    this._8kHz.Q.value = 1 ;
     this._8kHz.gain.value = 0;       
 
     this._16kHz = audioContext.createBiquadFilter();
@@ -281,46 +283,60 @@ function Equalizer() {
     this._16kHz.gain.value = 0;        
 
     this.connectFilters(audioContext)
-  }    
+  }
+
+  this.calculateTooltipValue = function(gainValue) {
+    return gainValue.toFixed(1);
+  }   
 
   this.set_31HzGain = function (gainValue) {
-    this._31Hz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._31Hz.gain.value = gainValue;
+    getElement("_31Hz-tooltip").textContent = "31Hz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_62HzGain = function (gainValue) {
-    this._62Hz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._62Hz.gain.value = gainValue;
+    getElement("_62Hz-tooltip").textContent = "62Hz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_125HzGain = function (gainValue) {
-    this._125Hz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._125Hz.gain.value = gainValue;
+    getElement("_125Hz-tooltip").textContent = "125Hz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_250HzGain = function (gainValue) {
-    this._250Hz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._250Hz.gain.value = gainValue;
+    getElement("_250Hz-tooltip").textContent = "250Hz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_500HzGain = function (gainValue) {
-    this._500Hz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._500Hz.gain.value = gainValue;
+    getElement("_500Hz-tooltip").textContent = "500Hz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_1kHzGain = function (gainValue) {
-    this._1kHz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._1kHz.gain.value = gainValue;
+    getElement("_1kHz-tooltip").textContent = "1kHz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_2kHzGain = function (gainValue) {
-    this._2kHz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._2kHz.gain.value = gainValue;
+    getElement("_2kHz-tooltip").textContent = "2kHz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_4kHzGain = function (gainValue) {
-    this._4kHz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._4kHz.gain.value = gainValue;
+    getElement("_4kHz-tooltip").textContent = "4kHz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_8kHzGain = function (gainValue) {
-    this._8kHz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._8kHz.gain.value = gainValue;
+    getElement("_8kHz-tooltip").textContent = "8kHz: " + this.calculateTooltipValue(gainValue);
   }
 
   this.set_16kHzGain = function (gainValue) {
-    this._16kHz.gain.value = gainValue * FILTER_GAIN_MULTIPLIER;
+    this._16kHz.gain.value = gainValue;
+    getElement("_16kHz-tooltip").textContent = "16kHz: " + this.calculateTooltipValue(gainValue);
   }
 }
 
@@ -333,7 +349,7 @@ function changePitch() {
 }
 
 function changeGain(gainValue, type) {
-  var value = parseFloat(gainValue) / 100.0;
+  var value = parseFloat(+gainValue - FILTER_GAIN_CONTROL_OFFSET) / VOLUME_STEP_COUNT * FILTER_GAIN_MULTIPLIER;
   switch(type)
   {
     case '31Hz': _equalizer.set_31HzGain(value); break;
@@ -351,6 +367,8 @@ function changeGain(gainValue, type) {
 
 function resetEqualizer() {
   var value = 0;
+  var VOLUME_STEP_COUNT = 100;
+  var equalizerResetValue = 0.5 * VOLUME_STEP_COUNT;
   _equalizer.set_31HzGain(value);
   _equalizer.set_62HzGain(value);
   _equalizer.set_125HzGain(value);
@@ -362,16 +380,16 @@ function resetEqualizer() {
   _equalizer.set_8kHzGain(value);
   _equalizer.set_16kHzGain(value);
   setCurrentEnhancedVolume(value);
-  domElement.equalizerControls._31HzControl.value = value;
-  domElement.equalizerControls._62HzControl.value = value;
-  domElement.equalizerControls._125HzControl.value = value;
-  domElement.equalizerControls._250HzControl.value = value;
-  domElement.equalizerControls._500HzControl.value = value;
-  domElement.equalizerControls._1kHzControl.value = value;
-  domElement.equalizerControls._2kHzControl.value = value;
-  domElement.equalizerControls._4kHzControl.value = value;
-  domElement.equalizerControls._8kHzControl.value = value;
-  domElement.equalizerControls._16kHzControl.value = value;
+  domElement.equalizerControls._31HzControl.value = equalizerResetValue;
+  domElement.equalizerControls._62HzControl.value = equalizerResetValue;
+  domElement.equalizerControls._125HzControl.value = equalizerResetValue;
+  domElement.equalizerControls._250HzControl.value = equalizerResetValue;
+  domElement.equalizerControls._500HzControl.value = equalizerResetValue;
+  domElement.equalizerControls._1kHzControl.value = equalizerResetValue;
+  domElement.equalizerControls._2kHzControl.value = equalizerResetValue;
+  domElement.equalizerControls._4kHzControl.value = equalizerResetValue;
+  domElement.equalizerControls._8kHzControl.value = equalizerResetValue;
+  domElement.equalizerControls._16kHzControl.value = equalizerResetValue;
   domElement.enhancedVolumeControl.value = value;
 }
 
@@ -702,16 +720,16 @@ function saveMediaSettings() {
       enhancedVolume: currentEnhancedVolume,
       playbackRate: currentPlaybackRate,
       equalizer: {
-        _31Hz: _equalizer._31Hz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _62Hz: _equalizer._62Hz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _125Hz: _equalizer._125Hz.gain.value / FILTER_GAIN_MULTIPLIER,    
-        _250Hz: _equalizer._250Hz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _500Hz: _equalizer._500Hz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _1kHz: _equalizer._1kHz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _2kHz: _equalizer._2kHz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _4kHz: _equalizer._4kHz.gain.value / FILTER_GAIN_MULTIPLIER,    
-        _8kHz: _equalizer._8kHz.gain.value / FILTER_GAIN_MULTIPLIER,
-        _16kHz: _equalizer._16kHz.gain.value / FILTER_GAIN_MULTIPLIER,        
+        _31Hz: _equalizer._31Hz.gain.value,
+        _62Hz: _equalizer._62Hz.gain.value,
+        _125Hz: _equalizer._125Hz.gain.value,    
+        _250Hz: _equalizer._250Hz.gain.value,
+        _500Hz: _equalizer._500Hz.gain.value,
+        _1kHz: _equalizer._1kHz.gain.value,
+        _2kHz: _equalizer._2kHz.gain.value,
+        _4kHz: _equalizer._4kHz.gain.value,    
+        _8kHz: _equalizer._8kHz.gain.value,
+        _16kHz: _equalizer._16kHz.gain.value,        
       }
     };
     updateMedia(currentPlayList, currentSong); 
@@ -719,6 +737,11 @@ function saveMediaSettings() {
 }
 
 function loadMediaSettings() {
+  function calculateControlValue(value) {
+    // Number 2 represent for dividing control bar into half.
+    return parseInt((value + FILTER_GAIN_MULTIPLIER / 2) * VOLUME_STEP_COUNT / FILTER_GAIN_MULTIPLIER);
+  }
+
   currentSong.settings.enhancedVolume = currentSong.settings.enhancedVolume ? currentSong.settings.enhancedVolume : 0;
   changeVolume(currentSong.settings.volume * VOLUME_STEP_COUNT);    
   changeEnhancedVolume(currentSong.settings.enhancedVolume * VOLUME_STEP_COUNT);
@@ -738,16 +761,16 @@ function loadMediaSettings() {
   domElement.volumeControlMobile.value = currentSong.settings.volume * VOLUME_STEP_COUNT;
   domElement.playbackRateControl.value = currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
   domElement.playbackRateControlMobile.value = currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
-  domElement.equalizerControls._31HzControl.value = currentSong.settings.equalizer._31Hz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._62HzControl.value = currentSong.settings.equalizer._62Hz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._125HzControl.value = currentSong.settings.equalizer._125Hz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._250HzControl.value = currentSong.settings.equalizer._250Hz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._500HzControl.value = currentSong.settings.equalizer._500Hz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._1kHzControl.value = currentSong.settings.equalizer._1kHz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._2kHzControl.value = currentSong.settings.equalizer._2kHz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._4kHzControl.value = currentSong.settings.equalizer._4kHz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._8kHzControl.value = currentSong.settings.equalizer._8kHz * VOLUME_STEP_COUNT;
-  domElement.equalizerControls._16kHzControl.value = currentSong.settings.equalizer._16kHz * VOLUME_STEP_COUNT;
+  domElement.equalizerControls._31HzControl.value = calculateControlValue(currentSong.settings.equalizer._31Hz);
+  domElement.equalizerControls._62HzControl.value = calculateControlValue(currentSong.settings.equalizer._62Hz);
+  domElement.equalizerControls._125HzControl.value = calculateControlValue(currentSong.settings.equalizer._125Hz);
+  domElement.equalizerControls._250HzControl.value = calculateControlValue(currentSong.settings.equalizer._250Hz);
+  domElement.equalizerControls._500HzControl.value = calculateControlValue(currentSong.settings.equalizer._500Hz);
+  domElement.equalizerControls._1kHzControl.value = calculateControlValue(currentSong.settings.equalizer._1kHz);
+  domElement.equalizerControls._2kHzControl.value = calculateControlValue(currentSong.settings.equalizer._2kHz);
+  domElement.equalizerControls._4kHzControl.value = calculateControlValue(currentSong.settings.equalizer._4kHz);
+  domElement.equalizerControls._8kHzControl.value = calculateControlValue(currentSong.settings.equalizer._8kHz);
+  domElement.equalizerControls._16kHzControl.value = calculateControlValue(currentSong.settings.equalizer._16kHz);
 }    
 
 function chooseSong(event, song) { 
@@ -1071,6 +1094,7 @@ function initUploadFileFunction() {
 
 /*----- -Setup Function- -----*/
 function uploadMediaFile(file, fileType) {
+  var DEFAULT_EQUALIZER_VALUE = 0.5;
   var createdDate = new Date();
   var mediaFile = {
     id: file.name + " " + createdDate.getTime(), 
@@ -1083,16 +1107,16 @@ function uploadMediaFile(file, fileType) {
       enhancedVolume: 0,
       playbackRate: 1,
       equalizer: {
-        _31Hz: 0,
-        _62Hz: 0,
-        _125Hz: 0,    
-        _250Hz: 0,
-        _500Hz: 0,
-        _1kHz: 0,
-        _2kHz: 0,
-        _4kHz: 0,    
-        _8kHz: 0,
-        _16kHz: 0,        
+        _31Hz: DEFAULT_EQUALIZER_VALUE,
+        _62Hz: DEFAULT_EQUALIZER_VALUE,
+        _125Hz: DEFAULT_EQUALIZER_VALUE,    
+        _250Hz: DEFAULT_EQUALIZER_VALUE,
+        _500Hz: DEFAULT_EQUALIZER_VALUE,
+        _1kHz: DEFAULT_EQUALIZER_VALUE,
+        _2kHz: DEFAULT_EQUALIZER_VALUE,
+        _4kHz: DEFAULT_EQUALIZER_VALUE,    
+        _8kHz: DEFAULT_EQUALIZER_VALUE,
+        _16kHz: DEFAULT_EQUALIZER_VALUE,        
       }
     }
   };            
