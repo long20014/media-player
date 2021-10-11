@@ -22,17 +22,17 @@
   <div id="setting-panel" class="panel">
     <div id="setting-panel-header">
       <div class="item-with-tooltip">        
-        <button type="button" id="close-setting" onclick="showSettingsToggle()" class="text--white"><i class="fas fa-times"></i></button> 
+        <button type="button" onclick="showSettingsToggle()" class="close-panel text--white"><i class="fas fa-times"></i></button> 
       </div>      
     </div>
     <div class="tab">
-      <button class="tablinks active" onclick="openTab(event, 'equalizer-tab')">Equalizer</button>
-      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>   
-      <button class="tablinks" onclick="openTab(event, 'app-tab')">App</button>    
+      <button class="tablinks active" onclick="openTab(event, 'equalizer-tab', 'setting-panel')">Equalizer</button>
+      <button class="tablinks" onclick="openTab(event, 'video-tab', 'setting-panel')">Video</button>   
+      <button class="tablinks" onclick="openTab(event, 'app-tab', 'setting-panel')">App</button>    
     </div>
     <!-- audio settings -->
     <div id="equalizer-tab" class="tabcontent">
-      <div id="equalizer" class="setting-panel-container">
+      <div id="equalizer" class="panel-container">
         <div class="controls">
           <label>31Hz</label>
           <div class="item-with-tooltip">
@@ -138,7 +138,7 @@
     </div>
     <!-- video settings -->
     <div id="video-tab" class="tabcontent">
-      <div id="video-setting" class="setting-panel-container">
+      <div id="video-setting" class="panel-container">
         <div class="controls">
           <label>Brightness</label>
           <div class="item-with-tooltip">
@@ -199,7 +199,7 @@
     </div>
     <!-- app settings -->
     <div id="app-tab" class="tabcontent">
-      <div id="app-setting" class="setting-panel-container">
+      <div id="app-setting" class="panel-container">
         <div class="controls">
           <label>Song list auto close time</label>
           <div class="item-with-tooltip">
@@ -214,6 +214,70 @@
             <input id="use-media-setting-checkbox" type="checkbox" checked onchange="useMediaSettingToggle()"></input>
           </div>
         </div>
+      </div>
+    </div>  
+  </div>
+  <!-- help panel -->
+  <div id="help-panel" class="panel">
+    <div id="help-panel-header">
+      <div class="item-with-tooltip">        
+        <button type="button" onclick="showHelpToggle()" class="close-panel text--white"><i class="fas fa-times"></i></button> 
+      </div>      
+    </div>
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'about-tab', 'help-panel')">About</button>
+      <button class="tablinks" onclick="openTab(event, 'hotkeys-tab', 'help-panel')">Hotkeys</button>   
+      <button class="tablinks" onclick="openTab(event, 'others-tab', 'help-panel')">Others</button>    
+    </div>
+    <!-- About tab -->
+    <div id="about-tab" class="tabcontent">
+      <div id="" class="panel-container help-panel">
+        <ul>
+          <li>Web Media Player v2.0</li>
+          <li>Author: long20014</li>
+          <br>
+          <li>Support file type: MP3, MP4, OGG, MKV.</li>
+          <li>Support play list.</li>
+          <li>Support equalizer.</li>
+          <li>Support speed change.</li>
+          <li>Support save audio settings for each media. (volume, speed, equalizer)</li>
+          <li>Support responsive on mobile.</li>
+          <li>Support loop one media or all media.</li>
+          <li>Support offline (service worker).</li>
+          <br>
+          <li>Note: Only work on Chrome and Firefox.</li>
+          <li>Note: Press Ctrl+F5 or Cmd+F5 for newest update.</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Hotkeys tab -->
+    <div id="hotkeys-tab" class="tabcontent">
+      <div id="" class="panel-container help-panel">
+        <ul>
+          <li>P - SpaceBar: Play/Pause</li>
+          <li>O: Stop</li>
+          <li>L: Loop toggle</li>
+          <li>K: Loop all toggle</li>
+          <li>M: Mute toggle</li>
+          <li>F: Fullscreen toggle</li>
+          <li>Q: Show song list toggle</li>
+          <li>W: Show setting toggle</li>
+          <li>→: Next 5s</li>
+          <li>←: Previous 5s</li>
+          <li>↑: Increase Volume</li>
+          <li>↓: Decrease Volume</li>
+          <li>K: Loop all</li>
+          <li>;: Increase play speed</li>
+          <li>': Decrease play speed</li>
+        </ul>
+      </div>      
+    </div>
+    <!-- Others settings -->
+    <div id="others-tab" class="tabcontent">
+      <div id="" class="panel-container help-panel">
+        <ul>
+          <li>Have fun using Web Media Player!!!</li>
+        </ul>
       </div>
     </div>  
   </div>
@@ -312,7 +376,13 @@
         <div id="fullscreen-button" class="anchor-button-wrapper" onclick="canvasFullscreenToggle()">
           <a id="fullscreen-icon" class="anchor-button-icon"><i class="fas fa-expand text--white"></i></a>  
         </div>
-      </div>      
+      </div>
+      <div class="item-with-tooltip" style="margin-left: 10px">
+        <div class="tooltip-text tooltip-top" id="show-help-button-tooltip">Help</div>
+        <div id="help-button" class="anchor-button-wrapper" onclick="showHelpToggle()">
+          <a id="help-icon" class="anchor-button-icon"><i class="fa fa-question text--white"></i></a>  
+        </div>
+      </div>        
     </div>
 
     <!-- -mobile- -->    

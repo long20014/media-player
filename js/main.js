@@ -72,6 +72,7 @@ var appSetting = {
   isOnSelectingPlaylist: false,
   isFullscreen: false,
   isSettingShow: false,
+  isHelpShow: false,
   needFilterApply: false,
 }
 var videoSetting = {
@@ -896,9 +897,9 @@ async function removePlayList() {
   }    
 }
 
-function openTab(evt, tabName) {
+function openTab(evt, tabName, panelId) {
   var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
+  tabcontent = Array.from(document.getElementsByClassName("tabcontent")).filter((tab) => tab.parentElement.id === panelId);
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
   }
@@ -1682,6 +1683,18 @@ function showSettingsToggle() {
   }
 }
 
+function showHelpToggle() {
+  if (appSetting.isHelpShow) {
+    domElement.helpPanel.style.opacity = "0";
+    setTimeout(() => domElement.helpPanel.style.visibility = "hidden", 300);        
+    appSetting.isHelpShow = false;
+  } else {
+    domElement.helpPanel.style.visibility = "visible";
+    domElement.helpPanel.style.opacity = "1";
+    appSetting.isHelpShow = true;    
+  }
+}
+
 function showListToggle() {  
   if (appSetting.isListShow) {
     appSetting.isListShow = false;
@@ -1740,7 +1753,7 @@ function flashPlayButtonOnCanvas() {
 /*----- -Utilities- -----*/
 function changeSongListAutoCloseTime(value) {
   appSetting.songListAutoCloseTime = value * 1000;
-  tooltip.songListAutoCloseTime.textContent = value + " s";
+  tooltip.songListAutoCloseTime.textContent = value + "s after mouse move in and out the list" ;
   reregisterAutoHideMediaList();
 }
 
@@ -1851,6 +1864,7 @@ function initDOMVars() {
   domElement.newPlayListPanel = getElement("new-play-list-panel");
   domElement.playListInput = getElement("play-list-name-input");
   domElement.songListPanel = getElement("song-list-panel");
+  domElement.helpPanel = getElement("help-panel");
   domElement.filesUpload = getElement("files_upload");  
   domElement.songListAutoCloseTime = getElement("song-list-auto-close-time");
   domElement.equalizerControls = {
@@ -1871,7 +1885,7 @@ function initTooltips() {
   tooltip.playButton = getElement("play-button-tooltip");
   tooltip.playButton.textContent = "Play";
   tooltip.songListAutoCloseTime = getElement("song-list-auto-close-time-tooltip");
-  tooltip.songListAutoCloseTime.textContent = (appSetting.songListAutoCloseTime / 1000) + " s";
+  tooltip.songListAutoCloseTime.textContent = (appSetting.songListAutoCloseTime / 1000) + "s after mouse move in and out the list";
   getElement("volume-tooltip").textContent = "Volume: " + audio.volume * 100;
   getElement("speed-tooltip").textContent = "Speed: " + audio.playbackRate;
   getElement("volume-tooltip-mobile").textContent = "Volume: " + audio.volume * 100;

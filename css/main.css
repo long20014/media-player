@@ -157,21 +157,31 @@ div#player {
   margin-left: calc(2% + 2px);
 }
 
-.setting-panel-container {
+.panel-container {
   background: #c3c3c3; 
-  padding: 5px;
-}
-
-#equalizer {
+  padding: 10px;
   width: 230px;
 }
 
-#video-setting {
-  width: 230px;
+.panel-container.help-panel {
+  max-height: 250px;
+  overflow-y: scroll;
 }
 
-#app-setting {
-  width: 230px;
+.panel-container::-webkit-scrollbar {
+  display: none;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.panel-container ul {
+  padding: 10px;
+  margin: 0px;
+}
+
+.panel-container li {
+  list-style-type: none;
+  margin-bottom: 5px;
 }
 
 #app-setting input[type="number"] {
@@ -208,7 +218,7 @@ div#player {
 
   /* Position the tooltip */
   position: absolute;  
-  z-index: 1;
+  z-index: 5;
 }
 
 .item-with-tooltip .tooltip-text.tooltip-top {
@@ -343,7 +353,7 @@ div#player {
   background: #333;    
 }
 
-#setting-panel {    
+#setting-panel, #help-panel {    
   opacity: 0;
   visibility: hidden;    
   z-index: 3;
@@ -373,14 +383,14 @@ div#player {
   justify-content: space-between;
 }
 
-#setting-panel-header {
+#setting-panel-header, #help-panel-header {
   display: flex;
   margin-bottom: 10px;
   margin-top: -10px;
   justify-content: flex-end;
 }
 
-#close-setting {
+.close-panel {
   background: none;
   box-shadow: none;
   border: none;
@@ -486,13 +496,14 @@ div#player {
 
 /* Style the tab content */
 .tabcontent {
+  position: relative;
   display: none;
   padding: 10px;
   border: 1px solid #ccc;
   border-top: none;
 }
 
-#equalizer-tab {
+#equalizer-tab, #about-tab {
   display: block;
 }
 
