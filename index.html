@@ -295,6 +295,12 @@
   <!-- player header -->
   <div id="player__header">
     <input id="files_upload" type="file" accept="audio/*,video/mp4,video/x-m4v,video/*" multiple/> 
+    <div class="item-with-tooltip">
+      <div class="tooltip-text tooltip-bottom" id="show-help-button-tooltip">Help</div>
+      <div id="help-button" class="anchor-button-wrapper" onclick="showHelpToggle()">
+        <a id="help-icon" class="anchor-button-icon"><i class="fa fa-question text--white"></i></a>  
+      </div>
+    </div>    
   </div> 
 
   <div id="player__body">
@@ -376,13 +382,7 @@
         <div id="fullscreen-button" class="anchor-button-wrapper" onclick="canvasFullscreenToggle()">
           <a id="fullscreen-icon" class="anchor-button-icon"><i class="fas fa-expand text--white"></i></a>  
         </div>
-      </div>
-      <div class="item-with-tooltip" style="margin-left: 10px">
-        <div class="tooltip-text tooltip-top" id="show-help-button-tooltip">Help</div>
-        <div id="help-button" class="anchor-button-wrapper" onclick="showHelpToggle()">
-          <a id="help-icon" class="anchor-button-icon"><i class="fa fa-question text--white"></i></a>  
-        </div>
-      </div>        
+      </div> 
     </div>
 
     <!-- -mobile- -->    

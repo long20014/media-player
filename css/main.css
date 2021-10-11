@@ -3,7 +3,7 @@
   --player__footer-height-mobile: 125px;
   --player__header-height: 62.5px;
   --player__main-toolbar-width: 822px;
-  --outline__left-margin: 25px;
+  --outline__margin: 25px;
 }
 
 body {
@@ -141,12 +141,19 @@ div#player {
 
 #files_upload {
   color: white;
-  margin-left: var(--outline__left-margin);
+  margin-left: var(--outline__margin);
+}
+
+#help-button.anchor-button-wrapper {
+  height: 24px;
+  width: 24px;
+  margin-right: var(--outline__margin);
 }
 
 #elapsed-time-bar {
   width: calc(100% - 50px);
-  margin-left: var(--outline__left-margin);
+  margin-left: var(--outline__margin);
+  margin-right: var(--outline__margin);
 }
 
 #elapsed-time-text {
@@ -235,6 +242,12 @@ div#player {
 .item-with-tooltip .tooltip-text.tooltip-right {
   top: 5px;
   right: calc(-100% - 50px);    
+}
+
+.item-with-tooltip .tooltip-text.tooltip-bottom {
+  bottom: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 
