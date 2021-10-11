@@ -903,7 +903,7 @@ function openTab(evt, tabName, panelId) {
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
   }
-  tablinks = document.getElementsByClassName("tablinks");
+  tablinks = Array.from(document.getElementsByClassName("tablinks")).filter((link) => link.parentElement.parentElement.id === panelId);
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" active", "");
   }
