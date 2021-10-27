@@ -27,6 +27,8 @@ Support loop one media or all media.
 
 Support offline (service worker).
 
+Support add subtitle (.srt file).
+
 ## Note
 
 Only work on Chrome and Firefox.
