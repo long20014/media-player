@@ -208,10 +208,24 @@
           </div>
         </div>
         <div class="controls">
-          <label>Use media setting</label>
+          <label>Enable media setting</label>
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
             <input id="use-media-setting-checkbox" type="checkbox" checked onchange="useMediaSettingToggle()"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Enable subtitle</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="subtitle-enable-tooltip"></div>
+            <input id="subtitle-enable-checkbox" type="checkbox" checked onchange="subtitleEnableToggle()"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Subtitle font size</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="font-size-tooltip"></div>
+            <input id="font-size" type="number" value="24" min="12" max="48" onchange="changeFontSize(this.value)"></input>
           </div>
         </div>
       </div>
@@ -233,7 +247,7 @@
     <div id="about-tab" class="tabcontent">
       <div id="" class="panel-container help-panel">
         <ul>
-          <li>Web Media Player v2.0</li>
+          <li>Web Media Player v2.</li>
           <li>Author: long20014</li>
           <br>
           <li>Support file type: MP3, MP4, OGG, MKV.</li>
@@ -244,6 +258,7 @@
           <li>Support responsive on mobile.</li>
           <li>Support loop one media or all media.</li>
           <li>Support offline (service worker).</li>
+          <li>Support adding subtitle (.srt file).</li>
           <br>
           <li>Note: Only work on Chrome and Firefox.</li>
           <li>Note: Press Ctrl+F5 or Cmd+Shift+R for newest update.</li>
@@ -308,7 +323,7 @@
     <div id="play-button-on-canvas" class="hidden">
       <a id="play-button-on-canvas-icon" class="anchor-button-icon"><i class="fas fa-play text--white"></i></a>  
     </div>
-    <
+    <div id='subtitle-wrapper'></div> 
   </div>
   
   <div id="player__footer">
@@ -371,7 +386,7 @@
           </div>          
         </div>             
       </div>
-      <div class="item-with-tooltip" style="margin-left: 10px">
+      <div class="item-with-tooltip" style="margin-left: 10px; display: none;">
         <div class="tooltip-text tooltip-top" id="download-button-tooltip">Download</div>
         <div id="download-button" class="anchor-button-wrapper" onclick="document.getElementById('download-link').click()">
           <a id="download-link" class="anchor-button-icon" download><i class="fa fa-download text--white"></i></a>  
@@ -382,7 +397,14 @@
         <div id="fullscreen-button" class="anchor-button-wrapper" onclick="canvasFullscreenToggle()">
           <a id="fullscreen-icon" class="anchor-button-icon"><i class="fas fa-expand text--white"></i></a>  
         </div>
-      </div> 
+      </div>
+      <div class="item-with-tooltip" style="margin-left: 10px">
+        <div class="tooltip-text tooltip-top" id="fullscreen-button-tooltip">Add Subtitle</div>
+        <div id="add-subtitle-button" class="anchor-button-wrapper" onclick="addSubtitle()">
+          <a id="add-subtitle-icon" class="anchor-button-icon"><i class="fas fa-upload text--white"></i></a>  
+        </div>
+      </div>
+      <input id="subtitle_upload" type="file" accept=".srt" hidden/>   
     </div>
 
     <!-- -mobile- -->    
@@ -483,6 +505,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.1/tuna-min.js" type="text/javascript"></script>
 <script type="text/javascript" src="./vendor/FileSaver.js"></script>
 <script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/subtitle.js"></script>
 <script type="text/javascript" src="./js/mobile.js"></script>
 </body>
 </html>

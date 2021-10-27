@@ -74,6 +74,7 @@ var appSetting = {
   isSettingShow: false,
   isHelpShow: false,
   needFilterApply: false,
+  isSubtitleEnable: true,
 }
 var videoSetting = {
   brightness: 100, //percent
@@ -173,6 +174,7 @@ window.addEventListener(
     setCurrentEnhancedVolume(domElement.enhancedVolumeControl.value);
     _equalizer.setupEqualizer(audioContext);  // must place after setCurrentEnhancedVolume cuz this use it;
     initUploadFileFunction();
+    initUploadSubtitleFile();
     initTooltips();  
     _processor = new Processor();   
           
@@ -477,7 +479,7 @@ function endElapsedTimeChange() {
 function useMediaSettingToggle() {
   if (appSetting.isSongSettingUsed) {
     appSetting.isSongSettingUsed = false;
-    getElement("use-media-setting-button-tooltip").textContent = "Turn on setting";
+    getElement("use-media-setting-button-tooltip").textContent = "Turn on media setting";
     domElement.useMediaSettingCheckbox.checked = false;
   } else {
     appSetting.isSongSettingUsed = true;
@@ -791,7 +793,8 @@ function chooseSong(event, song) {
   }    
   media.src = event.target.dataset.src;  
   media.playbackRate = currentPlaybackRate;  
-  setDownloadLink(event.target.dataset.src, event.target.textContent); 
+  setDownloadLink(event.target.dataset.src, event.target.textContent);
+  setCurrentSubtitle(); 
 }
 
 function deleteSongFromDisplayList(songName) {
@@ -814,7 +817,9 @@ function loadMediaElapsedTime() {
     }
     media.ontimeupdate = (() => {                                                 
       domElement.elapsedTime.textContent = getElapsedTime();
-      domElement.elapsedTimeBar.value = parseInt(media.currentTime);  
+      domElement.elapsedTimeBar.value = parseInt(media.currentTime);
+      if (appSetting.isSubtitleEnable) checkAndDrawSubtitle();
+      else cleanSubtitle();
     });
     media.onended = (() => {
       console.log("end");
@@ -1038,6 +1043,7 @@ function playNextSong() {
     loadCurrentSong(nextSong);
   }    
   if (media.isPlay) {
+    setCurrentSubtitle(); 
     _playCurrentSong();
   }    
 }
@@ -1052,6 +1058,7 @@ function playPreviousSong() {
     loadCurrentSong(previousSong);        
   }
   if (media.isPlay) {
+    setCurrentSubtitle(); 
     _playCurrentSong();
   }    
 }
@@ -1074,7 +1081,7 @@ function setDownloadLink(href, outputFileName) {
 }
 
 function initUploadFileFunction() {    
-  domElement.filesUpload.onchange = function(){
+  domElement.filesUpload.onchange = function(e){
     function isVideo(file) {
       var fileNameSplitted = file.name.split('.');
       var fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
@@ -1089,7 +1096,8 @@ function initUploadFileFunction() {
       } else if (isVideo(file)) {
         uploadMediaFile(file, "video");
       }                         
-    }    
+    }
+    e.target.value = "";    
   };   
 }
 
@@ -1103,6 +1111,7 @@ function uploadMediaFile(file, fileType) {
     src: file,
     createdDate: createdDate, 
     type: fileType,
+    subtitle: null,
     settings: {
       volume: 1,
       enhancedVolume: 0,
@@ -1394,6 +1403,7 @@ function exportDB(db) {
 function initCanvasSize() {
   domElement.canvas.width = CANVAS_WIDTH;
   domElement.canvas.height = CANVAS_HEIGHT; 
+  domElement.subtitleWrapper.style.width = domElement.canvas.width + 'px';
 }
 
 function addCanvasClickEvent() {
@@ -1469,6 +1479,7 @@ function adjustCanvasAndVideoSize(processor) {
     self.height = self.video.videoHeight / sizeRatio;
     domElement.canvas.width = self.video.videoWidth / sizeRatio;
     domElement.canvas.height = self.video.videoHeight / sizeRatio; 
+    domElement.subtitleWrapper.style.width = domElement.canvas.width + 'px'
   } else {
     self.width = 0;
     self.height = 0;
@@ -1536,7 +1547,7 @@ function Processor() {
     this.video = video;                    
     var self = this;
     this.video.addEventListener('play', function() {                
-      adjustCanvasAndVideoSize(self)
+      adjustCanvasAndVideoSize(self);
       self.timerCallback();
     }, 0);                  
   }
@@ -1562,18 +1573,6 @@ function Processor() {
       setTimeout(() => appSetting.needFilterApply = false, 0)      
     }          
     ctx.drawImage(this.video, 0, 0, this.width, this.height);
-    // let frame = this.ctx.getImageData(0, 0, this.width, this.height);
-    // let l = frame.data.length / 4;
-
-    // for (let i = 0; i < l; i++) {
-    //   let r = frame.data[i * 4 + 0];
-    //   let g = frame.data[i * 4 + 1];
-    //   let b = frame.data[i * 4 + 2];
-    //   if (g > 100 && r > 100 && b < 43)
-    //     frame.data[i * 4 + 3] = 0;
-    // }
-    // this.ctx2.putImageData(frame, 0, 0);
-    // this.changeVideoBrightness(1.3);
     return;
   }       
 };
@@ -1845,6 +1844,7 @@ function initDOMVars() {
   domElement.loopToggleButtonMobile = getElement("loop-toggle-mobile");
   domElement.loopAllToggleButton = getElement("loop-all-toggle"); 
   domElement.useMediaSettingCheckbox = getElement("use-media-setting-checkbox");
+  domElement.subtitleEnableCheckbox = getElement("subtitle-enable-checkbox");
   domElement.player = getElement("player");
   domElement.playerBody = getElement("player__body")
   domElement.playerFooter = getElement("player__footer");
@@ -1867,6 +1867,8 @@ function initDOMVars() {
   domElement.helpPanel = getElement("help-panel");
   domElement.filesUpload = getElement("files_upload");  
   domElement.songListAutoCloseTime = getElement("song-list-auto-close-time");
+  domElement.subtitleWrapper = getElement("subtitle-wrapper");
+  domElement.subtitleUpload = getElement("subtitle_upload");
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),

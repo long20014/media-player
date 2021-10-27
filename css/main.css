@@ -467,6 +467,23 @@ div#player {
   background: rgba(0,0,0,0.3);
 }
 
+#subtitle-wrapper {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  bottom: calc(10px + var(--player__footer-height));
+}
+
+.subtitle-line {
+  /*white-space: nowrap;*/
+  height: auto;
+  width: 90%;
+  text-align: center;
+}
+
 #play-button-on-canvas-icon {
   font-size: 1.5vw;
 }
