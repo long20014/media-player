@@ -57,7 +57,6 @@ function setLine(line, text) {
   line.style.fontSize = subtitleSetting.fontSize + 'px';
   line.style.color = subtitleSetting.fontColor;
   line.innerHTML = text;
-  console.log(line.clientWidth);
 }
 
 function drawSubtitle() {

@@ -478,9 +478,9 @@ div#player {
 }
 
 .subtitle-line {
-  /*white-space: nowrap;*/
   height: auto;
   width: 90%;
+  max-width: 1280px;
   text-align: center;
 }
 
