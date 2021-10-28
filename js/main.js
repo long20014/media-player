@@ -1111,7 +1111,6 @@ function uploadMediaFile(file, fileType) {
     src: file,
     createdDate: createdDate, 
     type: fileType,
-    subtitle: null,
     settings: {
       volume: 1,
       enhancedVolume: 0,
