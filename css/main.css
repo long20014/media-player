@@ -3,7 +3,7 @@
   --player__footer-height-mobile: 125px;
   --player__header-height: 62.5px;
   --player__main-toolbar-width: 822px;
-  --outline__left-margin: 25px;
+  --outline__margin: 25px;
 }
 
 body {
@@ -141,12 +141,19 @@ div#player {
 
 #files_upload {
   color: white;
-  margin-left: var(--outline__left-margin);
+  margin-left: var(--outline__margin);
+}
+
+#help-button.anchor-button-wrapper {
+  height: 24px;
+  width: 24px;
+  margin-right: var(--outline__margin);
 }
 
 #elapsed-time-bar {
   width: calc(100% - 50px);
-  margin-left: var(--outline__left-margin);
+  margin-left: var(--outline__margin);
+  margin-right: var(--outline__margin);
 }
 
 #elapsed-time-text {
@@ -157,21 +164,31 @@ div#player {
   margin-left: calc(2% + 2px);
 }
 
-.setting-panel-container {
+.panel-container {
   background: #c3c3c3; 
-  padding: 5px;
-}
-
-#equalizer {
-  width: 190px;
-}
-
-#video-setting {
+  padding: 10px;
   width: 230px;
 }
 
-#app-setting {
-  width: 230px;
+.panel-container.help-panel {
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
+.panel-container::-webkit-scrollbar {
+  display: none;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.panel-container ul {
+  padding: 10px;
+  margin: 0px;
+}
+
+.panel-container li {
+  list-style-type: none;
+  margin-bottom: 5px;
 }
 
 #app-setting input[type="number"] {
@@ -208,7 +225,7 @@ div#player {
 
   /* Position the tooltip */
   position: absolute;  
-  z-index: 1;
+  z-index: 5;
 }
 
 .item-with-tooltip .tooltip-text.tooltip-top {
@@ -225,6 +242,12 @@ div#player {
 .item-with-tooltip .tooltip-text.tooltip-right {
   top: 5px;
   right: calc(-100% - 50px);    
+}
+
+.item-with-tooltip .tooltip-text.tooltip-bottom {
+  bottom: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 
@@ -343,7 +366,7 @@ div#player {
   background: #333;    
 }
 
-#setting-panel {    
+#setting-panel, #help-panel {    
   opacity: 0;
   visibility: hidden;    
   z-index: 3;
@@ -354,13 +377,18 @@ div#player {
 .controls {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 0.2em;
+}
+
+.controls input[type="checkbox"] {
+  margin-right: 0;
 }
 
 #setting-button-section button {
   min-width: 60px;
   height: 30px;
   border: 2px solid #456;
-  margin-top: 20px;    
+  margin-top: 10px;    
 }
 
 #setting-button-section {
@@ -368,14 +396,14 @@ div#player {
   justify-content: space-between;
 }
 
-#setting-panel-header {
+#setting-panel-header, #help-panel-header {
   display: flex;
   margin-bottom: 10px;
   margin-top: -10px;
   justify-content: flex-end;
 }
 
-#close-setting {
+.close-panel {
   background: none;
   box-shadow: none;
   border: none;
@@ -421,6 +449,60 @@ div#player {
   background-color: #f1f1f1;
 }
 
+#play-button-on-canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5vw;
+  width: 5vw;
+  border: 1px solid gray;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: rgba(0,0,0,0.3);
+}
+
+#subtitle-wrapper {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  bottom: calc(10px + var(--player__footer-height));
+}
+
+.subtitle-line {
+  height: auto;
+  width: 90%;
+  max-width: 1280px;
+  text-align: center;
+}
+
+#play-button-on-canvas-icon {
+  font-size: 1.5vw;
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.scale {
+  animation: scale 0.5s linear;
+}
+
+
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
@@ -444,14 +526,25 @@ div#player {
 
 /* Style the tab content */
 .tabcontent {
+  position: relative;
   display: none;
-  padding: 6px 12px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-top: none;
 }
 
-#equalizer-tab {
+#equalizer-tab, #about-tab {
   display: block;
+}
+
+/*----- -animation- -----*/
+@keyframes scale {
+  0% {
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /*----- -Non mobile- -----*/ 
@@ -462,7 +555,7 @@ div#player {
 /*----- -Responsive- -----*/
 @media screen and (max-width: 768px) {
   .mobile {
-    display: inherit;
+    display: flex;
   }
 
   .non-mobile {

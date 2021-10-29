@@ -1,9 +1,19 @@
 <html>
 <head>
-    <title>Media Player</title>
+    <title>Web Media Player</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="twitter:card" content="summary" >
+    <meta name="twitter:creator" content="long20014" >
+    <meta name="keywords" content="Media player, web media player, mp3 player, mp4 player" >
+    <meta name="description" content="A Web-based Media Player. Support mp3, mp4, ogg, mkv file type. Can play in offline mode." >
+    <meta property="og:type" content="website" >
+    <meta property="og:url" content="https://long20014.github.io/media-player" >
+    <meta property="og:title" content="Web Media Player" >
+    <meta name="og:description" content="A Web-based Media Player. Support mp3, mp4, ogg, mkv file type. Can play in offline mode." >
+    <meta property="og:image" content="https://long20014.github.io/media-player/images/web-media-player-seo-img.jpg">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link type="text/css" href="./css/main.css" rel="stylesheet" />
+    <link type="image/x-icon" href="./favicon.ico" rel="shortcut icon">
 </head>
 
 <body>
@@ -12,85 +22,85 @@
   <div id="setting-panel" class="panel">
     <div id="setting-panel-header">
       <div class="item-with-tooltip">        
-        <button type="button" id="close-setting" onclick="showSettingsToggle()" class="text--white"><i class="fas fa-times"></i></button> 
+        <button type="button" onclick="showSettingsToggle()" class="close-panel text--white"><i class="fas fa-times"></i></button> 
       </div>      
     </div>
     <div class="tab">
-      <button class="tablinks active" onclick="openTab(event, 'equalizer-tab')">Equalizer</button>
-      <button class="tablinks" onclick="openTab(event, 'video-tab')">Video</button>   
-      <button class="tablinks" onclick="openTab(event, 'app-tab')">App</button>    
+      <button class="tablinks active" onclick="openTab(event, 'equalizer-tab', 'setting-panel')">Equalizer</button>
+      <button class="tablinks" onclick="openTab(event, 'video-tab', 'setting-panel')">Video</button>   
+      <button class="tablinks" onclick="openTab(event, 'app-tab', 'setting-panel')">App</button>    
     </div>
     <!-- audio settings -->
     <div id="equalizer-tab" class="tabcontent">
-      <div id="equalizer" class="setting-panel-container">
+      <div id="equalizer" class="panel-container">
         <div class="controls">
           <label>31Hz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_31HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '31Hz')"></input>
+            <div class="tooltip-text tooltip-top" id="_31Hz-tooltip"></div>
+            <input id="_31HzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '31Hz')"></input>
           </div>
         </div>
         <div class="controls">
           <label>62Hz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_62HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '62Hz')"></input>
+            <div class="tooltip-text tooltip-top" id="_62Hz-tooltip"></div>
+            <input id="_62HzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '62Hz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>125Hz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_125HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '125Hz')"></input>
+            <div class="tooltip-text tooltip-top" id="_125Hz-tooltip"></div>
+            <input id="_125HzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '125Hz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>250Hz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_250HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '250Hz')"></input>
+            <div class="tooltip-text tooltip-top" id="_250Hz-tooltip"></div>
+            <input id="_250HzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '250Hz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>500Hz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_500HzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '500Hz')"></input>
+            <div class="tooltip-text tooltip-top" id="_500Hz-tooltip"></div>
+            <input id="_500HzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '500Hz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>1kHz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_1kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '1kHz')"></input>
+            <div class="tooltip-text tooltip-top" id="_1kHz-tooltip"></div>
+            <input id="_1kHzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '1kHz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>2kHz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_2kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '2kHz')"></input>
+            <div class="tooltip-text tooltip-top" id="_2kHz-tooltip"></div>
+            <input id="_2kHzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '2kHz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>4kHz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_4kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '4kHz')"></input>
+            <div class="tooltip-text tooltip-top" id="_4kHz-tooltip"></div>
+            <input id="_4kHzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '4kHz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>8kHz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_8kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '8kHz')"></input>
+            <div class="tooltip-text tooltip-top" id="_8kHz-tooltip"></div>
+            <input id="_8kHzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '8kHz')"></input>
           </div>          
         </div>
         <div class="controls">
           <label>16kHz</label>
           <div class="item-with-tooltip">
-            <div class="tooltip-text tooltip-top" id=""></div>
-            <input id="_16kHzControl" type="range" value="0" step="1" min="0" max="100" onchange="changeGain(this.value, '16kHz')"></input>
+            <div class="tooltip-text tooltip-top" id="_16kHz-tooltip"></div>
+            <input id="_16kHzControl" type="range" value="50" step="1" min="0" max="100" onchange="changeGain(this.value, '16kHz')"></input>
           </div>          
         </div>
         <div class="controls mobile">
@@ -107,14 +117,17 @@
             <input type="range" id="speed-control-mobile" value="20" step="1" min="1" max="40" onchange="changePlaybackRate(this.value)"></input>
           </div>          
         </div>
+        <div class="controls">
+          <label>Enhanced volume</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="enhanced-volume-tooltip"></div>
+            <input id="enhanced-volume-control" type="range" value="0" step="1" min="0" max="100" onchange="changeEnhancedVolume(this.value)"></input>
+          </div>          
+        </div>
       </div>
       <div id="setting-button-section">
         <div class="item-with-tooltip">
-          <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
-          <button type="button" id="use-media-setting-toggle" onclick="useMediaSettingToggle()"><i class="fas fa-cog"></i></button> 
-        </div>
-        <div class="item-with-tooltip mobile">
-          <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Setting</div>
+          <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Settings</div>
           <button type="button" id="save-setting-button-mobile" onclick="saveMediaSettings()"><i class="fas fa-save"></i></button> 
         </div>
         <div class="item-with-tooltip">
@@ -125,7 +138,7 @@
     </div>
     <!-- video settings -->
     <div id="video-tab" class="tabcontent">
-      <div id="video-setting" class="setting-panel-container">
+      <div id="video-setting" class="panel-container">
         <div class="controls">
           <label>Brightness</label>
           <div class="item-with-tooltip">
@@ -186,14 +199,100 @@
     </div>
     <!-- app settings -->
     <div id="app-tab" class="tabcontent">
-      <div id="app-setting" class="setting-panel-container">
+      <div id="app-setting" class="panel-container">
         <div class="controls">
           <label>Song list auto close time</label>
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="song-list-auto-close-time-tooltip"></div>
-            <input id="song-list-auto-close-time" type="number" value="4" min="1" max="6" onchange="changeSongListAutoCloseTime(this.value)"></input>&nbsps
+            <input id="song-list-auto-close-time" type="number" value="4" min="1" max="6" onchange="changeSongListAutoCloseTime(this.value)"></input>
           </div>
         </div>
+        <div class="controls">
+          <label>Enable media setting</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="use-media-setting-button-tooltip"></div>
+            <input id="use-media-setting-checkbox" type="checkbox" checked onchange="useMediaSettingToggle()"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Enable subtitle</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="subtitle-enable-tooltip"></div>
+            <input id="subtitle-enable-checkbox" type="checkbox" checked onchange="subtitleEnableToggle()"></input>
+          </div>
+        </div>
+        <div class="controls">
+          <label>Subtitle font size</label>
+          <div class="item-with-tooltip">
+            <div class="tooltip-text tooltip-top" id="font-size-tooltip"></div>
+            <input id="font-size" type="number" value="24" min="12" max="72" onchange="changeFontSize(this.value)"></input>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </div>
+  <!-- help panel -->
+  <div id="help-panel" class="panel">
+    <div id="help-panel-header">
+      <div class="item-with-tooltip">        
+        <button type="button" onclick="showHelpToggle()" class="close-panel text--white"><i class="fas fa-times"></i></button> 
+      </div>      
+    </div>
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'about-tab', 'help-panel')">About</button>
+      <button class="tablinks" onclick="openTab(event, 'hotkeys-tab', 'help-panel')">Hotkeys</button>   
+      <button class="tablinks" onclick="openTab(event, 'others-tab', 'help-panel')">Others</button>    
+    </div>
+    <!-- About tab -->
+    <div id="about-tab" class="tabcontent">
+      <div id="" class="panel-container help-panel">
+        <ul>
+          <li>Web Media Player v2.</li>
+          <li>Author: long20014</li>
+          <br>
+          <li>Support file type: MP3, MP4, OGG, MKV.</li>
+          <li>Support play list.</li>
+          <li>Support equalizer.</li>
+          <li>Support speed change.</li>
+          <li>Support save audio settings for each media. (volume, speed, equalizer)</li>
+          <li>Support responsive on mobile.</li>
+          <li>Support loop one media or all media.</li>
+          <li>Support offline (service worker).</li>
+          <li>Support adding subtitle (.srt file).</li>
+          <br>
+          <li>Note: Only work on Chrome and Firefox.</li>
+          <li>Note: Press Ctrl+F5 or Cmd+Shift+R for newest update.</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Hotkeys tab -->
+    <div id="hotkeys-tab" class="tabcontent">
+      <div id="" class="panel-container help-panel">
+        <ul>
+          <li>P - SpaceBar: Play/Pause</li>
+          <li>O: Stop</li>
+          <li>L: Loop toggle</li>
+          <li>K: Loop all toggle</li>
+          <li>M: Mute toggle</li>
+          <li>F: Fullscreen toggle</li>
+          <li>Q: Show song list toggle</li>
+          <li>W: Show setting toggle</li>
+          <li>→: Next 5s</li>
+          <li>←: Previous 5s</li>
+          <li>↑: Increase Volume</li>
+          <li>↓: Decrease Volume</li>
+          <li>K: Loop all</li>
+          <li>;: Increase play speed</li>
+          <li>': Decrease play speed</li>
+        </ul>
+      </div>      
+    </div>
+    <!-- Others settings -->
+    <div id="others-tab" class="tabcontent">
+      <div id="" class="panel-container help-panel">
+        <ul>
+          <li>Have fun using Web Media Player!!!</li>
+        </ul>
       </div>
     </div>  
   </div>
@@ -211,10 +310,20 @@
   <!-- player header -->
   <div id="player__header">
     <input id="files_upload" type="file" accept="audio/*,video/mp4,video/x-m4v,video/*" multiple/> 
+    <div class="item-with-tooltip">
+      <div class="tooltip-text tooltip-bottom" id="show-help-button-tooltip">Help</div>
+      <div id="help-button" class="anchor-button-wrapper" onclick="showHelpToggle()">
+        <a id="help-icon" class="anchor-button-icon"><i class="fa fa-question text--white"></i></a>  
+      </div>
+    </div>    
   </div> 
 
   <div id="player__body">
     <canvas id="canvas"></canvas>
+    <div id="play-button-on-canvas" class="hidden">
+      <a id="play-button-on-canvas-icon" class="anchor-button-icon"><i class="fas fa-play text--white"></i></a>  
+    </div>
+    <div id='subtitle-wrapper'></div> 
   </div>
   
   <div id="player__footer">
@@ -225,12 +334,6 @@
       <input id="elapsed-time-bar" type="range" step="1" value="0" onmousedown="startElapsedTimeChange()" oninput="changeElapsedTime(this.value)" onmouseup="endElapsedTimeChange()" style="margin-top: 2px"></input>
     </div>
     <div id="player__toolbar-section">
-      <div class="item-with-tooltip" style="margin-right: 10px">
-        <div class="tooltip-text tooltip-top" id="save-setting-button-tooltip">Save Settings</div>
-        <div id="save-setting-button" class="anchor-button-wrapper" onclick="saveMediaSettings()">
-          <a id="save-setting-icon" class="anchor-button-icon"><i class="fa fa-save text--white"></i></a>  
-        </div>
-      </div>
       <div class="item-with-tooltip" style="margin-right: 10px">
         <div class="tooltip-text tooltip-top" id="show-list-button-tooltip">Settings</div>
         <div id="setting-button" class="anchor-button-wrapper" onclick="showSettingsToggle()">
@@ -283,7 +386,7 @@
           </div>          
         </div>             
       </div>
-      <div class="item-with-tooltip" style="margin-left: 10px">
+      <div class="item-with-tooltip" style="margin-left: 10px; display: none;">
         <div class="tooltip-text tooltip-top" id="download-button-tooltip">Download</div>
         <div id="download-button" class="anchor-button-wrapper" onclick="document.getElementById('download-link').click()">
           <a id="download-link" class="anchor-button-icon" download><i class="fa fa-download text--white"></i></a>  
@@ -294,7 +397,14 @@
         <div id="fullscreen-button" class="anchor-button-wrapper" onclick="canvasFullscreenToggle()">
           <a id="fullscreen-icon" class="anchor-button-icon"><i class="fas fa-expand text--white"></i></a>  
         </div>
-      </div>      
+      </div>
+      <div class="item-with-tooltip" style="margin-left: 10px">
+        <div class="tooltip-text tooltip-top" id="fullscreen-button-tooltip">Add Subtitle</div>
+        <div id="add-subtitle-button" class="anchor-button-wrapper" onclick="addSubtitle()">
+          <a id="add-subtitle-icon" class="anchor-button-icon"><i class="fas fa-upload text--white"></i></a>  
+        </div>
+      </div>
+      <input id="subtitle_upload" type="file" accept=".srt" hidden/>   
     </div>
 
     <!-- -mobile- -->    
@@ -390,11 +500,12 @@
   }
 </script>
 
-<script type="text/javascript" src="./js/dexie.js"></script>
-<script type="text/javascript" src="./js/indexedDB-import-export.js"></script>
+<script type="text/javascript" src="./vendor/dexie.js"></script>
+<script type="text/javascript" src="./vendor/indexedDB-import-export.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tunajs/1.0.1/tuna-min.js" type="text/javascript"></script>
+<script type="text/javascript" src="./vendor/FileSaver.js"></script>
 <script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/subtitle.js"></script>
 <script type="text/javascript" src="./js/mobile.js"></script>
-<script type="text/javascript" src="./js/FileSaver.js"></script>
 </body>
 </html>
