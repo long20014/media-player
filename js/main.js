@@ -651,6 +651,26 @@ function sortSongsByCreatedDate(songs, order) {
   })
 }
 
+function handleDrag(item) {
+  const selectedItem = item.target,
+        list = selectedItem.parentNode,
+        x = event.clientX,
+        y = event.clientY;
+  
+  selectedItem.classList.add('drag-sort-active');
+  let swapItem = document.elementFromPoint(x, y) === null ? selectedItem : document.elementFromPoint(x, y);
+  swapItem = swapItem.tagName === "TR" ? swapItem : swapItem.closest("TR");
+  if (swapItem && list === swapItem.parentNode) {
+    songPosSwap(domElement.songTable, selectedItem, swapItem);
+    swapItem = swapItem !== selectedItem.nextSibling ? swapItem : swapItem.nextSibling;
+    list.insertBefore(selectedItem, swapItem);
+  }
+}
+
+function handleDrop(item) {
+  item.target.classList.remove('drag-sort-active');
+}
+
 function addSongToDisplayList(song) {        
   var data = song.src;               
   var blobUrl = URL.createObjectURL(data);
@@ -660,19 +680,8 @@ function addSongToDisplayList(song) {
   var btnCell = document.createElement("TD");
 
   songRow.draggable = true; 
-
-  songRow.addEventListener("dragstart", (ev) => {
-    draggedItem = songRow;
-  })  
-  songRow.addEventListener("dragover", (ev) => {
-    ev.preventDefault();
-  })    
-  songRow.addEventListener("drop", (ev) => {             
-    songPosSwap(domElement.songTable, draggedItem, songRow);
-  })
-  songRow.addEventListener("dragend", (ev) => {
-    draggedItem = null;
-  })
+  songRow.ondrag = handleDrag;
+  songRow.ondragend = handleDrop;
 
   songItem.width = "100%";
   songItem.classList.add("song-item");   
@@ -1317,12 +1326,6 @@ function songPosSwap(songTable, draggedSongRow, targetSongRow) {
   var draggedSongRowIndex = Array.from(songTable.children).indexOf(draggedSongRow);
   var targetSongRowIndex = Array.from(songTable.children).indexOf(targetSongRow);
   if (draggedSongRowIndex !== targetSongRowIndex) {
-    if (draggedSongRowIndex === targetSongRowIndex - 1) {
-      songTable.insertBefore(songTable.children[targetSongRowIndex], songTable.children[draggedSongRowIndex]);
-    } else {
-      songTable.insertBefore(songTable.children[draggedSongRowIndex], songTable.children[targetSongRowIndex]);
-    }
-
     var draggedSongItem = appSongs[draggedSongRowIndex]
     var targetSongItem = appSongs[targetSongRowIndex]
 
@@ -1336,6 +1339,7 @@ function songPosSwap(songTable, draggedSongRow, targetSongRow) {
       appSongs.splice(targetSongRowIndex, 0, draggedSongItem);
       appSongs.splice(draggedSongRowIndex, 1);
     } 
+    console.log(appSongs);
     saveSongsPos();
   }    
 } 
@@ -1768,7 +1772,7 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
 
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
-    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);    
     domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
     domElement.playListSelect.addEventListener('focus', () => appSetting.isOnSelectingPlaylist = true); 
     domElement.playListSelect.addEventListener('focusout', () => appSetting.isOnSelectingPlaylist = false); 
@@ -1784,7 +1788,11 @@ function closeSongListPanel() {
 
 function reregisterAutoHideMediaList() {
   domElement.songListPanel.removeEventListener('mousemove', debounceHideMediaList);
-  debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+  if (appSetting.songListAutoCloseTime > 0) {
+    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+  } else {
+    debounceHideMediaList = null;
+  }
   domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
 }
 
