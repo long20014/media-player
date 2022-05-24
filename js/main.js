@@ -1,3 +1,4 @@
+'use strict';
 var BUFFER_SIZE = 4096;
 
 var PLAYER_FOOTER_HEIGHT = 125;
@@ -673,7 +674,7 @@ async function getSongList() {
   appSongs = await getAllSongFromPlayList(currentPlayList);
   if (appSongs && appSongs.length > 0) {
     loadSongsPos();
-    for (song of appSongs) {
+    for (const song of appSongs) {
       addSongToDisplayList(song);
     }
   }
