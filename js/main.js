@@ -1155,7 +1155,7 @@ function loadCurrentSong(song) {
 }
 
 function playNextSong() {
-  nextSong = appSongs[appSongs.indexOf(currentSong) + 1];
+  var nextSong = appSongs[appSongs.indexOf(currentSong) + 1];
   if (!nextSong) {
     if (appSetting.isLoopAll) {
       loadCurrentSong(appSongs[0]);
