@@ -624,7 +624,7 @@ function decreasePlayrateOnKeyPress() {
 /*----- -App Function- -----*/
 function clearAllSongs() {
   if (appSongs && appSongs.length > 0) {
-    for (song of appSongs) {
+    for (var song of appSongs) {
       deleteSongFromDisplayList(song.songName);
     }
     appSongs = [];
@@ -648,7 +648,7 @@ function deleteAllMedia() {
   var deleteConfirm = confirm('Are you sure to delete all media?');
   if (deleteConfirm) {
     var tempSongsList = [...appSongs];
-    for (song of tempSongsList) {
+    for (var song of tempSongsList) {
       deleteMedia(song);
     }
   }
@@ -674,7 +674,7 @@ async function getSongList() {
   appSongs = await getAllSongFromPlayList(currentPlayList);
   if (appSongs && appSongs.length > 0) {
     loadSongsPos();
-    for (const song of appSongs) {
+    for (var song of appSongs) {
       addSongToDisplayList(song);
     }
   }
@@ -698,13 +698,13 @@ function sortSongsByCreatedDate(songs, order) {
 }
 
 function handleDrag(item) {
-  const selectedItem = item.target,
+  var selectedItem = item.target,
     list = selectedItem.parentNode,
     x = event.clientX,
     y = event.clientY;
 
   selectedItem.classList.add('drag-sort-active');
-  let swapItem =
+  var swapItem =
     document.elementFromPoint(x, y) === null
       ? selectedItem
       : document.elementFromPoint(x, y);
@@ -1217,7 +1217,7 @@ function initUploadFileFunction() {
       );
     }
     var files = this.files;
-    for (file of files) {
+    for (var file of files) {
       if (file.type.includes('audio')) {
         // setAudioFileAsArrayBuffer(files[0]);
         uploadMediaFile(file, 'audio');
