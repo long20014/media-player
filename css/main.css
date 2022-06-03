@@ -588,11 +588,12 @@ div#player {
 }
 
 @media screen and (max-height: 412px) {
-  #setting-panel {
-    max-height: 380px;
+  #setting-panel,
+  #help-panel {
+    max-height: 360px;
   }
 
-  #setting-panel .panel-container {
+  .panel-container {
     overflow-y: auto;
     max-height: 200px;
   }
