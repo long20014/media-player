@@ -1891,7 +1891,7 @@ function enableSettingPanelMove() {
     function (event) {
       event.preventDefault();
       if (isMouseDown) {
-        mousePosition = {
+        var mousePosition = {
           x: event.clientX,
           y: event.clientY,
         };

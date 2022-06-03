@@ -348,7 +348,7 @@
         </div>
       </div>  
       <div id="player__main-toolbar">
-        <div id="speed-section">
+        <div id="speed-section" class="adjust-section">
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="speed-tooltip"></div>
             <input type="range" id="speed-control" value="20" step="1" min="1" max="40" onchange="changePlaybackRate(this.value)"></input>
@@ -380,7 +380,7 @@
             <button id="play-next" onclick="playNextSong()"><i class="fa fa-step-forward"></i></button>
           </div>       
         </div>
-        <div id="volume-section">
+        <div id="volume-section" class="adjust-section">
           <div class="item-with-tooltip">
             <div class="tooltip-text tooltip-top" id="volume-tooltip"></div>
             <input type="range" id="volume-control" value="100" step="1" min="0" max="100" onchange="changeVolume(this.value)"></input>    
