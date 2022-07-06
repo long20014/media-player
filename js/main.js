@@ -32,9 +32,6 @@ var screenWidth = CANVAS_WIDTH;
 var screenHeight = CANVAS_HEIGHT;
 var ctx, sourceNode, videoSourceNode, audioSourceNode, audioContext, analyser;
 
-var indexedDB;
-var IDBTransaction;
-var dbVersion;
 var db;
 var playLists = [];
 var $audio = new Audio();
