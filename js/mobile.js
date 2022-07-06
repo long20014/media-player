@@ -34,12 +34,11 @@ function startLoopMobile() {
 }
 
 function showListToggleMobile() {
-  var songListPanel = getElement('song-list-panel');
   if (appSetting.isListShow) {
     appSetting.isListShow = false;
-    songListPanel.style.right = '-120vw';
+    domElement.songListPanel.style.right = '-120vw';
   } else {
     appSetting.isListShow = true;
-    songListPanel.style.right = 0;
+    domElement.songListPanel.style.right = 0;
   }
 }

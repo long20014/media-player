@@ -189,168 +189,171 @@ window.addEventListener('resize', function () {
 });
 
 /*----- -Controller Function- -----*/
-function Equalizer() {
-  this.changeXFadeGainValue = function () {
-    if (currentSong && currentSong.type === 'video')
-      this.xfadeGain.gain.value =
-        DEFAULT_VIDEO_XFADE_GAIN +
-        currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
-    else {
-      this.xfadeGain.gain.value =
-        DEFAULT_AUDIO_XFADE_GAIN +
-        currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
-    }
-  };
-  this.connectFilters = function (audioContext) {
-    sourceNode.connect(this._31Hz);
-    this._31Hz.connect(this._62Hz);
-    this._62Hz.connect(this._125Hz);
-    this._125Hz.connect(this._250Hz);
-    this._250Hz.connect(this._500Hz);
-    this._500Hz.connect(this._1kHz);
-    this._1kHz.connect(this._2kHz);
-    this._2kHz.connect(this._4kHz);
-    this._4kHz.connect(this._8kHz);
-    this._8kHz.connect(this._16kHz);
-    this._16kHz.connect(this.xfadeGain);
-    this.xfadeGain.connect(audioContext.destination);
-  };
-  this.switchMediaSrcNode = function (audioContext) {
-    this.changeXFadeGainValue();
-    this.connectFilters(audioContext);
-  };
-  this.setupEqualizer = function (audioContext) {
-    this.bandSplit = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-    this.xfadeGain = audioContext.createGain();
-    this.changeXFadeGainValue();
+function Equalizer() {}
 
-    this._31Hz = audioContext.createBiquadFilter();
-    this._31Hz.type = 'lowshelf';
-    this._31Hz.frequency.value = this.bandSplit[0];
-    this._31Hz.Q.value = 1;
-    this._31Hz.gain.value = 0;
+Equalizer.prototype.changeXFadeGainValue = function () {
+  if (currentSong && currentSong.type === 'video')
+    this.xfadeGain.gain.value =
+      DEFAULT_VIDEO_XFADE_GAIN +
+      currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
+  else {
+    this.xfadeGain.gain.value =
+      DEFAULT_AUDIO_XFADE_GAIN +
+      currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
+  }
+};
 
-    this._62Hz = audioContext.createBiquadFilter();
-    this._62Hz.type = 'peaking';
-    this._62Hz.frequency.value = this.bandSplit[1];
-    this._62Hz.Q.value = 1;
-    this._62Hz.gain.value = 0;
+Equalizer.prototype.connectFilters = function (audioContext) {
+  sourceNode.connect(this._31Hz);
+  this._31Hz.connect(this._62Hz);
+  this._62Hz.connect(this._125Hz);
+  this._125Hz.connect(this._250Hz);
+  this._250Hz.connect(this._500Hz);
+  this._500Hz.connect(this._1kHz);
+  this._1kHz.connect(this._2kHz);
+  this._2kHz.connect(this._4kHz);
+  this._4kHz.connect(this._8kHz);
+  this._8kHz.connect(this._16kHz);
+  this._16kHz.connect(this.xfadeGain);
+  this.xfadeGain.connect(audioContext.destination);
+};
 
-    this._125Hz = audioContext.createBiquadFilter();
-    this._125Hz.type = 'peaking';
-    this._125Hz.frequency.value = this.bandSplit[2];
-    this._125Hz.Q.value = 1;
-    this._125Hz.gain.value = 0;
+Equalizer.prototype.switchMediaSrcNode = function (audioContext) {
+  this.changeXFadeGainValue();
+  this.connectFilters(audioContext);
+};
 
-    this._250Hz = audioContext.createBiquadFilter();
-    this._250Hz.type = 'peaking';
-    this._250Hz.frequency.value = this.bandSplit[3];
-    this._250Hz.Q.value = 1;
-    this._250Hz.gain.value = 0;
+Equalizer.prototype.setupEqualizer = function (audioContext) {
+  this.bandSplit = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+  this.xfadeGain = audioContext.createGain();
+  this.changeXFadeGainValue();
 
-    this._500Hz = audioContext.createBiquadFilter();
-    this._500Hz.type = 'peaking';
-    this._500Hz.frequency.value = this.bandSplit[4];
-    this._500Hz.Q.value = 1;
-    this._500Hz.gain.value = 0;
+  this._31Hz = audioContext.createBiquadFilter();
+  this._31Hz.type = 'lowshelf';
+  this._31Hz.frequency.value = this.bandSplit[0];
+  this._31Hz.Q.value = 1;
+  this._31Hz.gain.value = 0;
 
-    this._1kHz = audioContext.createBiquadFilter();
-    this._1kHz.type = 'peaking';
-    this._1kHz.frequency.value = this.bandSplit[5];
-    this._1kHz.Q.value = 1;
-    this._1kHz.gain.value = 0;
+  this._62Hz = audioContext.createBiquadFilter();
+  this._62Hz.type = 'peaking';
+  this._62Hz.frequency.value = this.bandSplit[1];
+  this._62Hz.Q.value = 1;
+  this._62Hz.gain.value = 0;
 
-    this._2kHz = audioContext.createBiquadFilter();
-    this._2kHz.type = 'peaking';
-    this._2kHz.frequency.value = this.bandSplit[6];
-    this._2kHz.Q.value = 1;
-    this._2kHz.gain.value = 0;
+  this._125Hz = audioContext.createBiquadFilter();
+  this._125Hz.type = 'peaking';
+  this._125Hz.frequency.value = this.bandSplit[2];
+  this._125Hz.Q.value = 1;
+  this._125Hz.gain.value = 0;
 
-    this._4kHz = audioContext.createBiquadFilter();
-    this._4kHz.type = 'peaking';
-    this._4kHz.frequency.value = this.bandSplit[7];
-    this._4kHz.Q.value = 1;
-    this._4kHz.gain.value = 0;
+  this._250Hz = audioContext.createBiquadFilter();
+  this._250Hz.type = 'peaking';
+  this._250Hz.frequency.value = this.bandSplit[3];
+  this._250Hz.Q.value = 1;
+  this._250Hz.gain.value = 0;
 
-    this._8kHz = audioContext.createBiquadFilter();
-    this._8kHz.type = 'peaking';
-    this._8kHz.frequency.value = this.bandSplit[8];
-    this._8kHz.Q.value = 1;
-    this._8kHz.gain.value = 0;
+  this._500Hz = audioContext.createBiquadFilter();
+  this._500Hz.type = 'peaking';
+  this._500Hz.frequency.value = this.bandSplit[4];
+  this._500Hz.Q.value = 1;
+  this._500Hz.gain.value = 0;
 
-    this._16kHz = audioContext.createBiquadFilter();
-    this._16kHz.type = 'highshelf';
-    this._16kHz.frequency.value = this.bandSplit[9];
-    this._16kHz.Q.value = 1;
-    this._16kHz.gain.value = 0;
+  this._1kHz = audioContext.createBiquadFilter();
+  this._1kHz.type = 'peaking';
+  this._1kHz.frequency.value = this.bandSplit[5];
+  this._1kHz.Q.value = 1;
+  this._1kHz.gain.value = 0;
 
-    this.connectFilters(audioContext);
-  };
+  this._2kHz = audioContext.createBiquadFilter();
+  this._2kHz.type = 'peaking';
+  this._2kHz.frequency.value = this.bandSplit[6];
+  this._2kHz.Q.value = 1;
+  this._2kHz.gain.value = 0;
 
-  this.calculateTooltipValue = function (gainValue) {
-    return gainValue.toFixed(1);
-  };
+  this._4kHz = audioContext.createBiquadFilter();
+  this._4kHz.type = 'peaking';
+  this._4kHz.frequency.value = this.bandSplit[7];
+  this._4kHz.Q.value = 1;
+  this._4kHz.gain.value = 0;
 
-  this.set_31HzGain = function (gainValue) {
-    this._31Hz.gain.value = gainValue;
-    getElement('_31Hz-tooltip').textContent =
-      '31Hz: ' + this.calculateTooltipValue(gainValue);
-  };
+  this._8kHz = audioContext.createBiquadFilter();
+  this._8kHz.type = 'peaking';
+  this._8kHz.frequency.value = this.bandSplit[8];
+  this._8kHz.Q.value = 1;
+  this._8kHz.gain.value = 0;
 
-  this.set_62HzGain = function (gainValue) {
-    this._62Hz.gain.value = gainValue;
-    getElement('_62Hz-tooltip').textContent =
-      '62Hz: ' + this.calculateTooltipValue(gainValue);
-  };
+  this._16kHz = audioContext.createBiquadFilter();
+  this._16kHz.type = 'highshelf';
+  this._16kHz.frequency.value = this.bandSplit[9];
+  this._16kHz.Q.value = 1;
+  this._16kHz.gain.value = 0;
 
-  this.set_125HzGain = function (gainValue) {
-    this._125Hz.gain.value = gainValue;
-    getElement('_125Hz-tooltip').textContent =
-      '125Hz: ' + this.calculateTooltipValue(gainValue);
-  };
+  this.connectFilters(audioContext);
+};
 
-  this.set_250HzGain = function (gainValue) {
-    this._250Hz.gain.value = gainValue;
-    getElement('_250Hz-tooltip').textContent =
-      '250Hz: ' + this.calculateTooltipValue(gainValue);
-  };
+Equalizer.prototype.calculateTooltipValue = function (gainValue) {
+  return gainValue.toFixed(1);
+};
 
-  this.set_500HzGain = function (gainValue) {
-    this._500Hz.gain.value = gainValue;
-    getElement('_500Hz-tooltip').textContent =
-      '500Hz: ' + this.calculateTooltipValue(gainValue);
-  };
+Equalizer.prototype.set_31HzGain = function (gainValue) {
+  this._31Hz.gain.value = gainValue;
+  getElement('_31Hz-tooltip').textContent =
+    '31Hz: ' + this.calculateTooltipValue(gainValue);
+};
 
-  this.set_1kHzGain = function (gainValue) {
-    this._1kHz.gain.value = gainValue;
-    getElement('_1kHz-tooltip').textContent =
-      '1kHz: ' + this.calculateTooltipValue(gainValue);
-  };
+Equalizer.prototype.set_62HzGain = function (gainValue) {
+  this._62Hz.gain.value = gainValue;
+  getElement('_62Hz-tooltip').textContent =
+    '62Hz: ' + this.calculateTooltipValue(gainValue);
+};
 
-  this.set_2kHzGain = function (gainValue) {
-    this._2kHz.gain.value = gainValue;
-    getElement('_2kHz-tooltip').textContent =
-      '2kHz: ' + this.calculateTooltipValue(gainValue);
-  };
+Equalizer.prototype.set_125HzGain = function (gainValue) {
+  this._125Hz.gain.value = gainValue;
+  getElement('_125Hz-tooltip').textContent =
+    '125Hz: ' + this.calculateTooltipValue(gainValue);
+};
 
-  this.set_4kHzGain = function (gainValue) {
-    this._4kHz.gain.value = gainValue;
-    getElement('_4kHz-tooltip').textContent =
-      '4kHz: ' + this.calculateTooltipValue(gainValue);
-  };
+Equalizer.prototype.set_250HzGain = function (gainValue) {
+  this._250Hz.gain.value = gainValue;
+  getElement('_250Hz-tooltip').textContent =
+    '250Hz: ' + this.calculateTooltipValue(gainValue);
+};
 
-  this.set_8kHzGain = function (gainValue) {
-    this._8kHz.gain.value = gainValue;
-    getElement('_8kHz-tooltip').textContent =
-      '8kHz: ' + this.calculateTooltipValue(gainValue);
-  };
+Equalizer.prototype.set_500HzGain = function (gainValue) {
+  this._500Hz.gain.value = gainValue;
+  getElement('_500Hz-tooltip').textContent =
+    '500Hz: ' + this.calculateTooltipValue(gainValue);
+};
 
-  this.set_16kHzGain = function (gainValue) {
-    this._16kHz.gain.value = gainValue;
-    getElement('_16kHz-tooltip').textContent =
-      '16kHz: ' + this.calculateTooltipValue(gainValue);
-  };
-}
+Equalizer.prototype.set_1kHzGain = function (gainValue) {
+  this._1kHz.gain.value = gainValue;
+  getElement('_1kHz-tooltip').textContent =
+    '1kHz: ' + this.calculateTooltipValue(gainValue);
+};
+
+Equalizer.prototype.set_2kHzGain = function (gainValue) {
+  this._2kHz.gain.value = gainValue;
+  getElement('_2kHz-tooltip').textContent =
+    '2kHz: ' + this.calculateTooltipValue(gainValue);
+};
+
+Equalizer.prototype.set_4kHzGain = function (gainValue) {
+  this._4kHz.gain.value = gainValue;
+  getElement('_4kHz-tooltip').textContent =
+    '4kHz: ' + this.calculateTooltipValue(gainValue);
+};
+
+Equalizer.prototype.set_8kHzGain = function (gainValue) {
+  this._8kHz.gain.value = gainValue;
+  getElement('_8kHz-tooltip').textContent =
+    '8kHz: ' + this.calculateTooltipValue(gainValue);
+};
+
+Equalizer.prototype.set_16kHzGain = function (gainValue) {
+  this._16kHz.gain.value = gainValue;
+  getElement('_16kHz-tooltip').textContent =
+    '16kHz: ' + this.calculateTooltipValue(gainValue);
+};
 
 function changePitch() {
   // var oscillator = audioContext.createOscillator()
