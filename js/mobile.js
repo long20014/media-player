@@ -1,6 +1,8 @@
+'use strict';
+
 /*------ -control- ------*/
 function loopToggleMobile() {
-  if (media.loop) {
+  if ($media.loop) {
     startLoopAllMobile();
   } else if (isLoopAll) {
     stopLoopAllMobile();
@@ -10,7 +12,7 @@ function loopToggleMobile() {
 }
 
 function startLoopAllMobile() {
-  media.loop = false;
+  $media.loop = false;
   isLoopAll = true;
   getElement('loop-button-tooltip-mobile').textContent = 'Stop loop all';
   domElement.loopToggleButtonMobile.firstChild.classList.remove('fa-redo-alt');
@@ -26,7 +28,7 @@ function stopLoopAllMobile() {
 }
 
 function startLoopMobile() {
-  media.loop = true;
+  $media.loop = true;
   getElement('loop-button-tooltip-mobile').textContent = 'Start loop all';
   domElement.loopToggleButtonMobile.classList.remove('text--gray');
 }

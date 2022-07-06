@@ -5,15 +5,15 @@ var SECOND_OF_MINUTE = 60;
 var subtitleSetting = {
   font: 'serif',
   fontSize: '24',
-  fontColor: 'white'
-}
+  fontColor: 'white',
+};
 
 function createSubtitle(text) {
   var subtitle = text;
   var pattern = /(\d+)\n([\d:,]+)\s+-{2}\>\s+([\d:,]+)\n([\s\S]*?(?=\n{2}|$))/g;
   var result = [];
 
-  if (typeof (text) != "string") throw "Sorry, Parser accept string only.";
+  if (typeof text != 'string') throw 'Sorry, Parser accept string only.';
   if (subtitle === null) return subtitle;
 
   var parse = subtitle.replace(/\r\n|\r|\n/g, '\n');
@@ -25,7 +25,7 @@ function createSubtitle(text) {
       start: convertTime(matches[2]),
       end: convertTime(matches[3]),
       text: matches[4],
-    })
+    });
   }
 
   return result;
@@ -35,19 +35,24 @@ function convertTime(timeString) {
   var timeParts = timeString.split(':');
   var hour = +timeParts[0];
   var minute = +timeParts[1];
-  var second = +(timeParts[2].replace(/\,/g, '\.'));
-  return (hour * SECOND_OF_HOUR + minute * SECOND_OF_MINUTE + second).toFixed(3)
+  var second = +timeParts[2].replace(/\,/g, '.');
+  return (hour * SECOND_OF_HOUR + minute * SECOND_OF_MINUTE + second).toFixed(
+    3
+  );
 }
 
 function getCurrentSubtitleLine(currentSubtitle, currentTime) {
   if (currentSubtitle && currentSubtitle.length > 0) {
-    return currentSubtitle.find((line) => isSubtitleLineValid(line, currentTime))
+    return currentSubtitle.find((line) =>
+      isSubtitleLineValid(line, currentTime)
+    );
   }
   return null;
 }
 
 function setCurrentSubtitle() {
-  if (currentSong && currentSong.type === 'video') currentSubtitle = currentSong.subtitle;
+  if (currentSong && currentSong.type === 'video')
+    currentSubtitle = currentSong.subtitle;
   else currentSubtitle = null;
 }
 
@@ -67,7 +72,9 @@ function drawSubtitle() {
 
 function cleanSubtitle() {
   if (domElement.subtitleWrapper.childNodes.length > 0) {
-    domElement.subtitleWrapper.childNodes.forEach((line) => domElement.subtitleWrapper.removeChild(line));
+    domElement.subtitleWrapper.childNodes.forEach((line) =>
+      domElement.subtitleWrapper.removeChild(line)
+    );
   }
 }
 
@@ -75,9 +82,9 @@ function addSubtitle() {
   domElement.subtitleUpload.click();
 }
 
-function initUploadSubtitleFile() {    
-  domElement.subtitleUpload.onchange = function(e){
-    var file = this.files[0]; 
+function initUploadSubtitleFile() {
+  domElement.subtitleUpload.onchange = function (e) {
+    var file = this.files[0];
     var fileNameSplitted = file.name.split('.');
     var fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
     if (fileExtension !== 'srt') {
@@ -88,25 +95,28 @@ function initUploadSubtitleFile() {
       alert('You can only add subtitle for a videop');
     } else {
       const reader = new FileReader();
-      reader.readAsText(file, "UTF-8");
+      reader.readAsText(file, 'UTF-8');
       reader.onload = function (evt) {
         currentSong['subtitle'] = createSubtitle(evt.target.result);
         setCurrentSubtitle();
-      }
+      };
       reader.onerror = function (evt) {
         alert('Failed to read files');
-      }
+      };
     }
-    e.target.value = "";
-  };   
+    e.target.value = '';
+  };
 }
 
 function isSubtitleLineValid(line, currentTime) {
-  return (+line.start < +currentTime && +line.end > +currentTime)
+  return +line.start < +currentTime && +line.end > +currentTime;
 }
 
 function isSubtitleEnded() {
-  return (currentSubtitle && +currentSubtitle[currentSubtitle.length - 1].end < +media.currentTime)
+  return (
+    currentSubtitle &&
+    +currentSubtitle[currentSubtitle.length - 1].end < +$media.currentTime
+  );
 }
 
 function changeFontSize(value) {
@@ -115,8 +125,15 @@ function changeFontSize(value) {
 
 function checkAndDrawSubtitle() {
   if (!isSubtitleEnded()) {
-    if (!currentSubtitleLine || (currentSubtitleLine && !isSubtitleLineValid(currentSubtitleLine, media.currentTime))) {
-      currentSubtitleLine = getCurrentSubtitleLine(currentSubtitle, media.currentTime);
+    if (
+      !currentSubtitleLine ||
+      (currentSubtitleLine &&
+        !isSubtitleLineValid(currentSubtitleLine, $media.currentTime))
+    ) {
+      currentSubtitleLine = getCurrentSubtitleLine(
+        currentSubtitle,
+        $media.currentTime
+      );
       if (domElement.subtitleWrapper.childNodes.length > 0) cleanSubtitle();
       if (currentSubtitleLine) drawSubtitle();
       else cleanSubtitle();
@@ -127,13 +144,11 @@ function checkAndDrawSubtitle() {
 function subtitleEnableToggle() {
   if (appSetting.isSubtitleEnable) {
     appSetting.isSubtitleEnable = false;
-    getElement("subtitle-enable-tooltip").textContent = "Turn on subtitle";
+    getElement('subtitle-enable-tooltip').textContent = 'Turn on subtitle';
     domElement.subtitleEnableCheckbox.checked = false;
   } else {
     appSetting.isSubtitleEnable = true;
-    getElement("subtitle-enable-tooltip").textContent = "Turn off subtitle";
+    getElement('subtitle-enable-tooltip').textContent = 'Turn off subtitle';
     domElement.subtitleEnableCheckbox.checked = true;
   }
 }
-
-

@@ -38,9 +38,9 @@ var IDBTransaction;
 var dbVersion;
 var db;
 var playLists = [];
-var audio = new Audio();
-var video;
-var media = audio;
+var $audio = new Audio();
+var $video;
+var $media = $audio;
 var _processor;
 var _equalizer;
 var delay;
@@ -52,8 +52,6 @@ var currentVolume;
 var currentEnhancedVolume;
 var currentPlaybackRate = 1;
 var currentPlayList = DEFAULT_PLAYLIST;
-var pitch = 1;
-var tempo = 1;
 var appSongs;
 var currentSong;
 var draggedItem;
@@ -87,11 +85,11 @@ var debounceHideMediaList;
 var domElement = {};
 var tooltip = {};
 
-media.controls = false;
-media.loop = false;
-media.isPlay = false;
-media.autoplay = false;
-media.preservesPitch = true;
+$media.controls = false;
+$media.loop = false;
+$media.isPlay = false;
+$media.autoplay = false;
+$media.preservesPitch = true;
 
 /*----- -Window Function- -----*/
 window.addEventListener('keydown', (e) => {
@@ -130,9 +128,9 @@ window.addEventListener('keydown', (e) => {
     } else if (e.key === "'") {
       increasePlayrateOnKeyPress();
     } else if (e.keyCode === keyCode.LEFT_ARROW) {
-      changeElapsedTime(media.currentTime - TIME_STEP);
+      changeElapsedTime($media.currentTime - TIME_STEP);
     } else if (e.keyCode === keyCode.RIGHT_ARROW) {
-      changeElapsedTime(media.currentTime + TIME_STEP);
+      changeElapsedTime($media.currentTime + TIME_STEP);
     }
   }
 });
@@ -145,7 +143,7 @@ window.addEventListener(
     audioContext = new AudioContext();
     _equalizer = new Equalizer();
     bufferSource = audioContext.createBufferSource();
-    console.log(audio);
+    console.log($audio);
     analyser = audioContext.createAnalyser();
     initDOMVars();
     initPlayListsToSelection();
@@ -162,8 +160,8 @@ window.addEventListener(
     ctx = domElement.canvas.getContext('2d', { alpha: false });
     initVideo();
     initCanvasSize();
-    audioSourceNode = audioContext.createMediaElementSource(audio);
-    videoSourceNode = audioContext.createMediaElementSource(video);
+    audioSourceNode = audioContext.createMediaElementSource($audio);
+    videoSourceNode = audioContext.createMediaElementSource($video);
     sourceNode = audioSourceNode;
     sourceNode.connect(analyser);
     analyser.connect(audioContext.destination);
@@ -430,11 +428,11 @@ function resetEqualizer() {
 
 function muteToggle() {
   if (!appSetting.isMute) {
-    media.volume = 0.0;
+    $media.volume = 0.0;
     appSetting.isMute = true;
   } else {
     console.log(currentVolume);
-    media.volume = getTotalVolume();
+    $media.volume = getTotalVolume();
     appSetting.isMute = false;
   }
 }
@@ -461,7 +459,7 @@ function changeDelay(delayValue) {
 
 function changeVolume(volumeValue) {
   setCurrentVolume(volumeValue);
-  media.volume = getTotalVolume();
+  $media.volume = getTotalVolume();
   getElement('volume-tooltip').textContent = 'volume: ' + volumeValue;
   getElement('volume-tooltip-mobile').textContent = 'volume: ' + volumeValue;
   if (appSetting.isMute) {
@@ -481,20 +479,20 @@ function changeEnhancedVolume(volumeValue) {
 
 function changePlaybackRate(playbackRateValue) {
   currentPlaybackRate = parseFloat(playbackRateValue / PLAYRATE_STEP_COUNT);
-  media.playbackRate = currentPlaybackRate;
-  getElement('speed-tooltip').textContent = 'Speed: ' + media.playbackRate;
+  $media.playbackRate = currentPlaybackRate;
+  getElement('speed-tooltip').textContent = 'Speed: ' + $media.playbackRate;
   getElement('speed-tooltip-mobile').textContent =
-    'Speed: ' + media.playbackRate;
+    'Speed: ' + $media.playbackRate;
 }
 
 function changeElapsedTime(timeValue) {
   appSetting.needFilterApply = true;
-  media.currentTime = timeValue;
+  $media.currentTime = timeValue;
 }
 
 function startElapsedTimeChange() {
-  var isPlaying = media.isPlay;
-  media.pause();
+  var isPlaying = $media.isPlay;
+  $media.pause();
   if (isPlaying) {
     // need setTimeout to call this after pause
     // event listener take effect.
@@ -505,8 +503,8 @@ function startElapsedTimeChange() {
 }
 
 function endElapsedTimeChange() {
-  if (media.isPlay) {
-    media.play();
+  if ($media.isPlay) {
+    $media.play();
   }
 }
 
@@ -534,7 +532,7 @@ function loopAllToggle() {
 }
 
 function loopToggle() {
-  if (media.loop) {
+  if ($media.loop) {
     stopLoop();
   } else {
     startLoop();
@@ -555,19 +553,19 @@ function stopLoopAll() {
 }
 
 function startLoop() {
-  media.loop = true;
+  $media.loop = true;
   getElement('loop-button-tooltip').textContent = 'Stop Loop';
   domElement.loopToggleButton.classList.remove('text--gray');
 }
 
 function stopLoop() {
-  media.loop = false;
+  $media.loop = false;
   getElement('loop-button-tooltip').textContent = 'Loop';
   domElement.loopToggleButton.classList.add('text--gray');
 }
 
 function playToggle(event) {
-  if (!media.isPlay) {
+  if (!$media.isPlay) {
     playMedia();
   } else {
     pauseMedia();
@@ -656,7 +654,7 @@ function deleteAllMedia() {
 
 function unsetMedia() {
   currentSong = null;
-  media.src = '';
+  $media.src = '';
   domElement.duration.innerHTML = '0:00';
   clearCanvas();
   stopFrameLooper();
@@ -754,24 +752,24 @@ function addSongToDisplayList(song) {
 }
 
 function switchMediaType() {
-  if (media.isPlay) {
+  if ($media.isPlay) {
     stopMedia();
   }
   stopFrameLooper();
   clearCanvas();
-  var isLoop = media.loop;
+  var isLoop = $media.loop;
   if (currentSong.type === 'audio') {
     sourceNode = audioSourceNode;
     _equalizer.switchMediaSrcNode(audioContext);
-    media = audio;
+    $media = $audio;
     startFrameLooper();
   } else if (currentSong.type === 'video') {
     sourceNode = videoSourceNode;
     _equalizer.switchMediaSrcNode(audioContext);
-    media = video;
+    $media = $video;
   }
-  media.loop = isLoop;
-  media.volume = getTotalVolume();
+  $media.loop = isLoop;
+  $media.volume = getTotalVolume();
 }
 
 function saveMediaSettings() {
@@ -882,8 +880,8 @@ function chooseSong(event, song) {
   if (appSetting.isSongSettingUsed) {
     loadMediaSettings();
   }
-  media.src = event.target.dataset.src;
-  media.playbackRate = currentPlaybackRate;
+  $media.src = event.target.dataset.src;
+  $media.playbackRate = currentPlaybackRate;
   setDownloadLink(event.target.dataset.src, event.target.textContent);
   setCurrentSubtitle();
 }
@@ -897,32 +895,32 @@ function deleteSongFromDisplayList(songName) {
 }
 
 function loadMediaElapsedTime() {
-  media.onloadedmetadata = function () {
+  $media.onloadedmetadata = function () {
     var getDuration = function () {
       return (
-        parseInt(media.duration / 60) +
+        parseInt($media.duration / 60) +
         ':' +
-        (parseInt(media.duration % 60) > 9
-          ? parseInt(media.duration % 60)
-          : '0' + parseInt(media.duration % 60))
+        (parseInt($media.duration % 60) > 9
+          ? parseInt($media.duration % 60)
+          : '0' + parseInt($media.duration % 60))
       );
     };
     var getElapsedTime = function () {
       return (
-        parseInt(media.currentTime / 60) +
+        parseInt($media.currentTime / 60) +
         ':' +
-        (parseInt(media.currentTime % 60) > 9
-          ? parseInt(media.currentTime % 60)
-          : '0' + parseInt(media.currentTime % 60))
+        (parseInt($media.currentTime % 60) > 9
+          ? parseInt($media.currentTime % 60)
+          : '0' + parseInt($media.currentTime % 60))
       );
     };
-    media.ontimeupdate = () => {
+    $media.ontimeupdate = () => {
       domElement.elapsedTime.textContent = getElapsedTime();
-      domElement.elapsedTimeBar.value = parseInt(media.currentTime);
+      domElement.elapsedTimeBar.value = parseInt($media.currentTime);
       if (appSetting.isSubtitleEnable) checkAndDrawSubtitle();
       else cleanSubtitle();
     };
-    media.onended = () => {
+    $media.onended = () => {
       console.log('end');
       clearCanvas();
       playNextSong();
@@ -983,7 +981,7 @@ async function removePlayList() {
   if (deleteConfirm) {
     var playListName = currentPlayList;
     if (playListName !== DEFAULT_DB) {
-      if (media.isPlay) {
+      if ($media.isPlay) {
         alert('Please stop or pause media before remove play list!');
       } else {
         var target = Array.from(domElement.playListSelect.children).find(
@@ -1081,21 +1079,21 @@ function changeVideoSetting(value, type) {
 
 /*----- -Media Function- -----*/
 function pauseMedia() {
-  media.pause();
+  $media.pause();
 }
 
-media.onpause = () => {
+$media.onpause = () => {
   setPlayToFalse();
 };
 
-media.onplay = () => {
+$media.onplay = () => {
   setPlayToTrue();
 };
 
 function playMedia() {
   // changePitch();
-  if (media.src !== window.location.href && media.src) {
-    media.play();
+  if ($media.src !== window.location.href && $media.src) {
+    $media.play();
     if (currentSong.type === 'video') {
       appSetting.needFilterApply = true;
       processVideo();
@@ -1109,18 +1107,18 @@ function playMedia() {
   }
 }
 
-media.onpause = () => {
+$media.onpause = () => {
   setPlayToFalse();
 };
 
-media.onplay = () => {
+$media.onplay = () => {
   setPlayToTrue();
 };
 
 function stopMedia() {
-  media.pause();
+  $media.pause();
   setPlayToFalse();
-  media.currentTime = 0;
+  $media.currentTime = 0;
 }
 
 function setPlayToFalse() {
@@ -1128,7 +1126,7 @@ function setPlayToFalse() {
   domElement.playButtonOnCanvasIcon.innerHTML =
     '<i class="fas fa-pause text--white"></i>';
   tooltip.playButton.textContent = 'Play';
-  media.isPlay = false;
+  $media.isPlay = false;
 }
 
 function setPlayToTrue() {
@@ -1136,22 +1134,22 @@ function setPlayToTrue() {
   domElement.playButtonOnCanvasIcon.innerHTML =
     '<i class="fas fa-play text--white"></i>';
   tooltip.playButton.textContent = 'Pause';
-  media.isPlay = true;
+  $media.isPlay = true;
 }
 
 function loadCurrentSong(song) {
   getElement(currentSong.src.name).classList.remove('song-highlight');
   currentSong = song;
   switchMediaType();
-  media.isPlay = true;
+  $media.isPlay = true;
   if (appSetting.isSongSettingUsed) {
     loadMediaSettings();
   }
   var blobUrl = URL.createObjectURL(currentSong.src);
   setDownloadLink(blobUrl, currentSong.songName);
   getElement(currentSong.src.name).classList.add('song-highlight');
-  media.src = blobUrl;
-  media.playbackRate = currentPlaybackRate;
+  $media.src = blobUrl;
+  $media.playbackRate = currentPlaybackRate;
 }
 
 function playNextSong() {
@@ -1160,14 +1158,14 @@ function playNextSong() {
     if (appSetting.isLoopAll) {
       loadCurrentSong(appSongs[0]);
     } else {
-      if (media.isPlay) {
+      if ($media.isPlay) {
         stopMedia();
       }
     }
   } else {
     loadCurrentSong(nextSong);
   }
-  if (media.isPlay) {
+  if ($media.isPlay) {
     setCurrentSubtitle();
     _playCurrentSong();
   }
@@ -1176,13 +1174,13 @@ function playNextSong() {
 function playPreviousSong() {
   previousSong = appSongs[appSongs.indexOf(currentSong) - 1];
   if (!previousSong) {
-    if (media.isPlay) {
+    if ($media.isPlay) {
       stopMedia();
     }
   } else {
     loadCurrentSong(previousSong);
   }
-  if (media.isPlay) {
+  if ($media.isPlay) {
     setCurrentSubtitle();
     _playCurrentSong();
   }
@@ -1195,7 +1193,7 @@ function _playCurrentSong() {
 
 function setElapsedTimeBar(elapsedTimeBar) {
   elapsedTimeBar.min = 0;
-  elapsedTimeBar.max = parseInt(media.duration);
+  elapsedTimeBar.max = parseInt($media.duration);
   elapsedTimeBar.value = 0;
 }
 
@@ -1419,7 +1417,7 @@ async function renamePlayListFromDB(playList) {
 }
 
 async function changePlayList(playListName) {
-  if (!media.isPlay) {
+  if (!$media.isPlay) {
     currentPlayList = playListName;
     clearAllSongs();
     await getSongList();
@@ -1646,7 +1644,7 @@ function adjustCanvasFrameLooperSize() {
 function adjustCanvasSize() {
   if (currentSong.type === 'video') {
     adjustCanvasAndVideoSize(_processor);
-    if (!media.isPlay) {
+    if (!$media.isPlay) {
       _processor.computeFrame();
     }
   } else {
@@ -1690,43 +1688,45 @@ function calculateWindowSizeAfterwindowResize() {
 
 /*----- -Video- -----*/
 function Processor() {
-  this.doLoad = function () {
-    this.video = video;
-    var self = this;
-    this.video.addEventListener(
-      'play',
-      function () {
-        adjustCanvasAndVideoSize(self);
-        self.timerCallback();
-      },
-      0
-    );
-  };
-
-  this.timerCallback = function () {
-    if (this.width === 0 || this.height === 0) {
-      adjustCanvasAndVideoSize(this);
-    }
-    if (this.video.paused || this.video.ended) {
-      stopCanvasRendering();
-      return;
-    }
-    this.computeFrame();
-    var self = this;
-    canvasRenderLoopTimeout = setTimeout(function () {
-      self.timerCallback();
-    }, 33);
-  };
-
-  this.computeFrame = function () {
-    if (appSetting.needFilterApply) {
-      invokeCanvasBuilder();
-      setTimeout(() => (appSetting.needFilterApply = false), 0);
-    }
-    ctx.drawImage(this.video, 0, 0, this.width, this.height);
-    return;
-  };
+  this.video = null;
 }
+
+Processor.prototype.doLoad = function (video) {
+  this.video = video;
+  var self = this;
+  this.video.addEventListener(
+    'play',
+    function () {
+      adjustCanvasAndVideoSize(self);
+      self.timerCallback();
+    },
+    0
+  );
+};
+
+Processor.prototype.timerCallback = function () {
+  if (this.width === 0 || this.height === 0) {
+    adjustCanvasAndVideoSize(this);
+  }
+  if (this.video.paused || this.video.ended) {
+    stopCanvasRendering();
+    return;
+  }
+  this.computeFrame();
+  var self = this;
+  canvasRenderLoopTimeout = setTimeout(function () {
+    self.timerCallback();
+  }, 33);
+};
+
+Processor.prototype.computeFrame = function () {
+  if (appSetting.needFilterApply) {
+    invokeCanvasBuilder();
+    setTimeout(() => (appSetting.needFilterApply = false), 0);
+  }
+  ctx.drawImage(this.video, 0, 0, this.width, this.height);
+  return;
+};
 
 function CanvasFilterBuilder() {
   this.brightnessPercentValue = 100;
@@ -1737,76 +1737,76 @@ function CanvasFilterBuilder() {
   this.sepiaPercentValue = 0;
   this.blurValue = 0;
   this.hueRotateValue = 0;
-
-  this.buildBrightness = function (brightness) {
-    this.brightnessPercentValue = limitPercentValue(brightness, 0, 200);
-    return this;
-  };
-
-  this.buildContrast = function (contrast) {
-    this.contrastPercentValue = limitPercentValue(contrast, 0, 150);
-    return this;
-  };
-
-  this.buildInvert = function (invert) {
-    this.invertPercentValue = limitPercentValue(invert, 0, 100);
-    return this;
-  };
-
-  this.buildGrayscale = function (grayscale) {
-    this.grayscalePercentValue = limitPercentValue(grayscale, 0, 100);
-    return this;
-  };
-
-  this.buildSaturate = function (saturate) {
-    this.saturatePercentValue = limitPercentValue(saturate, 0, 100);
-    return this;
-  };
-
-  this.buildSepia = function (sepia) {
-    this.sepiaPercentValue = limitPercentValue(sepia, 0, 100);
-    return this;
-  };
-
-  this.buildBlur = function (value) {
-    this.blurValue = value;
-    return this;
-  };
-
-  this.buildhueRotation = function (deg) {
-    this.hueRotateValue = deg;
-    return this;
-  };
-
-  this.build = function () {
-    ctx.filter =
-      'brightness(' +
-      this.brightnessPercentValue +
-      '%) ' +
-      'contrast(' +
-      this.contrastPercentValue +
-      '%)' +
-      'invert(' +
-      this.invertPercentValue +
-      '%) ' +
-      'grayscale(' +
-      this.grayscalePercentValue +
-      '%)' +
-      'saturate(' +
-      this.saturatePercentValue +
-      '%)' +
-      'sepia(' +
-      this.sepiaPercentValue +
-      '%)' +
-      'blur(' +
-      this.blurValue +
-      'px) ' +
-      'hue-rotate(' +
-      this.hueRotateValue +
-      'deg)';
-    return this;
-  };
 }
+
+CanvasFilterBuilder.prototype.buildBrightness = function (brightness) {
+  this.brightnessPercentValue = limitPercentValue(brightness, 0, 200);
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildContrast = function (contrast) {
+  this.contrastPercentValue = limitPercentValue(contrast, 0, 150);
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildInvert = function (invert) {
+  this.invertPercentValue = limitPercentValue(invert, 0, 100);
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildGrayscale = function (grayscale) {
+  this.grayscalePercentValue = limitPercentValue(grayscale, 0, 100);
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildSaturate = function (saturate) {
+  this.saturatePercentValue = limitPercentValue(saturate, 0, 100);
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildSepia = function (sepia) {
+  this.sepiaPercentValue = limitPercentValue(sepia, 0, 100);
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildBlur = function (value) {
+  this.blurValue = value;
+  return this;
+};
+
+CanvasFilterBuilder.prototype.buildhueRotation = function (deg) {
+  this.hueRotateValue = deg;
+  return this;
+};
+
+CanvasFilterBuilder.prototype.build = function () {
+  ctx.filter =
+    'brightness(' +
+    this.brightnessPercentValue +
+    '%) ' +
+    'contrast(' +
+    this.contrastPercentValue +
+    '%)' +
+    'invert(' +
+    this.invertPercentValue +
+    '%) ' +
+    'grayscale(' +
+    this.grayscalePercentValue +
+    '%)' +
+    'saturate(' +
+    this.saturatePercentValue +
+    '%)' +
+    'sepia(' +
+    this.sepiaPercentValue +
+    '%)' +
+    'blur(' +
+    this.blurValue +
+    'px) ' +
+    'hue-rotate(' +
+    this.hueRotateValue +
+    'deg)';
+  return this;
+};
 
 function invokeCanvasBuilder() {
   new CanvasFilterBuilder()
@@ -1822,18 +1822,18 @@ function invokeCanvasBuilder() {
 }
 
 function processVideo() {
-  _processor.doLoad();
+  _processor.doLoad($video);
 }
 
 function initVideo() {
-  video = document.createElement('video');
-  video.addEventListener('play', (event) => {
+  $video = document.createElement('video');
+  $video.addEventListener('play', (event) => {
     setPlayToTrue();
   });
-  video.addEventListener('pause', (event) => {
+  $video.addEventListener('pause', (event) => {
     setPlayToFalse();
   });
-  var tracks = video.audioTracks;
+  var tracks = $video.audioTracks;
 }
 
 /*----- -DOM interact- -----*/
@@ -2102,12 +2102,12 @@ function initTooltips() {
   tooltip.songListAutoCloseTime.textContent =
     appSetting.songListAutoCloseTime / 1000 +
     's after mouse move in and out the list';
-  getElement('volume-tooltip').textContent = 'Volume: ' + audio.volume * 100;
-  getElement('speed-tooltip').textContent = 'Speed: ' + audio.playbackRate;
+  getElement('volume-tooltip').textContent = 'Volume: ' + $audio.volume * 100;
+  getElement('speed-tooltip').textContent = 'Speed: ' + $audio.playbackRate;
   getElement('volume-tooltip-mobile').textContent =
-    'Volume: ' + audio.volume * 100;
+    'Volume: ' + $audio.volume * 100;
   getElement('speed-tooltip-mobile').textContent =
-    'Speed: ' + audio.playbackRate;
+    'Speed: ' + $audio.playbackRate;
   getElement('stop-button-tooltip').textContent = 'Stop';
   getElement('loop-button-tooltip').textContent = 'Start loop';
   getElement('loop-all-button-tooltip').textContent = 'Loop all';
