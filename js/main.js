@@ -4,8 +4,7 @@ var BUFFER_SIZE = 4096;
 var PLAYER_FOOTER_HEIGHT = 125;
 var PLAYER_HEADER_HEIGHT = 62.5;
 var CANVAS_WIDTH = window.innerWidth * 0.85;
-var CANVAS_HEIGHT =
-  window.innerHeight - PLAYER_HEADER_HEIGHT - PLAYER_FOOTER_HEIGHT;
+var CANVAS_HEIGHT = window.innerHeight - PLAYER_HEADER_HEIGHT - PLAYER_FOOTER_HEIGHT;
 var FULL_SCREEN_WIDTH = screen.width;
 var FULL_SCREEN_HEIGHT = screen.height;
 var keyCode = {
@@ -93,10 +92,7 @@ $media.preservesPitch = true;
 
 /*----- -Window Function- -----*/
 window.addEventListener('keydown', (e) => {
-  if (
-    document.activeElement.type !== 'text' &&
-    document.activeElement === document.body
-  ) {
+  if (document.activeElement.type !== 'text' && document.activeElement === document.body) {
     if (e.key === 'p' || e.key === 'P' || e.keyCode === keyCode.SPACE) {
       playToggle();
     } else if (e.key === 'k' || e.key === 'K') {
@@ -174,7 +170,7 @@ window.addEventListener(
     initTooltips();
     _processor = new Processor();
   },
-  false
+  false,
 );
 
 window.addEventListener('click', function () {
@@ -193,13 +189,9 @@ function Equalizer() {}
 
 Equalizer.prototype.changeXFadeGainValue = function () {
   if (currentSong && currentSong.type === 'video')
-    this.xfadeGain.gain.value =
-      DEFAULT_VIDEO_XFADE_GAIN +
-      currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
+    this.xfadeGain.gain.value = DEFAULT_VIDEO_XFADE_GAIN + currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
   else {
-    this.xfadeGain.gain.value =
-      DEFAULT_AUDIO_XFADE_GAIN +
-      currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
+    this.xfadeGain.gain.value = DEFAULT_AUDIO_XFADE_GAIN + currentEnhancedVolume * ENHANCED_VOLUME_MULTIPLIER;
   }
 };
 
@@ -297,62 +289,52 @@ Equalizer.prototype.calculateTooltipValue = function (gainValue) {
 
 Equalizer.prototype.set_31HzGain = function (gainValue) {
   this._31Hz.gain.value = gainValue;
-  getElement('_31Hz-tooltip').textContent =
-    '31Hz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_31Hz-tooltip').textContent = '31Hz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_62HzGain = function (gainValue) {
   this._62Hz.gain.value = gainValue;
-  getElement('_62Hz-tooltip').textContent =
-    '62Hz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_62Hz-tooltip').textContent = '62Hz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_125HzGain = function (gainValue) {
   this._125Hz.gain.value = gainValue;
-  getElement('_125Hz-tooltip').textContent =
-    '125Hz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_125Hz-tooltip').textContent = '125Hz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_250HzGain = function (gainValue) {
   this._250Hz.gain.value = gainValue;
-  getElement('_250Hz-tooltip').textContent =
-    '250Hz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_250Hz-tooltip').textContent = '250Hz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_500HzGain = function (gainValue) {
   this._500Hz.gain.value = gainValue;
-  getElement('_500Hz-tooltip').textContent =
-    '500Hz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_500Hz-tooltip').textContent = '500Hz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_1kHzGain = function (gainValue) {
   this._1kHz.gain.value = gainValue;
-  getElement('_1kHz-tooltip').textContent =
-    '1kHz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_1kHz-tooltip').textContent = '1kHz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_2kHzGain = function (gainValue) {
   this._2kHz.gain.value = gainValue;
-  getElement('_2kHz-tooltip').textContent =
-    '2kHz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_2kHz-tooltip').textContent = '2kHz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_4kHzGain = function (gainValue) {
   this._4kHz.gain.value = gainValue;
-  getElement('_4kHz-tooltip').textContent =
-    '4kHz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_4kHz-tooltip').textContent = '4kHz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_8kHzGain = function (gainValue) {
   this._8kHz.gain.value = gainValue;
-  getElement('_8kHz-tooltip').textContent =
-    '8kHz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_8kHz-tooltip').textContent = '8kHz: ' + this.calculateTooltipValue(gainValue);
 };
 
 Equalizer.prototype.set_16kHzGain = function (gainValue) {
   this._16kHz.gain.value = gainValue;
-  getElement('_16kHz-tooltip').textContent =
-    '16kHz: ' + this.calculateTooltipValue(gainValue);
+  getElement('_16kHz-tooltip').textContent = '16kHz: ' + this.calculateTooltipValue(gainValue);
 };
 
 function changePitch() {
@@ -364,9 +346,7 @@ function changePitch() {
 }
 
 function changeGain(gainValue, type) {
-  var value =
-    (parseFloat(+gainValue - FILTER_GAIN_CONTROL_OFFSET) / VOLUME_STEP_COUNT) *
-    FILTER_GAIN_MULTIPLIER;
+  var value = (parseFloat(+gainValue - FILTER_GAIN_CONTROL_OFFSET) / VOLUME_STEP_COUNT) * FILTER_GAIN_MULTIPLIER;
   switch (type) {
     case '31Hz':
       _equalizer.set_31HzGain(value);
@@ -473,8 +453,7 @@ function changeVolume(volumeValue) {
 function changeEnhancedVolume(volumeValue) {
   setCurrentEnhancedVolume(volumeValue);
   _equalizer.changeXFadeGainValue();
-  getElement('enhanced-volume-tooltip').textContent =
-    'enhanced volume: ' + volumeValue;
+  getElement('enhanced-volume-tooltip').textContent = 'enhanced volume: ' + volumeValue;
   if (appSetting.isMute) {
     appSetting.isMute = false;
   }
@@ -484,8 +463,7 @@ function changePlaybackRate(playbackRateValue) {
   currentPlaybackRate = parseFloat(playbackRateValue / PLAYRATE_STEP_COUNT);
   $media.playbackRate = currentPlaybackRate;
   getElement('speed-tooltip').textContent = 'Speed: ' + $media.playbackRate;
-  getElement('speed-tooltip-mobile').textContent =
-    'Speed: ' + $media.playbackRate;
+  getElement('speed-tooltip-mobile').textContent = 'Speed: ' + $media.playbackRate;
 }
 
 function changeElapsedTime(timeValue) {
@@ -514,13 +492,11 @@ function endElapsedTimeChange() {
 function useMediaSettingToggle() {
   if (appSetting.isSongSettingUsed) {
     appSetting.isSongSettingUsed = false;
-    getElement('use-media-setting-button-tooltip').textContent =
-      'Turn on media setting';
+    getElement('use-media-setting-button-tooltip').textContent = 'Turn on media setting';
     domElement.useMediaSettingCheckbox.checked = false;
   } else {
     appSetting.isSongSettingUsed = true;
-    getElement('use-media-setting-button-tooltip').textContent =
-      'Turn off media setting';
+    getElement('use-media-setting-button-tooltip').textContent = 'Turn off media setting';
     domElement.useMediaSettingCheckbox.checked = true;
   }
 }
@@ -602,9 +578,7 @@ function decreaseVolumeOnKeyPress() {
 
 function increasePlayrateOnKeyPress() {
   var increaseStep = 1;
-  var newValue = parseInt(
-    currentPlaybackRate * PLAYRATE_STEP_COUNT + increaseStep
-  );
+  var newValue = parseInt(currentPlaybackRate * PLAYRATE_STEP_COUNT + increaseStep);
   if (newValue <= PLAYRATE_STEP_COUNT * 2) {
     domElement.playbackRateControl.value = newValue;
     changePlaybackRate(newValue);
@@ -613,9 +587,7 @@ function increasePlayrateOnKeyPress() {
 
 function decreasePlayrateOnKeyPress() {
   var decreaseStep = 1;
-  var newValue = parseInt(
-    currentPlaybackRate * PLAYRATE_STEP_COUNT - decreaseStep
-  );
+  var newValue = parseInt(currentPlaybackRate * PLAYRATE_STEP_COUNT - decreaseStep);
   if (newValue >= 0) {
     domElement.playbackRateControl.value = newValue;
     changePlaybackRate(newValue);
@@ -684,17 +656,11 @@ async function getSongList() {
 function sortSongsByCreatedDate(songs, order) {
   if (order === 'asc') {
     return songs.sort((song1, song2) => {
-      return (
-        new Date(song1.createdDate).getTime() -
-        new Date(song2.createdDate).getTime()
-      );
+      return new Date(song1.createdDate).getTime() - new Date(song2.createdDate).getTime();
     });
   }
   return songs.sort((song1, song2) => {
-    return (
-      new Date(song2.createdDate).getTime() -
-      new Date(song1.createdDate).getTime()
-    );
+    return new Date(song2.createdDate).getTime() - new Date(song1.createdDate).getTime();
   });
 }
 
@@ -705,15 +671,11 @@ function handleDrag(item) {
     y = event.clientY;
 
   selectedItem.classList.add('drag-sort-active');
-  var swapItem =
-    document.elementFromPoint(x, y) === null
-      ? selectedItem
-      : document.elementFromPoint(x, y);
+  var swapItem = document.elementFromPoint(x, y) === null ? selectedItem : document.elementFromPoint(x, y);
   swapItem = swapItem.tagName === 'TR' ? swapItem : swapItem.closest('TR');
   if (swapItem && list === swapItem.parentNode) {
     songPosSwap(domElement.songTable, selectedItem, swapItem);
-    swapItem =
-      swapItem !== selectedItem.nextSibling ? swapItem : swapItem.nextSibling;
+    swapItem = swapItem !== selectedItem.nextSibling ? swapItem : swapItem.nextSibling;
     list.insertBefore(selectedItem, swapItem);
   }
 }
@@ -802,15 +764,10 @@ function saveMediaSettings() {
 function loadMediaSettings() {
   function calculateControlValue(value) {
     // Number 2 represent for dividing control bar into half.
-    return parseInt(
-      ((value + FILTER_GAIN_MULTIPLIER / 2) * VOLUME_STEP_COUNT) /
-        FILTER_GAIN_MULTIPLIER
-    );
+    return parseInt(((value + FILTER_GAIN_MULTIPLIER / 2) * VOLUME_STEP_COUNT) / FILTER_GAIN_MULTIPLIER);
   }
 
-  currentSong.settings.enhancedVolume = currentSong.settings.enhancedVolume
-    ? currentSong.settings.enhancedVolume
-    : 0;
+  currentSong.settings.enhancedVolume = currentSong.settings.enhancedVolume ? currentSong.settings.enhancedVolume : 0;
   changeVolume(currentSong.settings.volume * VOLUME_STEP_COUNT);
   changeEnhancedVolume(currentSong.settings.enhancedVolume * VOLUME_STEP_COUNT);
   changePlaybackRate(currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT);
@@ -824,46 +781,21 @@ function loadMediaSettings() {
   _equalizer.set_4kHzGain(currentSong.settings.equalizer._4kHz);
   _equalizer.set_8kHzGain(currentSong.settings.equalizer._8kHz);
   _equalizer.set_16kHzGain(currentSong.settings.equalizer._16kHz);
-  domElement.enhancedVolumeControl.value =
-    currentSong.settings.enhancedVolume * VOLUME_STEP_COUNT;
-  domElement.volumeControl.value =
-    currentSong.settings.volume * VOLUME_STEP_COUNT;
-  domElement.volumeControlMobile.value =
-    currentSong.settings.volume * VOLUME_STEP_COUNT;
-  domElement.playbackRateControl.value =
-    currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
-  domElement.playbackRateControlMobile.value =
-    currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
-  domElement.equalizerControls._31HzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._31Hz
-  );
-  domElement.equalizerControls._62HzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._62Hz
-  );
-  domElement.equalizerControls._125HzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._125Hz
-  );
-  domElement.equalizerControls._250HzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._250Hz
-  );
-  domElement.equalizerControls._500HzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._500Hz
-  );
-  domElement.equalizerControls._1kHzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._1kHz
-  );
-  domElement.equalizerControls._2kHzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._2kHz
-  );
-  domElement.equalizerControls._4kHzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._4kHz
-  );
-  domElement.equalizerControls._8kHzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._8kHz
-  );
-  domElement.equalizerControls._16kHzControl.value = calculateControlValue(
-    currentSong.settings.equalizer._16kHz
-  );
+  domElement.enhancedVolumeControl.value = currentSong.settings.enhancedVolume * VOLUME_STEP_COUNT;
+  domElement.volumeControl.value = currentSong.settings.volume * VOLUME_STEP_COUNT;
+  domElement.volumeControlMobile.value = currentSong.settings.volume * VOLUME_STEP_COUNT;
+  domElement.playbackRateControl.value = currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
+  domElement.playbackRateControlMobile.value = currentSong.settings.playbackRate * PLAYRATE_STEP_COUNT;
+  domElement.equalizerControls._31HzControl.value = calculateControlValue(currentSong.settings.equalizer._31Hz);
+  domElement.equalizerControls._62HzControl.value = calculateControlValue(currentSong.settings.equalizer._62Hz);
+  domElement.equalizerControls._125HzControl.value = calculateControlValue(currentSong.settings.equalizer._125Hz);
+  domElement.equalizerControls._250HzControl.value = calculateControlValue(currentSong.settings.equalizer._250Hz);
+  domElement.equalizerControls._500HzControl.value = calculateControlValue(currentSong.settings.equalizer._500Hz);
+  domElement.equalizerControls._1kHzControl.value = calculateControlValue(currentSong.settings.equalizer._1kHz);
+  domElement.equalizerControls._2kHzControl.value = calculateControlValue(currentSong.settings.equalizer._2kHz);
+  domElement.equalizerControls._4kHzControl.value = calculateControlValue(currentSong.settings.equalizer._4kHz);
+  domElement.equalizerControls._8kHzControl.value = calculateControlValue(currentSong.settings.equalizer._8kHz);
+  domElement.equalizerControls._16kHzControl.value = calculateControlValue(currentSong.settings.equalizer._16kHz);
 }
 
 function chooseSong(event, song) {
@@ -877,9 +809,7 @@ function chooseSong(event, song) {
   switchMediaType();
   loadMediaElapsedTime();
   console.log(event);
-  currentSong = appSongs.find(
-    (target) => target.songName == event.target.textContent
-  );
+  currentSong = appSongs.find((target) => target.songName == event.target.textContent);
   if (appSetting.isSongSettingUsed) {
     loadMediaSettings();
   }
@@ -903,9 +833,7 @@ function loadMediaElapsedTime() {
       return (
         parseInt($media.duration / 60) +
         ':' +
-        (parseInt($media.duration % 60) > 9
-          ? parseInt($media.duration % 60)
-          : '0' + parseInt($media.duration % 60))
+        (parseInt($media.duration % 60) > 9 ? parseInt($media.duration % 60) : '0' + parseInt($media.duration % 60))
       );
     };
     var getElapsedTime = function () {
@@ -946,9 +874,7 @@ function initPlayListsToSelection() {
   } else {
     addPlayListToSelection(DEFAULT_PLAYLIST);
   }
-  var defaultOption = Array.from(domElement.playListSelect.children).find(
-    (child) => child.value === currentPlayList
-  );
+  var defaultOption = Array.from(domElement.playListSelect.children).find((child) => child.value === currentPlayList);
   defaultOption.setAttribute('selected', 'selected');
 }
 
@@ -978,25 +904,17 @@ async function addNewPlayList() {
 }
 
 async function removePlayList() {
-  var deleteConfirm = confirm(
-    'Are you sure to remove playlist: ' + currentPlayList + '?'
-  );
+  var deleteConfirm = confirm('Are you sure to remove playlist: ' + currentPlayList + '?');
   if (deleteConfirm) {
     var playListName = currentPlayList;
     if (playListName !== DEFAULT_DB) {
       if ($media.isPlay) {
         alert('Please stop or pause media before remove play list!');
       } else {
-        var target = Array.from(domElement.playListSelect.children).find(
-          (child) => child.value === playListName
-        );
+        var target = Array.from(domElement.playListSelect.children).find((child) => child.value === playListName);
         if (target) {
-          var targetIndex = Array.from(
-            domElement.playListSelect.children
-          ).indexOf(target);
-          domElement.playListSelect.removeChild(
-            domElement.playListSelect.childNodes[targetIndex]
-          );
+          var targetIndex = Array.from(domElement.playListSelect.children).indexOf(target);
+          domElement.playListSelect.removeChild(domElement.playListSelect.childNodes[targetIndex]);
           playLists.splice(targetIndex, 1);
           removePlayListFromPosList(playListName);
           await deletePlayListFromDB(playListName);
@@ -1016,13 +934,13 @@ async function removePlayList() {
 function openTab(evt, tabName, panelId) {
   var i, tabcontent, tablinks;
   tabcontent = Array.from(document.getElementsByClassName('tabcontent')).filter(
-    (tab) => tab.parentElement.id === panelId
+    (tab) => tab.parentElement.id === panelId,
   );
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = 'none';
   }
   tablinks = Array.from(document.getElementsByClassName('tablinks')).filter(
-    (link) => link.parentElement.parentElement.id === panelId
+    (link) => link.parentElement.parentElement.id === panelId,
   );
   for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(' active', '');
@@ -1037,43 +955,35 @@ function changeVideoSetting(value, type) {
   switch (type) {
     case 'brightness':
       videoSetting.brightness = value;
-      getElement('brightness-tooltip').textContent =
-        'Brightness: ' + videoSetting.brightness + '%';
+      getElement('brightness-tooltip').textContent = 'Brightness: ' + videoSetting.brightness + '%';
       break;
     case 'contrast':
       videoSetting.contrast = value;
-      getElement('contrast-tooltip').textContent =
-        'Contrast: ' + videoSetting.contrast + '%';
+      getElement('contrast-tooltip').textContent = 'Contrast: ' + videoSetting.contrast + '%';
       break;
     case 'invert':
       videoSetting.invert = value;
-      getElement('invert-tooltip').textContent =
-        'Invert: ' + videoSetting.invert + '%';
+      getElement('invert-tooltip').textContent = 'Invert: ' + videoSetting.invert + '%';
       break;
     case 'grayscale':
       videoSetting.grayscale = value;
-      getElement('grayscale-tooltip').textContent =
-        'Grayscale: ' + videoSetting.grayscale + '%';
+      getElement('grayscale-tooltip').textContent = 'Grayscale: ' + videoSetting.grayscale + '%';
       break;
     case 'saturate':
       videoSetting.saturate = value;
-      getElement('saturate-tooltip').textContent =
-        'Saturate: ' + videoSetting.saturate + '%';
+      getElement('saturate-tooltip').textContent = 'Saturate: ' + videoSetting.saturate + '%';
       break;
     case 'sepia':
       videoSetting.sepia = value;
-      getElement('sepia-tooltip').textContent =
-        'Sepia: ' + videoSetting.sepia + '%';
+      getElement('sepia-tooltip').textContent = 'Sepia: ' + videoSetting.sepia + '%';
       break;
     case 'blur':
       videoSetting.blur = value;
-      getElement('blur-tooltip').textContent =
-        'Blur: ' + videoSetting.blur + 'px';
+      getElement('blur-tooltip').textContent = 'Blur: ' + videoSetting.blur + 'px';
       break;
     case 'hue-rotation':
       videoSetting.hueRotation = value;
-      getElement('hue-rotation-tooltip').textContent =
-        'Hue rotation: ' + videoSetting.hueRotation + 'deg';
+      getElement('hue-rotation-tooltip').textContent = 'Hue rotation: ' + videoSetting.hueRotation + 'deg';
       break;
     default:
   }
@@ -1103,9 +1013,7 @@ function playMedia() {
     }
     // bufferSource.start(currentTime);
   } else {
-    alert(
-      'Please choose a song in song list to play! \nOr add a song to song list if there is no song!'
-    );
+    alert('Please choose a song in song list to play! \nOr add a song to song list if there is no song!');
     if (!appSetting.isListShow) showListToggle();
   }
 }
@@ -1126,16 +1034,14 @@ function stopMedia() {
 
 function setPlayToFalse() {
   domElement.playButton.innerHTML = '<i class="fas fa-play"></i>';
-  domElement.playButtonOnCanvasIcon.innerHTML =
-    '<i class="fas fa-pause text--white"></i>';
+  domElement.playButtonOnCanvasIcon.innerHTML = '<i class="fas fa-pause text--white"></i>';
   tooltip.playButton.textContent = 'Play';
   $media.isPlay = false;
 }
 
 function setPlayToTrue() {
   domElement.playButton.innerHTML = '<i class="fas fa-pause"></i>';
-  domElement.playButtonOnCanvasIcon.innerHTML =
-    '<i class="fas fa-play text--white"></i>';
+  domElement.playButtonOnCanvasIcon.innerHTML = '<i class="fas fa-play text--white"></i>';
   tooltip.playButton.textContent = 'Pause';
   $media.isPlay = true;
 }
@@ -1212,10 +1118,7 @@ function initUploadFileFunction() {
       var fileNameSplitted = file.name.split('.');
       var fileExtension = fileNameSplitted[fileNameSplitted.length - 1];
       var videoExtension = ['mkv'];
-      return (
-        file.type.includes('video') ||
-        videoExtension.includes(fileExtension.toLowerCase())
-      );
+      return file.type.includes('video') || videoExtension.includes(fileExtension.toLowerCase());
     }
     var files = this.files;
     for (var file of files) {
@@ -1331,9 +1234,7 @@ async function initIndexDB(dbName) {
 function addSongToPlayList(playList, song) {
   if (song && playList) {
     var { id, songName, src, createdDate, type, settings } = song;
-    return db
-      .table(playList)
-      .put({ id, songName, src, createdDate, type, settings });
+    return db.table(playList).put({ id, songName, src, createdDate, type, settings });
   }
 }
 
@@ -1379,10 +1280,7 @@ async function addPlayListToDB(playList) {
   playLists = getAllPlayLists();
   if (playLists) {
     if (!playLists.includes(playList)) {
-      await createNewSchema(
-        playList,
-        'id, songName, src, createdDate, type, settings'
-      );
+      await createNewSchema(playList, 'id, songName, src, createdDate, type, settings');
       var initSong = {
         id: 'initSong',
         songName: 'initSong',
@@ -1455,12 +1353,8 @@ function getSongFromNhaccuatui(songUrl) {
 // });
 
 function songPosSwap(songTable, draggedSongRow, targetSongRow) {
-  var draggedSongRowIndex = Array.from(songTable.children).indexOf(
-    draggedSongRow
-  );
-  var targetSongRowIndex = Array.from(songTable.children).indexOf(
-    targetSongRow
-  );
+  var draggedSongRowIndex = Array.from(songTable.children).indexOf(draggedSongRow);
+  var targetSongRowIndex = Array.from(songTable.children).indexOf(targetSongRow);
   if (draggedSongRowIndex !== targetSongRowIndex) {
     var draggedSongItem = appSongs[draggedSongRowIndex];
     var targetSongItem = appSongs[targetSongRowIndex];
@@ -1488,9 +1382,7 @@ function saveSongsPos() {
     mediaPosList = [];
   } else {
     mediaPosList = JSON.parse(mediaPosList);
-    mediaPosObj = mediaPosList.find(
-      (item) => item.mediaList === currentPlayList
-    );
+    mediaPosObj = mediaPosList.find((item) => item.mediaList === currentPlayList);
   }
   if (!mediaPosObj) {
     mediaPosObj = {
@@ -1512,9 +1404,7 @@ function loadSongsPos() {
   var mediaPosList = localStorage.getItem('mediaPosList');
   if (mediaPosList && appSongs) {
     mediaPosList = JSON.parse(mediaPosList);
-    var mediaPosObj = mediaPosList.find(
-      (item) => item.mediaList === currentPlayList
-    );
+    var mediaPosObj = mediaPosList.find((item) => item.mediaList === currentPlayList);
     if (mediaPosObj) {
       var tempAppSongs = [];
       mediaPosObj.mediaPosArr.forEach((pos) => {
@@ -1533,9 +1423,7 @@ function loadSongsPos() {
 
 function removePlayListFromPosList(playListName) {
   var mediaPosList = JSON.parse(localStorage.getItem('mediaPosList'));
-  var removedList = mediaPosList.find(
-    (list) => list.mediaList === playListName
-  );
+  var removedList = mediaPosList.find((list) => list.mediaList === playListName);
   mediaPosList.splice(mediaPosList.indexOf(removedList), 1);
   localStorage.setItem('mediaPosList', JSON.stringify(mediaPosList));
 }
@@ -1683,8 +1571,7 @@ function canvasEscapeFullScreen() {
 
 function calculateWindowSizeAfterwindowResize() {
   CANVAS_WIDTH = window.innerWidth * 0.85;
-  CANVAS_HEIGHT =
-    window.innerHeight - PLAYER_HEADER_HEIGHT - PLAYER_FOOTER_HEIGHT;
+  CANVAS_HEIGHT = window.innerHeight - PLAYER_HEADER_HEIGHT - PLAYER_FOOTER_HEIGHT;
   FULL_SCREEN_WIDTH = screen.width;
   FULL_SCREEN_HEIGHT = screen.height;
 }
@@ -1703,7 +1590,7 @@ Processor.prototype.doLoad = function (video) {
       adjustCanvasAndVideoSize(self);
       self.timerCallback();
     },
-    0
+    0,
   );
 };
 
@@ -1843,10 +1730,7 @@ function initVideo() {
 function showSettingsToggle() {
   if (appSetting.isSettingShow) {
     domElement.settingPanel.style.opacity = '0';
-    setTimeout(
-      () => (domElement.settingPanel.style.visibility = 'hidden'),
-      300
-    );
+    setTimeout(() => (domElement.settingPanel.style.visibility = 'hidden'), 300);
     appSetting.isSettingShow = false;
   } else {
     domElement.settingPanel.style.visibility = 'visible';
@@ -1886,7 +1770,7 @@ function enableSettingPanelMove() {
     function () {
       isMouseDown = false;
     },
-    true
+    true,
   );
 
   settingPanelHeader.addEventListener(
@@ -1902,19 +1786,16 @@ function enableSettingPanelMove() {
         domElement.settingPanel.style.top = mousePosition.y + offset[1] + 'px';
       }
     },
-    true
+    true,
   );
 
   settingPanelHeader.addEventListener(
     'mousedown',
     function (e) {
       isMouseDown = true;
-      offset = [
-        domElement.settingPanel.offsetLeft - e.clientX,
-        domElement.settingPanel.offsetTop - e.clientY,
-      ];
+      offset = [domElement.settingPanel.offsetLeft - e.clientX, domElement.settingPanel.offsetTop - e.clientY];
     },
-    true
+    true,
   );
 }
 
@@ -1935,8 +1816,7 @@ function flashPlayButtonOnCanvas() {
 /*----- -Utilities- -----*/
 function changeSongListAutoCloseTime(value) {
   appSetting.songListAutoCloseTime = value * 1000;
-  tooltip.songListAutoCloseTime.textContent =
-    value + 's after mouse move in and out the list';
+  tooltip.songListAutoCloseTime.textContent = value + 's after mouse move in and out the list';
   reregisterAutoHideMediaList();
 }
 
@@ -1952,26 +1832,11 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
 
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
-    debounceHideMediaList = debounce(
-      closeSongListPanel,
-      appSetting.songListAutoCloseTime
-    );
-    domElement.songListPanel.addEventListener(
-      'mousemove',
-      debounceHideMediaList
-    );
-    domElement.playListSelect.addEventListener(
-      'focus',
-      () => (appSetting.isOnSelectingPlaylist = true)
-    );
-    domElement.playListSelect.addEventListener(
-      'focusout',
-      () => (appSetting.isOnSelectingPlaylist = false)
-    );
-    domElement.playListSelect.addEventListener(
-      'change',
-      () => (appSetting.isOnSelectingPlaylist = false)
-    );
+    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+    domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
+    domElement.playListSelect.addEventListener('focus', () => (appSetting.isOnSelectingPlaylist = true));
+    domElement.playListSelect.addEventListener('focusout', () => (appSetting.isOnSelectingPlaylist = false));
+    domElement.playListSelect.addEventListener('change', () => (appSetting.isOnSelectingPlaylist = false));
   }
 }
 
@@ -1987,15 +1852,9 @@ function closeSongListPanel() {
 }
 
 function reregisterAutoHideMediaList() {
-  domElement.songListPanel.removeEventListener(
-    'mousemove',
-    debounceHideMediaList
-  );
+  domElement.songListPanel.removeEventListener('mousemove', debounceHideMediaList);
   if (appSetting.songListAutoCloseTime > 0) {
-    debounceHideMediaList = debounce(
-      closeSongListPanel,
-      appSetting.songListAutoCloseTime
-    );
+    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
   } else {
     debounceHideMediaList = null;
   }
@@ -2099,37 +1958,24 @@ function initDOMVars() {
 function initTooltips() {
   tooltip.playButton = getElement('play-button-tooltip');
   tooltip.playButton.textContent = 'Play';
-  tooltip.songListAutoCloseTime = getElement(
-    'song-list-auto-close-time-tooltip'
-  );
+  tooltip.songListAutoCloseTime = getElement('song-list-auto-close-time-tooltip');
   tooltip.songListAutoCloseTime.textContent =
-    appSetting.songListAutoCloseTime / 1000 +
-    's after mouse move in and out the list';
+    appSetting.songListAutoCloseTime / 1000 + 's after mouse move in and out the list';
   getElement('volume-tooltip').textContent = 'Volume: ' + $audio.volume * 100;
   getElement('speed-tooltip').textContent = 'Speed: ' + $audio.playbackRate;
-  getElement('volume-tooltip-mobile').textContent =
-    'Volume: ' + $audio.volume * 100;
-  getElement('speed-tooltip-mobile').textContent =
-    'Speed: ' + $audio.playbackRate;
+  getElement('volume-tooltip-mobile').textContent = 'Volume: ' + $audio.volume * 100;
+  getElement('speed-tooltip-mobile').textContent = 'Speed: ' + $audio.playbackRate;
   getElement('stop-button-tooltip').textContent = 'Stop';
   getElement('loop-button-tooltip').textContent = 'Start loop';
   getElement('loop-all-button-tooltip').textContent = 'Loop all';
   getElement('loop-button-tooltip-mobile').textContent = 'Start loop';
-  getElement('use-media-setting-button-tooltip').textContent =
-    'Turn off media setting';
-  getElement('brightness-tooltip').textContent =
-    'Brightness: ' + videoSetting.brightness + '%';
-  getElement('contrast-tooltip').textContent =
-    'Contrast: ' + videoSetting.contrast + '%';
-  getElement('invert-tooltip').textContent =
-    'Invert: ' + videoSetting.invert + '%';
-  getElement('grayscale-tooltip').textContent =
-    'Grayscale: ' + videoSetting.grayscale + '%';
-  getElement('saturate-tooltip').textContent =
-    'Saturate: ' + videoSetting.saturate + '%';
-  getElement('sepia-tooltip').textContent =
-    'Sepia: ' + videoSetting.sepia + '%';
+  getElement('use-media-setting-button-tooltip').textContent = 'Turn off media setting';
+  getElement('brightness-tooltip').textContent = 'Brightness: ' + videoSetting.brightness + '%';
+  getElement('contrast-tooltip').textContent = 'Contrast: ' + videoSetting.contrast + '%';
+  getElement('invert-tooltip').textContent = 'Invert: ' + videoSetting.invert + '%';
+  getElement('grayscale-tooltip').textContent = 'Grayscale: ' + videoSetting.grayscale + '%';
+  getElement('saturate-tooltip').textContent = 'Saturate: ' + videoSetting.saturate + '%';
+  getElement('sepia-tooltip').textContent = 'Sepia: ' + videoSetting.sepia + '%';
   getElement('blur-tooltip').textContent = 'Blur: ' + videoSetting.blur + 'px';
-  getElement('hue-rotation-tooltip').textContent =
-    'Hue rotation: ' + videoSetting.hueRotation + 'deg';
+  getElement('hue-rotation-tooltip').textContent = 'Hue rotation: ' + videoSetting.hueRotation + 'deg';
 }
