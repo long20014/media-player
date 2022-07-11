@@ -764,8 +764,7 @@ function saveMediaSettings(song, isConfirmNeeded) {
 }
 
 function saveCurrentMediaSettings() {
-  var saveConfirm = confirm('Are you sure to save current media setting ?');
-  if (currentSong && saveConfirm) {
+  if (currentSong) {
     currentSong.settings = {
       ...currentSong.settings,
       volume: currentVolume,
