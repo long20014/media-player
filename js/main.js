@@ -603,6 +603,11 @@ function clearAllSongs() {
   }
 }
 
+function skipMedia(song) {
+  song.settings.skipped = !song.settings.skipped;
+  saveMediaSettings(song, false);
+}
+
 function deleteMedia(song) {
   if (currentSong && currentSong.songName === song.songName) {
     stopMedia();
@@ -685,9 +690,11 @@ function addSongToDisplayList(song) {
   var data = song.src;
   var blobUrl = URL.createObjectURL(data);
   var songRow = document.createElement('TR');
+  var skipBtn = document.createElement('BUTTON');
   var deleteBtn = document.createElement('BUTTON');
   var songItem = document.createElement('TD');
   var btnCell = document.createElement('TD');
+  btnCell.classList.add('btn-cell');
 
   songRow.draggable = true;
   songRow.ondrag = handleDrag;
@@ -695,6 +702,9 @@ function addSongToDisplayList(song) {
 
   songItem.width = '100%';
   songItem.classList.add('song-item');
+  if (song.settings.skipped) {
+    songItem.classList.add('skipped-song');
+  }
   songItem.textContent = song.songName;
   songItem.id = song.songName;
   songItem.dataset.src = blobUrl;
@@ -702,11 +712,23 @@ function addSongToDisplayList(song) {
     chooseSong(event, song);
     console.log(song);
   });
+  skipBtn.width = '10%';
+  skipBtn.innerHTML = '<i class="fas fa-angle-right"></i>';
+  skipBtn.addEventListener('click', (event) => {
+    var songLabel = event.target.closest('button').parentNode.parentNode.firstChild;
+    if (!song.settings.skipped) {
+      songLabel.classList.add('skipped-song'); // change color of skipped song
+    } else {
+      songLabel.classList.remove('skipped-song'); // change color back
+    }
+    skipMedia(song);
+  });
   deleteBtn.width = '10%';
   deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
   deleteBtn.addEventListener('click', (event) => {
     deleteMedia(song);
   });
+  btnCell.appendChild(skipBtn);
   btnCell.appendChild(deleteBtn);
   songRow.appendChild(songItem);
   songRow.appendChild(btnCell);
@@ -734,10 +756,18 @@ function switchMediaType() {
   $media.volume = getTotalVolume();
 }
 
-function saveMediaSettings() {
-  var saveConfirm = confirm('Are you sure to save media setting ?');
+function saveMediaSettings(song, isConfirmNeeded) {
+  var saveConfirm = isConfirmNeeded && confirm('Are you sure to save media setting ?');
+  if (song && ((isConfirmNeeded && saveConfirm) || (!isConfirmNeeded && !saveConfirm))) {
+    updateMedia(currentPlayList, song);
+  }
+}
+
+function saveCurrentMediaSettings() {
+  var saveConfirm = confirm('Are you sure to save current media setting ?');
   if (currentSong && saveConfirm) {
     currentSong.settings = {
+      ...currentSong.settings,
       volume: currentVolume,
       enhancedVolume: currentEnhancedVolume,
       playbackRate: currentPlaybackRate,
@@ -758,7 +788,7 @@ function saveMediaSettings() {
   }
 }
 
-function loadMediaSettings() {
+function loadCurrentMediaSettings() {
   function calculateControlValue(value) {
     // Number 2 represent for dividing control bar into half.
     return parseInt(((value + FILTER_GAIN_MULTIPLIER / 2) * VOLUME_STEP_COUNT) / FILTER_GAIN_MULTIPLIER);
@@ -808,7 +838,7 @@ function chooseSong(event, song) {
   console.log(event);
   currentSong = appSongs.find((target) => target.songName == event.target.textContent);
   if (appSetting.isSongSettingUsed) {
-    loadMediaSettings();
+    loadCurrentMediaSettings();
   }
   $media.src = event.target.dataset.src;
   $media.playbackRate = currentPlaybackRate;
@@ -1049,7 +1079,7 @@ function loadCurrentSong(song) {
   switchMediaType();
   $media.isPlay = true;
   if (appSetting.isSongSettingUsed) {
-    loadMediaSettings();
+    loadCurrentMediaSettings();
   }
   var blobUrl = URL.createObjectURL(currentSong.src);
   setDownloadLink(blobUrl, currentSong.songName);
@@ -1059,10 +1089,25 @@ function loadCurrentSong(song) {
 }
 
 function playNextSong() {
-  var nextSong = appSongs[appSongs.indexOf(currentSong) + 1];
+  var i = 1;
+  var nextSong = appSongs[appSongs.indexOf(currentSong) + i];
+  while (nextSong && nextSong.settings.skipped) {
+    i++;
+    nextSong = appSongs[appSongs.indexOf(currentSong) + i];
+  }
+
   if (!nextSong) {
     if (appSetting.isLoopAll) {
-      loadCurrentSong(appSongs[0]);
+      function playNextLoopSong() {
+        var j = 0;
+        var nextLoopSong = appSongs[j];
+        while (nextLoopSong && nextLoopSong.settings.skipped) {
+          j++;
+          nextLoopSong = appSongs[j];
+        }
+        loadCurrentSong(nextLoopSong);
+      }
+      playNextLoopSong();
     } else {
       if ($media.isPlay) {
         stopMedia();
@@ -1071,6 +1116,7 @@ function playNextSong() {
   } else {
     loadCurrentSong(nextSong);
   }
+
   if ($media.isPlay) {
     setCurrentSubtitle();
     _playCurrentSong();
@@ -1078,10 +1124,28 @@ function playNextSong() {
 }
 
 function playPreviousSong() {
-  previousSong = appSongs[appSongs.indexOf(currentSong) - 1];
+  var i = 1;
+  var previousSong = appSongs[appSongs.indexOf(currentSong) - 1];
+  while (previousSong && previousSong.settings.skipped) {
+    i++;
+    previousSong = appSongs[appSongs.indexOf(currentSong) - i];
+  }
   if (!previousSong) {
-    if ($media.isPlay) {
-      stopMedia();
+    if (appSetting.isLoopAll) {
+      function playPreviousLoopSong() {
+        var j = 1;
+        var previousLoopSong = appSongs[appSongs.length - j];
+        while (previousLoopSong && previousLoopSong.settings.skipped) {
+          j++;
+          previousLoopSong = appSongs[appSongs.length - j];
+        }
+        loadCurrentSong(previousLoopSong);
+      }
+      playPreviousLoopSong();
+    } else {
+      if ($media.isPlay) {
+        stopMedia();
+      }
     }
   } else {
     loadCurrentSong(previousSong);
@@ -1156,6 +1220,7 @@ function uploadMediaFile(file, fileType) {
         _8kHz: DEFAULT_EQUALIZER_VALUE,
         _16kHz: DEFAULT_EQUALIZER_VALUE,
       },
+      skipped: false,
     },
   };
   addSongToDisplayList(mediaFile);

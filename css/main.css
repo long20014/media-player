@@ -3,6 +3,7 @@
   --player__footer-mobile-height: 125px;
   --player__header-height: 62.5px;
   --outline__margin: 25px;
+  --skipped-color: rgb(52 229 155);
 }
 
 body {
@@ -308,6 +309,15 @@ div#player {
 
 #song-list-panel #song-table button {
   width: 30px;
+}
+
+#song-table .btn-cell {
+  display: flex;
+  flex-direction: row;
+}
+
+#song-table .skipped-song {
+  color: var(--skipped-color)
 }
 
 .anchor-button-wrapper:hover {
