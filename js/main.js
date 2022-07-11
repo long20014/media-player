@@ -785,6 +785,7 @@ function saveCurrentMediaSettings() {
     };
     updateMedia(currentPlayList, currentSong);
   }
+  showNotification('info', 'Current song settings are saved');
 }
 
 function loadCurrentMediaSettings() {
@@ -2002,6 +2003,7 @@ function initDOMVars() {
   domElement.songListAutoCloseTime = getElement('song-list-auto-close-time');
   domElement.subtitleWrapper = getElement('subtitle-wrapper');
   domElement.subtitleUpload = getElement('subtitle_upload');
+  domElement.notify = getElement('notify');
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),
