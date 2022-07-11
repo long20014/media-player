@@ -1,30 +1,29 @@
+function hideNotificationFn() {
+  domElement.notification.classList.add('hidden');
+}
+
 function showNotification(type, messsage) {
-  function setTimeoutToHideNotification() {
-    setTimeout(() => {
-      domElement.notify.classList.add('hidden');
-    }, 2000);
-  }
   function showInfo() {
-    domElement.notify.classList.add('info');
-    domElement.notify.classList.remove('error');
-    domElement.notify.classList.remove('warning');
-    domElement.notify.classList.remove('hidden');
-    setTimeoutToHideNotification();
+    domElement.notification.classList.add('info');
+    domElement.notification.classList.remove('error');
+    domElement.notification.classList.remove('warning');
+    domElement.notification.classList.remove('hidden');
+    $debounces.hideNotification();
   }
   function showError() {
-    domElement.notify.classList.add('error');
-    domElement.notify.classList.remove('info');
-    domElement.notify.classList.remove('warning');
-    domElement.notify.classList.remove('hidden');
-    setTimeoutToHideNotification();
+    domElement.notification.classList.add('error');
+    domElement.notification.classList.remove('info');
+    domElement.notification.classList.remove('warning');
+    domElement.notification.classList.remove('hidden');
+    $debounces.hideNotification();
   }
 
   function showWarning() {
-    domElement.notify.classList.add('warning');
-    domElement.notify.classList.remove('info');
-    domElement.notify.classList.remove('error');
-    domElement.notify.classList.remove('hidden');
-    setTimeoutToHideNotification();
+    domElement.notification.classList.add('warning');
+    domElement.notification.classList.remove('info');
+    domElement.notification.classList.remove('error');
+    domElement.notification.classList.remove('hidden');
+    $debounces.hideNotification();
   }
   switch (type) {
     case 'info':
@@ -39,5 +38,5 @@ function showNotification(type, messsage) {
     default:
       showInfo();
   }
-  domElement.notify.textContent = messsage;
+  domElement.notification.textContent = messsage;
 }

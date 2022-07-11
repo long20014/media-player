@@ -77,7 +77,10 @@ var videoSetting = {
   blur: 0, // px
   hueRotation: 0, // deg
 };
-var debounceHideMediaList;
+var $debounces = {
+  hideMediaList: null,
+  hideNotification: null,
+};
 var domElement = {};
 var tooltip = {};
 
@@ -142,6 +145,7 @@ window.addEventListener(
     initPlayListsToSelection();
     enableSettingPanelMove();
     registerAutoHideMediaList();
+    registerDebounceHideNotification();
     addCanvasClickEvent();
 
     document.onwebkitfullscreenchange = function (event) {
@@ -926,7 +930,7 @@ async function addNewPlayList() {
     addPlayListToSelection(playListName);
     closeAddPlayListPanel();
   } else {
-    alert('Play list name must longer than 3 characters!');
+    showNotification('error', 'Play list name must longer than 3 characters!');
   }
 }
 
@@ -936,7 +940,7 @@ async function removePlayList() {
     var playListName = currentPlayList;
     if (playListName !== DEFAULT_DB) {
       if ($media.isPlay) {
-        alert('Please stop or pause media before remove play list!');
+        showNotification('error', 'Please stop or pause media before remove play list!');
       } else {
         var target = Array.from(domElement.playListSelect.children).find((child) => child.value === playListName);
         if (target) {
@@ -949,11 +953,11 @@ async function removePlayList() {
           domElement.playListSelect.value = DEFAULT_PLAYLIST;
           closeAddPlayListPanel();
         } else {
-          alert('Play list does not exists.');
+          showNotification('error', 'Play list does not exists.');
         }
       }
     } else {
-      alert('Cannot delete default playlist!');
+      showNotification('error', 'Cannot delete default playlist!');
     }
   }
 }
@@ -1040,7 +1044,10 @@ function playMedia() {
     }
     // bufferSource.start(currentTime);
   } else {
-    alert('Please choose a song in song list to play! \nOr add a song to song list if there is no song!');
+    showNotification(
+      'warning',
+      'Please choose a song in song list to play! \nOr add a song to song list if there is no song!',
+    );
     if (!appSetting.isListShow) showListToggle();
   }
 }
@@ -1353,6 +1360,7 @@ async function addPlayListToDB(playList) {
       };
       addSongToPlayList(playList, initSong);
       deleteSongFromPlayList(playList, initSong);
+      showNotification('info', 'Create new play list successfully');
     }
   }
 }
@@ -1386,7 +1394,7 @@ async function changePlayList(playListName) {
     await getSongList();
   } else {
     domElement.playListSelect.value = currentPlayList;
-    alert('Please stop or pause media to change play list!');
+    showNotification('warning', 'Please stop or pause media to change play list!');
   }
 }
 
@@ -1892,10 +1900,14 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
   return limitedValue;
 }
 
+function registerDebounceHideNotification() {
+  $debounces.hideNotification = debounce(hideNotificationFn, 3000);
+}
+
 function registerAutoHideMediaList() {
   if (domElement.songListPanel) {
-    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
-    domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
+    $debounces.hideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+    domElement.songListPanel.addEventListener('mousemove', $debounces.hideMediaList);
     domElement.playListSelect.addEventListener('focus', () => (appSetting.isOnSelectingPlaylist = true));
     domElement.playListSelect.addEventListener('focusout', () => (appSetting.isOnSelectingPlaylist = false));
     domElement.playListSelect.addEventListener('change', () => (appSetting.isOnSelectingPlaylist = false));
@@ -1914,13 +1926,13 @@ function closeSongListPanel() {
 }
 
 function reregisterAutoHideMediaList() {
-  domElement.songListPanel.removeEventListener('mousemove', debounceHideMediaList);
+  domElement.songListPanel.removeEventListener('mousemove', $debounces.hideMediaList);
   if (appSetting.songListAutoCloseTime > 0) {
-    debounceHideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
+    $debounces.hideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
   } else {
-    debounceHideMediaList = null;
+    $debounces.hideMediaList = null;
   }
-  domElement.songListPanel.addEventListener('mousemove', debounceHideMediaList);
+  domElement.songListPanel.addEventListener('mousemove', $debounces.hideMediaList);
 }
 
 function debounce(func, wait, immediate) {
@@ -2003,7 +2015,7 @@ function initDOMVars() {
   domElement.songListAutoCloseTime = getElement('song-list-auto-close-time');
   domElement.subtitleWrapper = getElement('subtitle-wrapper');
   domElement.subtitleUpload = getElement('subtitle_upload');
-  domElement.notify = getElement('notify');
+  domElement.notification = getElement('notification');
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),

@@ -4,6 +4,7 @@
   --player__header-height: 62.5px;
   --outline__margin: 25px;
   --skipped-color: rgb(52 229 155);
+  --transition-timing-standard: 0.3s
 }
 
 body {
@@ -25,7 +26,7 @@ div#player {
   overflow: hidden;
 }
 
-#player #notify {
+#player #notification {
   position: absolute;
   top: 10px;
   right: var(--outline__margin);
@@ -33,28 +34,26 @@ div#player {
   padding: 10px 15px;
   color: white;
   display: flex;
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-timing-standard) ease, visibility var(--transition-timing-standard) ease;
   border: 1px solid gray;
   background-color: white;
   z-index: 9999;
 }
 
-#player #notify.info {
+#player #notification.hidden {
+  visibility: hidden;
+}
+
+#player #notification.info {
   color:rgb(56, 138, 56);
 }
 
-#player #notify.error {
+#player #notification.error {
   color:rgb(207, 57, 69);
 }
 
-#player #notify.warning {
-  color:rgb(218, 218, 19);
-}
-
-#player #notify.hidden {
-  visibility: none;
-  opacity: 0;
+#player #notification.warning {
+  color:rgb(178, 153, 29);
 }
 
 #player__header {
@@ -303,7 +302,7 @@ div#player {
   border: 1px solid gray;
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background var(--transition-timing-standard) ease;
 }
 
 #song-list-panel {
@@ -318,7 +317,7 @@ div#player {
   width: 30vw;
   height: calc(100vh - var(--player__footer-height));
   border: 1px solid gray;
-  transition: all 0.3s ease;
+  transition: all var(--transition-timing-standard) ease;
 }
 
 #song-list-panel #song-table .song-item {
@@ -358,7 +357,7 @@ div#player {
 
 .anchor-button-icon {
   pointer-events: none;
-  transition: background 0.3s ease;
+  transition: background var(--transition-timing-standard) ease;
 }
 
 .anchor-button-wrapper:hover i {
@@ -405,7 +404,7 @@ div#player {
   visibility: hidden;    
   z-index: 3;
   padding: 20px;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--transition-timing-standard) ease;
 }
 
 .controls {
@@ -454,7 +453,7 @@ div#player {
   visibility: hidden;    
   z-index: 4;
   padding: 20px;
-  transition: opacity 0.3s ease; 
+  transition: opacity var(--transition-timing-standard) ease; 
   width: 207px;   
 }
 
@@ -545,7 +544,7 @@ div#player {
   outline: none;
   cursor: pointer;
   padding: 8px 12px;
-  transition: 0.3s;  
+  transition: all var(--transition-timing-standard) ease;  
 }
 
 /* Change background color of buttons on hover */
