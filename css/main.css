@@ -250,7 +250,7 @@ div#player {
   text-align: center;
   border-radius: 6px;
   padding: 5px 10px;
-
+  height: 0;
   /* Position the tooltip */
   position: absolute;  
   z-index: 5;
@@ -281,6 +281,7 @@ div#player {
 
 .item-with-tooltip:hover .tooltip-text {
   visibility: visible;
+  height: auto;
 }
 
 .text--white {
@@ -353,6 +354,10 @@ div#player {
 
 #song-table .skipped-song {
   color: var(--skipped-color)
+}
+
+#song-table {
+  padding-bottom: 10px;
 }
 
 .anchor-button-wrapper:hover {
