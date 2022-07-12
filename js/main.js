@@ -379,6 +379,8 @@ function changeGain(gainValue, type) {
     case '16kHz':
       _equalizer.set_16kHzGain(value);
       break;
+    default:
+      throw new Error('Invalid type');
   }
 }
 
@@ -1205,7 +1207,7 @@ function initUploadFileFunction() {
 
 /*----- -Setup Function- -----*/
 function uploadMediaFile(file, fileType) {
-  var DEFAULT_EQUALIZER_VALUE = 0.5;
+  var DEFAULT_EQUALIZER_VALUE = 0;
   var createdDate = new Date();
   var mediaFile = {
     id: file.name + ' ' + createdDate.getTime(),
