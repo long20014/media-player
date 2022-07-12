@@ -259,13 +259,13 @@ div#player {
 }
 
 .item-with-tooltip .tooltip-text.tooltip-left {
-  top: 5px;
-  left: calc(-100% - 50px);    
+  top: 0;
+  left: calc(-100% - 25px);    
 }
 
 .item-with-tooltip .tooltip-text.tooltip-right {
-  top: 5px;
-  right: calc(-100% - 50px);    
+  top: 0;
+  right: calc(-100% - 25px);    
 }
 
 .item-with-tooltip .tooltip-text.tooltip-bottom {

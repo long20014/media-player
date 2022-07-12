@@ -694,7 +694,7 @@ function addSongToDisplayList(song) {
   var data = song.src;
   var blobUrl = URL.createObjectURL(data);
   var songRow = document.createElement('TR');
-  var skipBtn = document.createElement('BUTTON');
+  var skipBtn = document.createElement('DIV');
   var deleteBtn = document.createElement('BUTTON');
   var songItem = document.createElement('TD');
   var btnCell = document.createElement('TD');
@@ -716,10 +716,12 @@ function addSongToDisplayList(song) {
     chooseSong(event, song);
     console.log(song);
   });
+  skipBtn.classList.add('item-with-tooltip');
   skipBtn.width = '10%';
-  skipBtn.innerHTML = '<i class="fas fa-angle-right"></i>';
+  skipBtn.innerHTML = `<div class="tooltip-text tooltip-left">skip</div>
+  <button><i class="fa fa-step-forward"></i></button>`;
   skipBtn.addEventListener('click', (event) => {
-    var songLabel = event.target.closest('button').parentNode.parentNode.firstChild;
+    var songLabel = event.target.closest('.item-with-tooltip').parentNode.parentNode.firstChild;
     if (!song.settings.skipped) {
       songLabel.classList.add('skipped-song'); // change color of skipped song
     } else {
