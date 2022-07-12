@@ -718,7 +718,7 @@ function addSongToDisplayList(song) {
   });
   skipBtn.classList.add('item-with-tooltip');
   skipBtn.width = '10%';
-  skipBtn.innerHTML = `<div class="tooltip-text tooltip-left">skip</div>
+  skipBtn.innerHTML = `<div class="tooltip-text tooltip-left" style="left: calc(-100% - 20px);">skip</div>
   <button><i class="fa fa-step-forward"></i></button>`;
   skipBtn.addEventListener('click', (event) => {
     var songLabel = event.target.closest('.item-with-tooltip').parentNode.parentNode.firstChild;
