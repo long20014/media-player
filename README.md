@@ -11,7 +11,7 @@ Web open media player using the Web Audio API
 
 Support file type: MP3, MP4, OGG, MKV.
 
-Support play list.
+Support play list (song are saved on your browser).
 
 Support equalizer.
 
@@ -19,7 +19,7 @@ Support speed change.
 
 Support adjust video contrast, brightness, grayscale, blur, etc..
 
-Support save audio settings for each media. (volume, speed, equalizer)
+Support save audio settings for each media (volume, speed, equalizer).
 
 Support responsive on mobile.
 
@@ -28,6 +28,8 @@ Support loop one media or all media.
 Support offline (service worker).
 
 Support add subtitle (.srt file).
+
+Support skipping media. Use the skip button on the song to toggle skipping the media on the list.
 
 ## Note
 
