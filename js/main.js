@@ -47,7 +47,7 @@ var currentDelay;
 var currentVolume;
 var currentEnhancedVolume;
 var currentPlaybackRate = 1;
-var currentPlayList = DEFAULT_PLAYLIST;
+var currentPlayList = localStorage.getItem('currentPlayList') || DEFAULT_PLAYLIST;
 var appSongs;
 var currentSong;
 var draggedItem;
@@ -917,6 +917,8 @@ function openAddPlayListPanel() {
   domElement.newPlayListPanel.style.opacity = '1';
   domElement.newPlayListPanel.style.visibility = 'visible';
   appSetting.isAddNewPlaylistPanelShow = true;
+  const playListNameInput = getElement('play-list-name-input');
+  playListNameInput.focus();
 }
 
 function closeAddPlayListPanel() {
@@ -924,6 +926,8 @@ function closeAddPlayListPanel() {
   domElement.newPlayListPanel.style.visibility = 'hidden';
   domElement.playListInput.value = '';
   appSetting.isAddNewPlaylistPanelShow = false;
+  const playListNameInput = getElement('play-list-name-input');
+  playListNameInput.blur();
 }
 
 async function addNewPlayList() {
@@ -1394,6 +1398,7 @@ async function renamePlayListFromDB(playList) {
 async function changePlayList(playListName) {
   if (!$media.isPlay) {
     currentPlayList = playListName;
+    localStorage.setItem('currentPlayList', currentPlayList);
     clearAllSongs();
     await getSongList();
   } else {
