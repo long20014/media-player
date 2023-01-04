@@ -917,8 +917,7 @@ function openAddPlayListPanel() {
   domElement.newPlayListPanel.style.opacity = '1';
   domElement.newPlayListPanel.style.visibility = 'visible';
   appSetting.isAddNewPlaylistPanelShow = true;
-  const playListNameInput = getElement('play-list-name-input');
-  playListNameInput.focus();
+  domElement.playListNameInput.focus();
 }
 
 function closeAddPlayListPanel() {
@@ -926,8 +925,7 @@ function closeAddPlayListPanel() {
   domElement.newPlayListPanel.style.visibility = 'hidden';
   domElement.playListInput.value = '';
   appSetting.isAddNewPlaylistPanelShow = false;
-  const playListNameInput = getElement('play-list-name-input');
-  playListNameInput.blur();
+  domElement.playListNameInput.blur();
 }
 
 async function addNewPlayList() {
@@ -2025,6 +2023,7 @@ function initDOMVars() {
   domElement.subtitleWrapper = getElement('subtitle-wrapper');
   domElement.subtitleUpload = getElement('subtitle_upload');
   domElement.notification = getElement('notification');
+  domElement.playListNameInput = getElement('play-list-name-input');
   domElement.equalizerControls = {
     _31HzControl: getElement('_31HzControl'),
     _62HzControl: getElement('_62HzControl'),
