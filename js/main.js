@@ -105,6 +105,10 @@ window.addEventListener('keydown', (e) => {
       muteToggle();
     } else if (e.key === 'f' || e.key === 'F') {
       canvasFullscreenToggle();
+    } else if (e.key === 'a' || e.key === 'A') {
+      playPreviousSong();
+    } else if (e.key === 'd' || e.key === 'D') {
+      playNextSong();
     } else if (e.key === 'q' || e.key === 'Q') {
       if (window.innerWidth > 768) {
         showListToggle();
@@ -113,6 +117,8 @@ window.addEventListener('keydown', (e) => {
       }
     } else if (e.key === 'w' || e.key === 'W') {
       showSettingsToggle();
+    } else if (e.key === 'h' || e.key === 'H') {
+      showHelpToggle();
     } else if (e.keyCode === keyCode.ESCAPE) {
       exitFullscreen();
     } else if (e.keyCode === keyCode.DOWN_ARROW) {
