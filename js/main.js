@@ -1490,16 +1490,21 @@ function loadSongsPos() {
     var mediaPosObj = mediaPosList.find((item) => item.mediaList === currentPlayList);
     if (mediaPosObj) {
       var tempAppSongs = [];
-      mediaPosObj.mediaPosArr.forEach((pos) => {
-        for (var i = 0; i < appSongs.length; i++) {
-          if (appSongs[i].id === pos) {
-            tempAppSongs.push(appSongs[i]);
-            appSongs.splice(i, 1);
-            break;
+      if (mediaPosObj.mediaPosArr.length !== appSongs.length) {
+        // this happen when songs in position obj are missing, we need to reset it.
+        mediaPosObj.mediaPosArr = [];
+      } else {
+        mediaPosObj.mediaPosArr.forEach((pos) => {
+          for (var i = 0; i < appSongs.length; i++) {
+            if (appSongs[i].id === pos) {
+              tempAppSongs.push(appSongs[i]);
+              appSongs.splice(i, 1);
+              break;
+            }
           }
-        }
-      });
-      appSongs = tempAppSongs;
+        });
+        appSongs = tempAppSongs;
+      }
     }
   }
 }
