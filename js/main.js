@@ -1493,6 +1493,7 @@ function loadSongsPos() {
       if (mediaPosObj.mediaPosArr.length !== appSongs.length) {
         // this happen when songs in position obj are missing, we need to reset it.
         mediaPosObj.mediaPosArr = [];
+        localStorage.setItem('mediaPosList', JSON.stringify(mediaPosList));
       } else {
         mediaPosObj.mediaPosArr.forEach((pos) => {
           for (var i = 0; i < appSongs.length; i++) {
