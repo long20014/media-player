@@ -1128,7 +1128,7 @@ function setPlayToTrue() {
 }
 
 function loadCurrentSong(song) {
-  getElement($currentSong.src.name).classList.remove('song-highlight');
+  getElement($currentSong.id).classList.remove('song-highlight');
   $currentSong = song;
   switchMediaType();
   $media.isPlay = true;
@@ -1137,7 +1137,7 @@ function loadCurrentSong(song) {
   }
   var blobUrl = URL.createObjectURL($currentSong.src);
   setDownloadLink(blobUrl, $currentSong.songName);
-  getElement($currentSong.src.name).classList.add('song-highlight');
+  getElement($currentSong.id).classList.add('song-highlight');
   $media.src = blobUrl;
   $media.playbackRate = $currentPlaybackRate;
 }
