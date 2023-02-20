@@ -53,7 +53,7 @@ var currentSong;
 var draggedItem;
 var canvasRenderLoopTimeout;
 var appSetting = {
-  songListAutoCloseTime: 4000,
+  songListAutoCloseTime: 0,
   isSongSettingUsed: true,
   isLoopAll: false,
   isInited: false,
@@ -80,9 +80,15 @@ var videoSetting = {
 var $debounces = {
   hideMediaList: null,
   hideNotification: null,
+  showSongTooltip: null,
+};
+var $appFlag = {
+  songTooltipShow: false,
 };
 var domElement = {};
 var tooltip = {};
+
+var $songNameTooltip;
 
 $media.controls = false;
 $media.loop = false;
@@ -175,6 +181,8 @@ window.addEventListener(
     initUploadFileFunction();
     initUploadSubtitleFile();
     initTooltips();
+    createSongNameTooltip();
+    registerDebounceShowSongTooltip();
     _processor = new Processor();
   },
   false,
@@ -698,6 +706,29 @@ function handleDrop(item) {
   item.target.classList.remove('drag-sort-active');
 }
 
+function createSongNameTooltip() {
+  $songNameTooltip = document.createElement('DIV');
+  $songNameTooltip.classList.add('song-name-tooltip');
+  $songNameTooltip.textContent = 'song name tooltip';
+  document.body.appendChild($songNameTooltip);
+}
+
+function showSongTooltip(text, e) {
+  $songNameTooltip.textContent = text;
+  var left = e.clientX + 5 + 'px';
+  var top = e.clientY - 10 + 'px';
+  $songNameTooltip.style.left = left;
+  $songNameTooltip.style.top = top;
+  if (!Array.from($songNameTooltip.classList).includes('show')) {
+    $songNameTooltip.classList.add('show');
+  }
+}
+
+function hideSongTooltip() {
+  $songNameTooltip.classList.remove('show');
+  $debounces.showSongTooltip.cancel();
+}
+
 function addSongToDisplayList(song) {
   var data = song.src;
   var blobUrl = URL.createObjectURL(data);
@@ -706,6 +737,7 @@ function addSongToDisplayList(song) {
   var deleteBtn = document.createElement('BUTTON');
   var songItem = document.createElement('TD');
   var btnCell = document.createElement('TD');
+
   btnCell.classList.add('btn-cell');
 
   songRow.draggable = true;
@@ -718,11 +750,17 @@ function addSongToDisplayList(song) {
     songItem.classList.add('skipped-song');
   }
   songItem.textContent = song.songName;
-  songItem.id = song.songName;
+  songItem.id = song.id;
   songItem.dataset.src = blobUrl;
   songItem.addEventListener('click', (event) => {
     chooseSong(event, song);
     console.log(song);
+  });
+  songItem.addEventListener('mousemove', (e) => {
+    $debounces.showSongTooltip(song.songName, e);
+  });
+  songItem.addEventListener('mouseleave', (e) => {
+    hideSongTooltip();
   });
   skipBtn.classList.add('item-with-tooltip');
   skipBtn.width = '10%';
@@ -1923,8 +1961,12 @@ function registerDebounceHideNotification() {
   $debounces.hideNotification = debounce(hideNotificationFn, 3000);
 }
 
+function registerDebounceShowSongTooltip() {
+  $debounces.showSongTooltip = debounce(showSongTooltip, 1000);
+}
+
 function registerAutoHideMediaList() {
-  if (domElement.songListPanel) {
+  if (domElement.songListPanel && appSetting.songListAutoCloseTime > 0) {
     $debounces.hideMediaList = debounce(closeSongListPanel, appSetting.songListAutoCloseTime);
     domElement.songListPanel.addEventListener('mousemove', $debounces.hideMediaList);
     domElement.playListSelect.addEventListener('focus', () => (appSetting.isOnSelectingPlaylist = true));
@@ -1960,8 +2002,12 @@ function debounce(func, wait, immediate) {
   // Each call to the returned function will share this common timer.
   var timeout;
 
+  function cancel() {
+    clearTimeout(timeout);
+  }
+
   // Calling debounce returns a new anonymous function
-  return function () {
+  function debounced() {
     // reference the context and args for the setTimeout function
     var context = this;
     var args = arguments;
@@ -1993,7 +2039,9 @@ function debounce(func, wait, immediate) {
 
     // Immediate mode and no wait timer? Execute the function..
     if (callNow) func.apply(context, args);
-  };
+  }
+  debounced.cancel = cancel;
+  return debounced;
 }
 
 /*----- -DOM- -----*/
