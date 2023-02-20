@@ -52,7 +52,7 @@ var $currentSong;
 var $draggedItem;
 var $canvasRenderLoopTimeout;
 var $appSetting = {
-  songListAutoCloseTime: 0,
+  songListAutoCloseTime: 4000,
   isSongSettingUsed: true,
   isLoopAll: false,
   isInited: false,
