@@ -1,28 +1,28 @@
 function hideNotificationFn() {
-  domElement.notification.classList.add('hidden');
+  $domElement.notification.classList.add('hidden');
 }
 
 function showNotification(type, messsage) {
   function showInfo() {
-    domElement.notification.classList.add('info');
-    domElement.notification.classList.remove('error');
-    domElement.notification.classList.remove('warning');
-    domElement.notification.classList.remove('hidden');
+    $domElement.notification.classList.add('info');
+    $domElement.notification.classList.remove('error');
+    $domElement.notification.classList.remove('warning');
+    $domElement.notification.classList.remove('hidden');
     $debounces.hideNotification();
   }
   function showError() {
-    domElement.notification.classList.add('error');
-    domElement.notification.classList.remove('info');
-    domElement.notification.classList.remove('warning');
-    domElement.notification.classList.remove('hidden');
+    $domElement.notification.classList.add('error');
+    $domElement.notification.classList.remove('info');
+    $domElement.notification.classList.remove('warning');
+    $domElement.notification.classList.remove('hidden');
     $debounces.hideNotification();
   }
 
   function showWarning() {
-    domElement.notification.classList.add('warning');
-    domElement.notification.classList.remove('info');
-    domElement.notification.classList.remove('error');
-    domElement.notification.classList.remove('hidden');
+    $domElement.notification.classList.add('warning');
+    $domElement.notification.classList.remove('info');
+    $domElement.notification.classList.remove('error');
+    $domElement.notification.classList.remove('hidden');
     $debounces.hideNotification();
   }
   switch (type) {
@@ -38,5 +38,5 @@ function showNotification(type, messsage) {
     default:
       showInfo();
   }
-  domElement.notification.textContent = messsage;
+  $domElement.notification.textContent = messsage;
 }
