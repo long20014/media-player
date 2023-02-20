@@ -615,7 +615,7 @@ function decreasePlayrateOnKeyPress() {
 function clearAllSongs() {
   if (appSongs && appSongs.length > 0) {
     for (var song of appSongs) {
-      deleteSongFromDisplayList(song.songName);
+      deleteSongFromDisplayList(song.id);
     }
     appSongs = [];
     stopMedia();
@@ -898,8 +898,8 @@ function chooseSong(event, song) {
   setCurrentSubtitle();
 }
 
-function deleteSongFromDisplayList(songName) {
-  var songItem = getElement(songName);
+function deleteSongFromDisplayList(songId) {
+  var songItem = getElement(songId);
   var songRow = songItem.parentElement;
   if (songItem && songRow.parentElement === domElement.songTable) {
     domElement.songTable.removeChild(songRow);
