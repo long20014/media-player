@@ -1249,9 +1249,7 @@ function uploadMediaFile(file, fileType) {
   var blobUrl = URL.createObjectURL(file);
   tempMedia.src = blobUrl;
   var duration;
-  tempMedia.onloadedmetadata = function () {
-    duration = tempMedia.duration;
-
+  function operateMediaFile() {
     var DEFAULT_EQUALIZER_VALUE = 0;
     var createdDate = new Date();
     var mediaFile = {
@@ -1284,6 +1282,10 @@ function uploadMediaFile(file, fileType) {
     addSongToPlayList($currentPlayList, mediaFile);
     addSongToSongList(mediaFile);
     saveSongsPos();
+  }
+  tempMedia.onloadedmetadata = function () {
+    duration = tempMedia.duration;
+    operateMediaFile();
   };
 }
 
