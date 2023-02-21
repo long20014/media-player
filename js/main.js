@@ -629,7 +629,7 @@ function skipMedia(song) {
 }
 
 function deleteMedia(song) {
-  if ($currentSong && $currentSong.songName === song.songName) {
+  if ($currentSong && $currentSong.id === song.id) {
     stopMedia();
     unsetMedia();
   }
