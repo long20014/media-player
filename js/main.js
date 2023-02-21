@@ -1434,6 +1434,16 @@ async function createNewSchema(playList, newSchema) {
   await $db.open();
 }
 
+async function updateSchema(newSchema) {
+  var songs = {};
+  $playLists.forEach((storeName) => {
+    songs[storeName] = newSchema;
+  });
+  await $db.close();
+  $db.version(Math.round($db.verno + 1)).stores(songs);
+  await $db.open();
+}
+
 async function renamePlayListFromDB(playList) {
   await $db.close();
   await $db.open();
@@ -1943,6 +1953,20 @@ function flashPlayButtonOnCanvas() {
 }
 
 /*----- -Utilities- -----*/
+function showLoader() {
+  const classList = getElement('js-loader-wrapper').classList;
+  if (!Array.from(classList).includes('show')) {
+    classList.add('show');
+  }
+}
+
+function hideLoader() {
+  const classList = getElement('js-loader-wrapper').classList;
+  if (Array.from(classList).includes('show')) {
+    classList.remove('show');
+  }
+}
+
 function changeSongListAutoCloseTime(value) {
   $appSetting.songListAutoCloseTime = value * 1000;
   $tooltip.songListAutoCloseTime.textContent = value + 's after mouse move in and out the list';

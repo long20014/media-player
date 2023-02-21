@@ -15,22 +15,24 @@ async function updateDuration(playList, song) {
 }
 
 async function addDurationToSchema() {
-  const dummyList = 'dummy for migration';
-  await addPlayListToDB(dummyList);
+  await updateSchema(CURRENT_SCHEMA);
   for (var playList of $playLists) {
     const appSongs = await getAllSongFromPlayList(playList);
     for (var song of appSongs) {
       await updateDuration(playList, song);
     }
   }
-  await deletePlayListFromDB(dummyList);
 }
 
 async function migrateToV2_2() {
   const currentAppVersion = localStorage.getItem('applicationVersion');
   const isVersionMatched = APP_VERSION === currentAppVersion;
   if (!isVersionMatched) {
+    showNotification('info', `We're migrating your db to new version`);
+    showLoader();
     await addDurationToSchema();
+    hideLoader();
     localStorage.setItem('applicationVersion', APP_VERSION);
+    showNotification('info', 'Migration has been successfully done');
   }
 }
