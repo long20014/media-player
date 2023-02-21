@@ -1378,9 +1378,9 @@ async function getAllSongFromPlayList(playList) {
   }
   return [];
 }
-async function getSongFromDB(playList, songName) {
-  if (playList && songName) {
-    var song = await $db.table(playList).get({ songName }, (song) => song);
+async function getSongFromDB(playList, songId) {
+  if (playList && songId) {
+    var song = await $db.table(playList).get(songId, (song) => song);
     if (song) {
       console.log(song);
       return song;
