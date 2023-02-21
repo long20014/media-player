@@ -1,5 +1,6 @@
 'use strict';
 var APP_VERSION = 'v2.2';
+var CURRENT_SCHEMA = 'id, songName, duration, src, createdDate, type, settings';
 var BUFFER_SIZE = 4096;
 var PLAYER_FOOTER_HEIGHT = 125;
 var PLAYER_HEADER_HEIGHT = 62.5;
@@ -1399,7 +1400,7 @@ async function addPlayListToDB(playList) {
   $playLists = getAllPlayLists();
   if ($playLists) {
     if (!$playLists.includes(playList)) {
-      await createNewSchema(playList, 'id, songName, duration, src, createdDate, type, settings');
+      await createNewSchema(playList, CURRENT_SCHEMA);
       var initSong = {
         id: 'initSong',
         songName: 'initSong',
@@ -1425,7 +1426,7 @@ async function deletePlayListFromDB(playList) {
 async function createNewSchema(playList, newSchema) {
   var songs = {};
   $playLists.forEach((storeName) => {
-    songs[storeName] = 'id, songName, duration, src, createdDate, type, settings';
+    songs[storeName] = CURRENT_SCHEMA;
   });
   songs[playList] = newSchema;
   await $db.close();
