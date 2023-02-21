@@ -906,20 +906,10 @@ function deleteSongFromDisplayList(songId) {
 function loadMediaElapsedTime() {
   $media.onloadedmetadata = function () {
     var getDuration = function () {
-      return (
-        parseInt($media.duration / 60) +
-        ':' +
-        (parseInt($media.duration % 60) > 9 ? parseInt($media.duration % 60) : '0' + parseInt($media.duration % 60))
-      );
+      return convertSecondsToHours($media.duration);
     };
     var getElapsedTime = function () {
-      return (
-        parseInt($media.currentTime / 60) +
-        ':' +
-        (parseInt($media.currentTime % 60) > 9
-          ? parseInt($media.currentTime % 60)
-          : '0' + parseInt($media.currentTime % 60))
-      );
+      return convertSecondsToHours($media.currentTime);
     };
     $media.ontimeupdate = () => {
       $domElement.elapsedTime.textContent = getElapsedTime();

@@ -8,6 +8,7 @@ function debounce(func, wait, immediate) {
   // Each call to the returned function will share this common timer.
   var timeout;
 
+  // use to cancel debounce
   function cancel() {
     clearTimeout(timeout);
   }
@@ -48,4 +49,29 @@ function debounce(func, wait, immediate) {
   }
   debounced.cancel = cancel;
   return debounced;
+}
+
+function convertSecondsToHours(timeInSecond) {
+  const hours = ((timeInSecond) => {
+    const hourNumber = parseInt(timeInSecond / 3600);
+    return hourNumber;
+  })(timeInSecond);
+
+  const minutes = ((timeInSecond) => {
+    const minuteNumber = parseInt((timeInSecond % 3600) / 60);
+    if (minuteNumber > 9) {
+      return minuteNumber;
+    }
+    return '0' + minuteNumber;
+  })(timeInSecond);
+
+  const seconds = ((timeInSecond) => {
+    const secondNumber = parseInt(timeInSecond) % 60;
+    if (secondNumber > 9) {
+      return secondNumber;
+    }
+    return '0' + secondNumber;
+  })(timeInSecond);
+
+  return `${hours > 0 ? hours + ':' : ''}${minutes}:${seconds}`;
 }
