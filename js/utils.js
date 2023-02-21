@@ -50,28 +50,30 @@ function debounce(func, wait, immediate) {
   debounced.cancel = cancel;
   return debounced;
 }
+
+function calculateHoursFromSecond(timeInSecond) {
+  const hours = parseInt(timeInSecond / 3600);
+  const minutes = parseInt((timeInSecond % 3600) / 60);
+  const seconds = parseInt(timeInSecond) % 60;
+  return { hours, minutes, seconds };
+}
+
 // Example: 3661s -> 1:01:01, 361s -> 06:01
 function convertSecondsToHours(timeInSecond) {
-  const hours = ((timeInSecond) => {
-    const hourNumber = parseInt(timeInSecond / 3600);
-    return hourNumber;
-  })(timeInSecond);
+  const { hours, minutes, seconds } = calculateHoursFromSecond(timeInSecond);
+  const hourNumber = hours > 0 ? `${hours}:` : '';
+  const minuteNumber = minutes > 9 ? `${minutes}:` : `0${minutes}:`;
+  const secondNumber = seconds > 9 ? seconds : `0${seconds}`;
 
-  const minutes = ((timeInSecond) => {
-    const minuteNumber = parseInt((timeInSecond % 3600) / 60);
-    if (minuteNumber > 9) {
-      return minuteNumber;
-    }
-    return '0' + minuteNumber;
-  })(timeInSecond);
+  return `${hourNumber}${minuteNumber}${secondNumber}`;
+}
 
-  const seconds = ((timeInSecond) => {
-    const secondNumber = parseInt(timeInSecond) % 60;
-    if (secondNumber > 9) {
-      return secondNumber;
-    }
-    return '0' + secondNumber;
-  })(timeInSecond);
-
-  return `${hours > 0 ? hours + ':' : ''}${minutes}:${seconds}`;
+function limitPercentValue(value, lowerLimit, upperLimit) {
+  var limitedValue = value;
+  if (limitedValue > upperLimit) {
+    limitedValue = upperLimit;
+  } else if (limitedValue < lowerLimit) {
+    limitedValue = lowerLimit;
+  }
+  return limitedValue;
 }

@@ -1934,16 +1934,6 @@ function changeSongListAutoCloseTime(value) {
   reregisterAutoHideMediaList();
 }
 
-function limitPercentValue(value, lowerLimit, upperLimit) {
-  var limitedValue = value;
-  if (limitedValue > upperLimit) {
-    limitedValue = upperLimit;
-  } else if (limitedValue < lowerLimit) {
-    limitedValue = lowerLimit;
-  }
-  return limitedValue;
-}
-
 function registerDebounceHideNotification() {
   $debounces.hideNotification = debounce(hideNotificationFn, 3000);
 }
