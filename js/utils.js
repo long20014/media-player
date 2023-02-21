@@ -77,3 +77,7 @@ function limitPercentValue(value, lowerLimit, upperLimit) {
   }
   return limitedValue;
 }
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

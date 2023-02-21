@@ -1,6 +1,6 @@
 'use strict';
+var APP_VERSION = 'v2.2';
 var BUFFER_SIZE = 4096;
-
 var PLAYER_FOOTER_HEIGHT = 125;
 var PLAYER_HEADER_HEIGHT = 62.5;
 var CANVAS_WIDTH = window.innerWidth * 0.85;
@@ -169,6 +169,9 @@ window.addEventListener(
     sourceNode = audioSourceNode;
     sourceNode.connect(analyser);
     analyser.connect(audioContext.destination);
+
+    await migrateToV2_2();
+
     await getSongList();
     setCurrentVolume($domElement.volumeControl.value);
     setCurrentEnhancedVolume($domElement.enhancedVolumeControl.value);
@@ -176,6 +179,7 @@ window.addEventListener(
     initUploadFileFunction();
     initUploadSubtitleFile();
     initTooltips();
+    initTexts();
     createSongNameTooltip();
     registerDebounceShowSongTooltip();
     _processor = new Processor();
@@ -629,7 +633,7 @@ function deleteMedia(song) {
     unsetMedia();
   }
   removeSongFromList(song);
-  deleteSongFromDisplayList(song.songName);
+  deleteSongFromDisplayList(song.id);
   deleteSongFromPlayList($currentPlayList, song);
   saveSongsPos();
 }
@@ -1121,7 +1125,7 @@ function loadCurrentSong(song) {
   getElement($currentSong.id).classList.remove('song-highlight');
   $currentSong = song;
   switchMediaType();
-  $media.isPlay = true;
+  $media.isPlay = true; //for playing next or prev song.
   if ($appSetting.isSongSettingUsed) {
     loadCurrentMediaSettings();
   }
@@ -1240,37 +1244,46 @@ function initUploadFileFunction() {
 
 /*----- -Setup Function- -----*/
 function uploadMediaFile(file, fileType) {
-  var DEFAULT_EQUALIZER_VALUE = 0;
-  var createdDate = new Date();
-  var mediaFile = {
-    id: file.name + ' ' + createdDate.getTime(),
-    songName: file.name,
-    src: file,
-    createdDate: createdDate,
-    type: fileType,
-    settings: {
-      volume: 1,
-      enhancedVolume: 0,
-      playbackRate: 1,
-      equalizer: {
-        _31Hz: DEFAULT_EQUALIZER_VALUE,
-        _62Hz: DEFAULT_EQUALIZER_VALUE,
-        _125Hz: DEFAULT_EQUALIZER_VALUE,
-        _250Hz: DEFAULT_EQUALIZER_VALUE,
-        _500Hz: DEFAULT_EQUALIZER_VALUE,
-        _1kHz: DEFAULT_EQUALIZER_VALUE,
-        _2kHz: DEFAULT_EQUALIZER_VALUE,
-        _4kHz: DEFAULT_EQUALIZER_VALUE,
-        _8kHz: DEFAULT_EQUALIZER_VALUE,
-        _16kHz: DEFAULT_EQUALIZER_VALUE,
+  var tempMedia = fileType === 'audio' ? new Audio() : document.createElement('video');
+  var blobUrl = URL.createObjectURL(file);
+  tempMedia.src = blobUrl;
+  var duration;
+  tempMedia.onloadedmetadata = function () {
+    duration = tempMedia.duration;
+
+    var DEFAULT_EQUALIZER_VALUE = 0;
+    var createdDate = new Date();
+    var mediaFile = {
+      id: file.name + ' ' + createdDate.getTime(),
+      songName: file.name,
+      duration,
+      src: file,
+      createdDate: createdDate,
+      type: fileType,
+      settings: {
+        volume: 1,
+        enhancedVolume: 0,
+        playbackRate: 1,
+        equalizer: {
+          _31Hz: DEFAULT_EQUALIZER_VALUE,
+          _62Hz: DEFAULT_EQUALIZER_VALUE,
+          _125Hz: DEFAULT_EQUALIZER_VALUE,
+          _250Hz: DEFAULT_EQUALIZER_VALUE,
+          _500Hz: DEFAULT_EQUALIZER_VALUE,
+          _1kHz: DEFAULT_EQUALIZER_VALUE,
+          _2kHz: DEFAULT_EQUALIZER_VALUE,
+          _4kHz: DEFAULT_EQUALIZER_VALUE,
+          _8kHz: DEFAULT_EQUALIZER_VALUE,
+          _16kHz: DEFAULT_EQUALIZER_VALUE,
+        },
+        skipped: false,
       },
-      skipped: false,
-    },
+    };
+    addSongToDisplayList(mediaFile);
+    addSongToPlayList($currentPlayList, mediaFile);
+    addSongToSongList(mediaFile);
+    saveSongsPos();
   };
-  addSongToDisplayList(mediaFile);
-  addSongToPlayList($currentPlayList, mediaFile);
-  addSongToSongList(mediaFile);
-  saveSongsPos();
 }
 
 function setAudioFileAsArrayBuffer(file) {
@@ -1339,8 +1352,8 @@ async function initIndexDB(dbName) {
 
 function addSongToPlayList(playList, song) {
   if (song && playList) {
-    var { id, songName, src, createdDate, type, settings } = song;
-    return $db.table(playList).put({ id, songName, src, createdDate, type, settings });
+    var { id, songName, duration, src, createdDate, type, settings } = song;
+    return $db.table(playList).put({ id, songName, duration, src, createdDate, type, settings });
   }
 }
 
@@ -1353,12 +1366,12 @@ function updateMedia(playList, song) {
 
 async function getAllSongFromPlayList(playList) {
   if (playList) {
-    var $appSongs = await $db
+    var appSongs = await $db
       .table(playList)
       .toArray()
       .then((songs) => songs);
-    console.log($appSongs);
-    return $appSongs;
+    console.log(appSongs);
+    return appSongs;
   }
   return [];
 }
@@ -1386,10 +1399,11 @@ async function addPlayListToDB(playList) {
   $playLists = getAllPlayLists();
   if ($playLists) {
     if (!$playLists.includes(playList)) {
-      await createNewSchema(playList, 'id, songName, src, createdDate, type, settings');
+      await createNewSchema(playList, 'id, songName, duration, src, createdDate, type, settings');
       var initSong = {
         id: 'initSong',
         songName: 'initSong',
+        duration: 0,
         src: null,
         createdDate: null,
         type: 'audio',
@@ -1411,7 +1425,7 @@ async function deletePlayListFromDB(playList) {
 async function createNewSchema(playList, newSchema) {
   var songs = {};
   $playLists.forEach((storeName) => {
-    songs[storeName] = 'id, songName, src, createdDate, type, settings';
+    songs[storeName] = 'id, songName, duration, src, createdDate, type, settings';
   });
   songs[playList] = newSchema;
   await $db.close();
@@ -2046,4 +2060,8 @@ function initTooltips() {
   getElement('sepia-tooltip').textContent = 'Sepia: ' + $videoSetting.sepia + '%';
   getElement('blur-tooltip').textContent = 'Blur: ' + $videoSetting.blur + 'px';
   getElement('hue-rotation-tooltip').textContent = 'Hue rotation: ' + $videoSetting.hueRotation + 'deg';
+}
+
+function initTexts() {
+  getElement('version').textContent = `Web Media Player ${APP_VERSION}`;
 }
