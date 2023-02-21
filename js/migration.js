@@ -7,7 +7,6 @@ async function updateDuration(playList, song) {
     var duration;
     tempMedia.onloadedmetadata = function () {
       duration = tempMedia.duration;
-      console.log(duration);
       return $db.table(playList).update(id, { duration });
     };
   }
