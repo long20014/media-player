@@ -50,7 +50,7 @@ function debounce(func, wait, immediate) {
   debounced.cancel = cancel;
   return debounced;
 }
-
+// Example: 3661s -> 1:01:01, 361s -> 06:01
 function convertSecondsToHours(timeInSecond) {
   const hours = ((timeInSecond) => {
     const hourNumber = parseInt(timeInSecond / 3600);
