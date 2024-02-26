@@ -1566,8 +1566,10 @@ function loadSongsPos() {
 function removePlayListFromPosList(playListName) {
   var mediaPosList = JSON.parse(localStorage.getItem('mediaPosList'));
   var removedList = mediaPosList.find((list) => list.mediaList === playListName);
-  mediaPosList.splice(mediaPosList.indexOf(removedList), 1);
-  localStorage.setItem('mediaPosList', JSON.stringify(mediaPosList));
+  if (removedList) {
+    mediaPosList.splice(mediaPosList.indexOf(removedList), 1);
+    localStorage.setItem('mediaPosList', JSON.stringify(mediaPosList));
+  }
 }
 
 function exportDB($db) {
