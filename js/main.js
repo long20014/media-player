@@ -1249,6 +1249,7 @@ function uploadMediaFile(file, fileType) {
   var blobUrl = URL.createObjectURL(file);
   tempMedia.src = blobUrl;
   var duration;
+  console.log($db.verno);
   function operateMediaFile() {
     var DEFAULT_EQUALIZER_VALUE = 0;
     var createdDate = new Date();
@@ -1432,7 +1433,7 @@ async function createNewSchema(playList, newSchema) {
   });
   songs[playList] = newSchema;
   await $db.close();
-  $db.version(Math.round($db.verno + 1)).stores(songs);
+  $db.version($db.verno + 0.1).stores(songs);
   await $db.open();
 }
 
@@ -1442,7 +1443,7 @@ async function updateSchema(newSchema) {
     songs[storeName] = newSchema;
   });
   await $db.close();
-  $db.version(Math.round($db.verno + 1)).stores(songs);
+  $db.version(Math.round($db.verno + 0.1)).stores(songs);
   await $db.open();
 }
 
